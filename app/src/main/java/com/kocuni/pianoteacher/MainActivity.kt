@@ -16,7 +16,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Example of a call to a native method
-        binding.sampleText.text = stringFromJNI()
+        if (startEngine()) {
+            binding.sampleText.text = "Hell yes"
+        } else {
+            binding.sampleText.text = "Oh no"
+        }
+
     }
 
     /**
@@ -24,6 +29,7 @@ class MainActivity : AppCompatActivity() {
      * which is packaged with this application.
      */
     external fun stringFromJNI(): String
+    external fun startEngine(): Boolean
 
     companion object {
         // Used to load the 'pianoteacher' library on application startup.
