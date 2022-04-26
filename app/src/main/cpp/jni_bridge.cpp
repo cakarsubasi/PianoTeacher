@@ -2,7 +2,7 @@
 #include <string>
 #include "AudioEngine.h"
 
-static AudioEngine *engine = nullptr;
+static AudioEngine engine;
 
 extern "C" {
 
@@ -18,11 +18,9 @@ JNIEXPORT jboolean JNICALL
 Java_com_kocuni_pianoteacher_MainActivity_startEngine(
         JNIEnv* env,
         jobject) {
-    if (engine == nullptr) {
-        engine = new AudioEngine();
-    }
 
-    return (engine != nullptr) ? JNI_TRUE : JNI_FALSE;
+    engine.start();
+    return true;
 }
 
 

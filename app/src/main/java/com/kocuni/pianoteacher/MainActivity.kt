@@ -2,12 +2,18 @@ package com.kocuni.pianoteacher
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.Button
+import android.Manifest
+import android.content.pm.PackageManager
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
 import com.kocuni.pianoteacher.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private val REQUEST_MIC = 0;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,6 +28,22 @@ class MainActivity : AppCompatActivity() {
             binding.sampleText.text = "Oh no"
         }
 
+        val button: Button = findViewById(R.id.closeButton);
+        button.setOnClickListener { view ->
+            binding.sampleText.text = "Button pressed"
+        }
+
+        if (!isRecordPermissionGranted()) {
+            requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO),
+            REQUEST_MIC
+            )
+        }
+    }
+
+
+    fun isRecordPermissionGranted(): Boolean {
+        return ActivityCompat.checkSelfPermission(this,
+        Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
     }
 
     /**
