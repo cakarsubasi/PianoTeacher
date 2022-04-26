@@ -23,5 +23,26 @@ Java_com_kocuni_pianoteacher_MainActivity_startEngine(
     return true;
 }
 
+/*
+JNIEXPORT void JNICALL
 
+*/
 } // extern "C"
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_kocuni_pianoteacher_MainActivity_setRecording(JNIEnv *env, jobject thiz,
+                                                       jboolean is_recording) {
+    // TODO: implement setRecording()
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_kocuni_pianoteacher_MainActivity_setPlaying(JNIEnv *env, jobject thiz,
+                                                     jboolean is_playing) {
+    // TODO: implement setPlaying()
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_kocuni_pianoteacher_MainActivity_stopEngine(JNIEnv *env, jobject thiz) {
+    // TODO: implement stopEngine()
+    engine.stop();
+}
