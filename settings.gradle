@@ -14,3 +14,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Piano Teacher"
 include ':app'
+include ':Scratchpad'
