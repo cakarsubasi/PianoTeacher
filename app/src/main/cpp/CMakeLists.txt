@@ -24,6 +24,7 @@ add_library( # Sets the name of the library.
         jni_bridge.cpp
         AudioEngine.h
         AudioEngine.cpp
+        Callbacks.h
 
         )
 

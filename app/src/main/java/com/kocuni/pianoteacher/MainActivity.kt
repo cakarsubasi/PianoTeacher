@@ -36,13 +36,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Example of a call to a native method
-        if (true) {
-            binding.sampleText.text = "Hell yes"
-        } else {
-            binding.sampleText.text = "Oh no"
-        }
-
         val button: Button = findViewById(R.id.closeButton);
         button.setOnClickListener { _ ->
             binding.sampleText.text = "Button pressed"

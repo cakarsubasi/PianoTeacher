@@ -19,8 +19,11 @@ Java_com_kocuni_pianoteacher_MainActivity_startEngine(
         JNIEnv* env,
         jobject) {
 
-    engine.start();
-    return true;
+    if(engine.start()) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 /*

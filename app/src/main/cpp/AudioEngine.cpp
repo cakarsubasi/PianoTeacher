@@ -6,17 +6,21 @@
 #include <oboe/oboe.h>
 #include <android/log.h>
 
-
+AudioEngine::AudioEngine()
+    : mOutputCallback(std::make_unique<OutputCallback>()),
+    mInputCallback(std::make_unique<InputCallback>()) {
+}
 
 bool AudioEngine::start() {
-    // TODO
+
     oboe::AudioStreamBuilder inBuilder;
     inBuilder.setDirection(oboe::Direction::Input)
     ->setChannelCount(mChannelCount)
     ->setSharingMode(oboe::SharingMode::Exclusive)
     ->setPerformanceMode(oboe::PerformanceMode::LowLatency)
     ->setSampleRate(kSampleRate)
-    ->setDataCallback(this);
+    ->setDataCallback(mInputCallback.get());
+
 
     oboe::Result result = inBuilder.openStream(mRecordingStream);
     if (result != oboe::Result::OK) {
@@ -26,7 +30,12 @@ bool AudioEngine::start() {
                             convertToText(result));
         return false;
     }
-    mRecordingStream->requestStart();
+
+    __android_log_print(ANDROID_LOG_DEBUG,
+                        "AudioEngine",
+                        "Successfully opened input stream.");
+
+    //mRecordingStream->requestStart();
 
     oboe::AudioStreamBuilder outBuilder;
     outBuilder.setDirection(oboe::Direction::Output)
@@ -34,7 +43,22 @@ bool AudioEngine::start() {
     ->setSharingMode(oboe::SharingMode::Exclusive)
     ->setPerformanceMode(oboe::PerformanceMode::LowLatency)
     ->setSampleRate(mRecordingStream->getSampleRate())
-    ->setDataCallback(this);
+    ->setDataCallback(mOutputCallback.get());
+
+    result = outBuilder.openStream(mPlaybackStream);
+    if (result != oboe::Result::OK) {
+        __android_log_print(ANDROID_LOG_ERROR,
+                            "AudioEngine",
+                            "Error opening stream %s",
+                            convertToText(result));
+        return false;
+    }
+
+    mPlaybackStream->requestStart();
+
+    __android_log_print(ANDROID_LOG_DEBUG,
+                        "AudioEngine",
+                        "Successfully opened output stream.");
 
 
     return true;
@@ -69,23 +93,4 @@ void AudioEngine::stop() {
 void AudioEngine::restart() {
     // TODO
 
-}
-
-oboe::DataCallbackResult
-AudioEngine::onAudioReady(oboe::AudioStream *oboeStream,
-                          void *audioData,
-                          int32_t numFrames) {
-    // sample code for sine wave generation
-    float *floatData = (float *) audioData;
-    for (int i = 0; i < numFrames; ++i) {
-        float sampleValue = kAmplitude * sinf(mPhase);
-        for (int j = 0; j < mChannelCount; j++) {
-            floatData[i * mChannelCount + j] = sampleValue;
-        }
-        mPhase += mPhaseIncrement;
-        if (mPhase >= kTwoPi) mPhase -= kTwoPi;
-    }
-
-
-    return oboe::DataCallbackResult::Continue;
 }
