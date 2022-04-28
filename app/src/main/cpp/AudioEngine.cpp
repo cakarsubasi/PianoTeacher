@@ -6,6 +6,8 @@
 #include <oboe/oboe.h>
 #include <android/log.h>
 
+void stopStream(std::shared_ptr<oboe::AudioStream> stream);
+
 AudioEngine::AudioEngine()
     : mOutputCallback(std::make_unique<OutputCallback>()),
     mInputCallback(std::make_unique<InputCallback>()) {
@@ -65,15 +67,20 @@ bool AudioEngine::start() {
 }
 
 void AudioEngine::stop() {
-    if (mRecordingStream) {
-        oboe::Result result = mRecordingStream->stop();
+    stopStream(mRecordingStream);
+    stopStream(mPlaybackStream);
+}
+
+void stopStream(std::shared_ptr<oboe::AudioStream> stream) {
+    if (stream) {
+        oboe::Result result = stream->stop();
         if (result != oboe::Result::OK) {
             __android_log_print(ANDROID_LOG_WARN,
                                 "AudioEngine",
                                 "Error stopping stream: %s",
                                 convertToText(result));
         }
-        result = mRecordingStream->close();
+        result = stream->close();
         if (result != oboe::Result::OK) {
             __android_log_print(ANDROID_LOG_ERROR,
                                 "AudioEngine",
@@ -85,9 +92,8 @@ void AudioEngine::stop() {
                                 "Successfully closed stream: %s",
                                 convertToText(result));
         }
-        mRecordingStream.reset();
+        stream.reset();
     }
-
 }
 
 void AudioEngine::restart() {

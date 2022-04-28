@@ -74,7 +74,6 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        startEngine()
 
     }
 
