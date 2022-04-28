@@ -26,6 +26,10 @@ add_library( # Sets the name of the library.
         AudioEngine.cpp
         Callbacks.h
 
+        minfft/minfft.h
+        minfft/minfft.c
+
+
         )
 
 # Searches for a specified prebuilt library and stores the path as a

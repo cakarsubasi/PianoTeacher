@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <math.h>
 #include <android/log.h>
+#include "minfft/minfft.h"
 //#include "Callbacks.h"
 
 class AudioEngine {
