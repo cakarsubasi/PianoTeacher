@@ -77,14 +77,20 @@ class GlyphAccidental(x: Double = 0.0,
                       y: Double = 0.0,
                       h: Double = 0.0,
                       w: Double = 0.0) : Glyph(x, y, h, w) {
-            val type: String = "Natural"
+    constructor(x: Double, y: Double, h: Double, w: Double, type: String) : this() {
+        this.type = type
+    }
+    var type: String = "Natural"
 }
 
 class GlyphClef(x: Double = 0.0,
-           y: Double = 0.0,
-           h: Double = 0.0,
-           w: Double = 0.0) : Glyph(x, y, h, w) {
-                    val type: String = "gClef"
+                y: Double = 0.0,
+                h: Double = 0.0,
+                w: Double = 0.0) : Glyph(x, y, h, w) {
+    constructor(x: Double, y: Double, h: Double, w: Double, type: String) : this() {
+        this.type = type
+    }
+    var type: String = "gClef"
 }
 
 class SongStream() {

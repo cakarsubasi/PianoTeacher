@@ -14,15 +14,16 @@ fun main() {
     fileReader.read(buffer)
 
     val jsonstr: String = String(buffer)
-    println(jsonstr)
 
     val abstractSong = JSONObject(jsonstr)
-
     println(abstractSong.toString(4))
+    val song = constructSong(abstractSong)
 
-    val songObjects = abstractSong.getJSONObject("objects")
+}
 
-    //println(songObjects.getJSONObject("0").getJSONObject("objects").getJSONObject("measures"))
+fun constructSong(songjson: JSONObject): Song {
+    val songObjects = songjson.getJSONObject("objects")
+
     val song: Song = Song()
     val systems = ArrayList<SystemStaff>()
     for (systemIndex in songObjects.keys()) {
@@ -59,8 +60,19 @@ fun main() {
                     val h = jNoteObject.getJSONObject("objects").getDouble("h")
                     val w = jNoteObject.getJSONObject("objects").getDouble("w")
 
-                    // TODO: typed glyphs
-                    val glyph = Glyph(x, y, h, w)
+                    val glyph: Glyph = when (glyphType) {
+                        "Note" -> GlyphNote(x, y, h, w)
+                        "Accidental" -> {
+                            val acc = jNoteObject.getJSONObject("objects").getString("type")
+                            GlyphAccidental(x, y, h, w, acc)
+                        }
+                        "Clef" -> {
+                            val acc = jNoteObject.getJSONObject("objects").getString("type")
+                            GlyphClef(x, y, h, w, acc)
+                        }
+                        else -> Glyph(x, y, h, w)
+                    }
+
                     glyphs.add(glyph)
                 }
                 // construct measures
@@ -79,8 +91,5 @@ fun main() {
         song.systems = systems
     }
 
-}
-
-fun constructSong(songjson: JSONObject) {
-
+    return song
 }
