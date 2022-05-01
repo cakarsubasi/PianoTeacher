@@ -77,7 +77,7 @@ class JSONParser {
                 system.ymin = ymin
                 systems.add(system)
             }
-            song.systems = systems
+            song.staffs = systems
             return song
         }
     }

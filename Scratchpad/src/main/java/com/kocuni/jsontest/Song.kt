@@ -38,7 +38,8 @@ class Song {
      *   Utils
      *     FT/Spectrogram
      */
-    var systems: List<SystemStaff> = ArrayList()
+    var staffs: List<SystemStaff> = ArrayList()
+    val systems: TreeMap<Int, Array<Int>> = TreeMap()
 }
 
 class SystemStaff {
