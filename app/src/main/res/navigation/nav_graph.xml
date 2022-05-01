@@ -10,4 +10,12 @@
         android:name="com.kocuni.pianoteacher.MainActivity"
         android:label="activity_main"
         tools:layout="@layout/activity_main" />
+    <activity
+        android:id="@+id/songActivity"
+        android:name="com.kocuni.pianoteacher.SongActivity"
+        android:label="activity_song"
+        tools:layout="@layout/activity_song" />
+    <action
+        android:id="@+id/action_global_mainActivity"
+        app:destination="@id/mainActivity" />
 </navigation>

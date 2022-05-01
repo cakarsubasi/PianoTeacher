@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.view.MotionEvent
 import android.widget.Switch
@@ -25,6 +26,8 @@ class MainActivity : AppCompatActivity() {
 
         val button: Button = findViewById(R.id.closeButton);
         button.setOnClickListener { _ ->
+            val intent = Intent(this, SongActivity::class.java).apply {  }
+            startActivity(intent)
             binding.sampleText.text = "Button pressed"
         }
 
