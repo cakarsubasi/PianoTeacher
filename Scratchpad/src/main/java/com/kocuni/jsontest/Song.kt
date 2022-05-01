@@ -1,6 +1,7 @@
 package com.kocuni.jsontest
 
-import javax.lang.model.type.UnionType
+import java.util.*
+import kotlin.collections.ArrayList
 
 class Song {
     /**
@@ -37,15 +38,15 @@ class Song {
      *   Utils
      *     FT/Spectrogram
      */
-    var systems: List<SystemStaff> = ArrayList<SystemStaff>()
+    var systems: List<SystemStaff> = ArrayList()
 }
 
 class SystemStaff {
     var ymax: Double = 0.0
     var ymin: Double = 0.0
 
-    var measures: List<Measure> = ArrayList<Measure>()
-    var staffs: List<Staff> = ArrayList<Staff>();
+    var measures: List<Measure> = ArrayList()
+    var staffs: List<Staff> = ArrayList()
 }
 
 class Staff {
@@ -54,7 +55,8 @@ class Staff {
 }
 
 class Measure {
-    var glyphs: List<Glyph> = ArrayList<Glyph>()
+    var glyphs: List<Glyph> = ArrayList()
+    var index: Int = -1
 }
 
 open class Glyph(val x: Double = 0.0,
@@ -62,7 +64,7 @@ open class Glyph(val x: Double = 0.0,
                  val h: Double = 0.0,
                  val w: Double = 0.0) : Comparable<Glyph> {
     override fun compareTo(other: Glyph): Int {
-        return this.x.compareTo(other.x);
+        return this.x.compareTo(other.x)
     }
 }
 
@@ -93,8 +95,8 @@ class GlyphClef(x: Double = 0.0,
     var type: String = "gClef"
 }
 
-class SongStream() {
-
+class SongStream(song: Song) {
+    val stream = TreeMap<Int, Chord>()
 }
 
 /**
@@ -104,7 +106,7 @@ class SongStream() {
 class Chord() {
 
     data class Pitch(val pitch: Double, val name: String = "C4") { }
-    val notes: ArrayList<Pitch> = ArrayList<Pitch>()
+    val notes: ArrayList<Pitch> = ArrayList()
 
 }
 
