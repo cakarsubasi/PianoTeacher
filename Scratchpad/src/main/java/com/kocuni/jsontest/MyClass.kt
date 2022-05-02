@@ -8,7 +8,7 @@ fun main() {
     println("Hello world")
     // this buffer size might need to get a lot larger
     val buffer = CharArray(100_000)
-    val examplesong = File("C:\\Repositories\\PianoTeacher\\Scratchpad\\src\\main\\java\\com\\kocuni\\jsontest\\song.json")
+    val examplesong = File("Scratchpad/src/main/java/com/kocuni/jsontest/song.json")
     val fileReader = FileReader(examplesong)
     fileReader.read(buffer)
 

@@ -39,6 +39,7 @@ class Song {
      *     FT/Spectrogram
      */
     var staffs: List<SystemStaff> = ArrayList()
+    var isOneHanded: Boolean = true
     val systems: TreeMap<Int, Array<Int>> = TreeMap()
 }
 

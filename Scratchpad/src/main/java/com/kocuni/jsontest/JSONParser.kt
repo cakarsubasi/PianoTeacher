@@ -9,6 +9,7 @@ class JSONParser {
 
         fun parse(songjson: JSONObject): Song {
             val songObjects = songjson.getJSONObject("objects")
+            val isOneHanded = songjson.getBoolean("one_handed")
 
             val song: Song = Song()
             val systems = ArrayList<SystemStaff>()
@@ -78,6 +79,7 @@ class JSONParser {
                 systems.add(system)
             }
             song.staffs = systems
+            song.isOneHanded = isOneHanded
             return song
         }
     }
