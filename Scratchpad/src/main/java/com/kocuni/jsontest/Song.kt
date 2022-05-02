@@ -99,6 +99,39 @@ class GlyphClef(x: Double = 0.0,
 
 class SongStream(song: Song) {
     val stream = TreeMap<Int, Chord>()
+    /**
+     * Traverse each measure in the song, generate chords and measures
+     *
+     * One handed case first
+     */
+    init {
+        song.systems
+    }
+
+    override fun toString(): String {
+        return super.toString()
+    }
+}
+
+object SongStreamFactory {
+
+    fun makeSongStream(song: Song): SongStream {
+
+        for (staff in song.staffs) {
+            for (measure in staff.measures) {
+                for (glyph in measure.glyphs) {
+                    if (glyph is GlyphNote) {
+                        // infer pitch add
+                        val chord = Chord()
+                        val note = Note()
+                        chord.notes.add(note)
+                    }
+                }
+            }
+        }
+
+        return SongStream(song)
+    }
 }
 
 /**
@@ -106,15 +139,24 @@ class SongStream(song: Song) {
  * the same time.
  */
 class Chord() {
+    val notes: ArrayList<Note> = ArrayList()
+    var timeIndex: Double = 0.0;
 
-    data class Pitch(val pitch: Double, val name: String = "C4") { }
-    val notes: ArrayList<Pitch> = ArrayList()
+    // merge the chords
+    operator fun plus(o: Chord) : Chord {
+        val chord = Chord()
+        chord.notes.addAll(this.notes)
+        chord.notes.addAll(o.notes)
+        chord.timeIndex = (this.timeIndex + o.timeIndex)/2.0
+        return chord
+    }
 
 }
 
 class Note(){
     val pitch: Double = 0.0
     val name: String = "C4"
+    val glyph: GlyphNote = GlyphNote()
 }
 
 enum class Clef {

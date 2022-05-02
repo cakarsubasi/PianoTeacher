@@ -2,10 +2,7 @@ package com.kocuni.jsontest
 
 import org.json.JSONObject
 
-class JSONParser {
-
-    companion object {
-
+object JSONParser {
 
         fun parse(songjson: JSONObject): Song {
             val songObjects = songjson.getJSONObject("objects")
@@ -82,6 +79,6 @@ class JSONParser {
             song.isOneHanded = isOneHanded
             return song
         }
-    }
+
 
 }
