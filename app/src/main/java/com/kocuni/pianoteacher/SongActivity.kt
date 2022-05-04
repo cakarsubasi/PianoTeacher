@@ -66,6 +66,7 @@ class SongActivity : AppCompatActivity() {
         //recorder.read(buffer, 0, 2048)
 
 
+
         timer.scheduleAtFixedRate(
             TestTask(recorder),
             1000L,
@@ -80,7 +81,7 @@ class SongActivity : AppCompatActivity() {
         var buffer: ShortArray = ShortArray(4096)
         override fun run() {
             //Log.d(TAG, "Timer event. ${JNIBridge.marshallTest()}")
-            recorder.read(buffer, 0, 2048)
+            recorder.read(buffer, 0, 4096)
             var total = 0
             for (i in 0..2047) {
                 total += buffer.get(i)

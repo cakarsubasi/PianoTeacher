@@ -20,6 +20,6 @@ object JNIBridge {
      * Load the native library
      */
     init {
-        System.loadLibrary("pianoteacher")
+        //System.loadLibrary("pianoteacher")
     }
 }
