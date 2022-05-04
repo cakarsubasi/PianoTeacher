@@ -8,4 +8,6 @@ class PitchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pitch)
     }
+
+
 }

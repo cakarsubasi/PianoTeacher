@@ -4,11 +4,11 @@ import org.json.JSONObject
 
 object JSONParser {
 
-        fun parse(songjson: JSONObject): Song {
+        fun parse(songjson: JSONObject): AbstractSong {
             val songObjects = songjson.getJSONObject("objects")
             val isOneHanded = songjson.getBoolean("one_handed")
 
-            val song: Song = Song()
+            val abstractSong: AbstractSong = AbstractSong()
             val systems = ArrayList<SystemStaff>()
 
             for (systemIndex in songObjects.keys()) {
@@ -75,9 +75,9 @@ object JSONParser {
                 system.ymin = ymin
                 systems.add(system)
             }
-            song.staffs = systems
-            song.isOneHanded = isOneHanded
-            return song
+            abstractSong.staffs = systems
+            abstractSong.isOneHanded = isOneHanded
+            return abstractSong
         }
 
 

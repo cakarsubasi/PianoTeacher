@@ -10,4 +10,8 @@ java {
 
 dependencies {
     implementation 'org.json:json:20220320'
+    implementation 'org.junit.jupiter:junit-jupiter'
+    implementation 'junit:junit:4.13.2'
+    implementation 'org.junit.jupiter:junit-jupiter'
+
 }

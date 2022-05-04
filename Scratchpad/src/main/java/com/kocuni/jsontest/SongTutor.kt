@@ -1,6 +1,6 @@
 package com.kocuni.jsontest
 
-class SongTutor (val song: Song){
+class SongTutor (val abstractSong: AbstractSong){
 
-    val stream = SongStream(song)
+    val stream = Stream(abstractSong)
 }

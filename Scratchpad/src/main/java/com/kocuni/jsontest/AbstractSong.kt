@@ -2,8 +2,9 @@ package com.kocuni.jsontest
 
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.roundToInt
 
-class Song {
+class AbstractSong {
     /**
      * Ideas:
      * Song
@@ -97,41 +98,9 @@ class GlyphClef(x: Double = 0.0,
     var type: String = "gClef"
 }
 
-class SongStream(song: Song) {
-    val stream = TreeMap<Int, Chord>()
-    /**
-     * Traverse each measure in the song, generate chords and measures
-     *
-     * One handed case first
-     */
-    init {
-        song.systems
-    }
 
-    override fun toString(): String {
-        return super.toString()
-    }
-}
+class Part() {
 
-object SongStreamFactory {
-
-    fun makeSongStream(song: Song): SongStream {
-
-        for (staff in song.staffs) {
-            for (measure in staff.measures) {
-                for (glyph in measure.glyphs) {
-                    if (glyph is GlyphNote) {
-                        // infer pitch add
-                        val chord = Chord()
-                        val note = Note()
-                        chord.notes.add(note)
-                    }
-                }
-            }
-        }
-
-        return SongStream(song)
-    }
 }
 
 /**
@@ -141,6 +110,11 @@ object SongStreamFactory {
 class Chord() {
     val notes: ArrayList<Note> = ArrayList()
     var timeIndex: Double = 0.0;
+
+    constructor(note: Note) : this() {
+        this.notes.add(note)
+        this.timeIndex = note.glyph.x
+    }
 
     // merge the chords
     operator fun plus(o: Chord) : Chord {
@@ -154,9 +128,16 @@ class Chord() {
 }
 
 class Note(){
-    val pitch: Double = 0.0
-    val name: String = "C4"
-    val glyph: GlyphNote = GlyphNote()
+    constructor(glyph: GlyphNote, name: String) : this(name) {
+        this.glyph = glyph
+    }
+    constructor(name: String) : this() {
+        this.name = name
+    }
+
+    var pitch: Double = 0.0
+    var name: String = "C4"
+    var glyph: GlyphNote = GlyphNote()
 }
 
 enum class Clef {
