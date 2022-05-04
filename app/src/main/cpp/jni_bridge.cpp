@@ -32,11 +32,13 @@ JNIEXPORT void JNICALL
 Java_com_kocuni_pianoteacher_JNIBridge_setRecording(JNIEnv *env, jobject thiz,
                                                     jboolean is_recording) {
     // TODO: implement setRecording()
+    engine.setRecording(is_recording);
 }
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_kocuni_pianoteacher_JNIBridge_setPlaying(JNIEnv *env, jobject thiz, jboolean is_playing) {
     // TODO: implement setPlaying()
+    engine.setPlaying(is_playing);
 }
 
 extern "C"

@@ -21,7 +21,6 @@
 #include <array>
 #include <atomic>
 
-#include "Definitions.h"
 
 constexpr int kMaxSamples = 480000; // 10s of audio data @ 48kHz
 

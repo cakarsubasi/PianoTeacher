@@ -10,7 +10,9 @@
 #include <math.h>
 #include <android/log.h>
 #include "minfft/minfft.h"
-#include "Callbacks.h"
+#include <array>
+#include "SoundRecording.h"
+//#include "Callbacks.h"
 
 class AudioEngine {
 public:
@@ -20,12 +22,26 @@ public:
     bool start();
     void stop();
     void restart();
+    void setPlaying(bool isPlaying);
+    void setRecording(bool isRecording);
 
     float avgamplitude = 0.0;
+    std::shared_ptr<SoundRecording> mAudioRecording = std::make_shared<SoundRecording>();
+    //SoundRecording mAudioRecording;
+
+
 
     float amplitude();
 
 private:
+    static void convertArrayMonoToStereo(float *data, int32_t numFrames) {
+
+        for (int i = numFrames - 1; i >= 0; i--) {
+            data[i*2] = data[i];
+            data[(i*2)+1] = data[i];
+        }
+    }
+
     static void sineWave(float* floatData, int32_t numFrames, float mPhase) {
         for (int i = 0; i < numFrames; ++i) {
             float sampleValue = kAmplitude * sinf(mPhase);
@@ -37,35 +53,55 @@ private:
         }
     }
 
-    /*
+
     class InputCallback: public oboe::AudioStreamDataCallback {
     public:
+        InputCallback(std::shared_ptr<SoundRecording> &recording) {
+            this->recording = recording;
+        }
+
         oboe::DataCallbackResult onAudioReady(oboe::AudioStream *oboeStream,
                                               void *audioData,
                                               int32_t numFrames) override {
+            if (mIsRecording) {
+                int32_t framesWritten = recording->write(static_cast<float*>(audioData), numFrames);
+                if (framesWritten == 0) mIsRecording = false;
+            }
 
             return oboe::DataCallbackResult::Continue;
         }
-
+        bool mIsRecording = false;
+    private:
+        std::shared_ptr<SoundRecording> recording;
     };
 
     class OutputCallback: public oboe::AudioStreamDataCallback {
     public:
+        OutputCallback(std::shared_ptr<SoundRecording> &recording) {
+            this->recording = recording;
+        }
+
         oboe::DataCallbackResult onAudioReady(oboe::AudioStream *oboeStream,
                                               void *audioData,
                                               int32_t numFrames) override {
-
-            float *floatData = (float *) audioData;
-
-            sineWave(floatData, numFrames, mPhase);
+            if (mIsPlaying) {
+                int32_t framesRead = recording->read(static_cast<float*>(audioData), numFrames);
+                convertArrayMonoToStereo(static_cast<float*>(audioData), framesRead);
+                if (framesRead < numFrames) mIsPlaying = false;
+            }
+            //float *floatData = (float *) audioData;
+            //sineWave(floatData, numFrames, mPhase);
 
             return oboe::DataCallbackResult::Continue;
         }
+
+        bool mIsPlaying = false;
     private:
         float mPhase = 0.0;
-        oboe::AudioStream *mStream = nullptr;
+        std::shared_ptr<SoundRecording> recording;
     };
-    */
+
+
     int32_t mRecordingDeviceId = oboe::kUnspecified;
     static oboe::AudioFormat constexpr mFormat = oboe::AudioFormat::Float;
     int32_t mSampleRate = oboe::kUnspecified;
@@ -75,8 +111,8 @@ private:
     std::shared_ptr<oboe::AudioStream> mRecordingStream;
     std::shared_ptr<oboe::AudioStream> mPlaybackStream;
 
-    static size_t constexpr buffersize = 8192;
-    std::shared_ptr<std::array<float, buffersize>> audioBuffer = std::make_shared<std::array<float, buffersize>>();
+    //static size_t constexpr buffersize = 8192;
+    //std::shared_ptr<std::array<float, buffersize>> audioBuffer = std::make_shared<std::array<float, buffersize>>();
 
     std::unique_ptr<InputCallback> mInputCallback;
     std::unique_ptr<OutputCallback> mOutputCallback;

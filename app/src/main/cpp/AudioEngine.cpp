@@ -9,21 +9,20 @@
 void stopStream(std::shared_ptr<oboe::AudioStream> stream);
 
 AudioEngine::AudioEngine()
-    : mOutputCallback(std::make_unique<OutputCallback>()),
-    mInputCallback(std::make_unique<InputCallback>(audioBuffer)) {
+    : mOutputCallback(std::make_unique<OutputCallback>(mAudioRecording)),
+    mInputCallback(std::make_unique<InputCallback>(mAudioRecording)) {
 }
 
 bool AudioEngine::start() {
 
     oboe::AudioStreamBuilder inBuilder;
     inBuilder.setDirection(oboe::Direction::Input)
-    ->setChannelCount(mChannelCount)
+    ->setChannelCount(oboe::ChannelCount::Mono)
     ->setSharingMode(oboe::SharingMode::Exclusive)
     ->setPerformanceMode(oboe::PerformanceMode::LowLatency)
-    ->setSampleRate(kSampleRate); /*
-    ->setDataCallback(mInputCallback.get())
-    ->setFramesPerCallback(512);
-    */
+    ->setSampleRate(kSampleRate)
+    ->setDataCallback(mInputCallback.get());
+
 
     oboe::Result result = inBuilder.openStream(mRecordingStream);
     if (result != oboe::Result::OK) {
@@ -42,12 +41,11 @@ bool AudioEngine::start() {
 
     oboe::AudioStreamBuilder outBuilder;
     outBuilder.setDirection(oboe::Direction::Output)
-    ->setChannelCount(mChannelCount)
+    ->setChannelCount(oboe::ChannelCount::Stereo)
     ->setSharingMode(oboe::SharingMode::Exclusive)
     ->setPerformanceMode(oboe::PerformanceMode::LowLatency)
     ->setSampleRate(mRecordingStream->getSampleRate())
-    ->setDataCallback(mOutputCallback.get())
-    ->setFramesPerCallback(512);
+    ->setDataCallback(mOutputCallback.get());
 
     result = outBuilder.openStream(mPlaybackStream);
     if (result != oboe::Result::OK) {
@@ -58,7 +56,7 @@ bool AudioEngine::start() {
         return false;
     }
 
-    //mPlaybackStream->requestStart();
+    mPlaybackStream->requestStart();
 
     __android_log_print(ANDROID_LOG_DEBUG,
                         "AudioEngine",
@@ -104,6 +102,7 @@ void AudioEngine::restart() {
 }
 
 float AudioEngine::amplitude() {
+    /*
     oboe::Result result = mRecordingStream->read(audioBuffer->data(), 8192, 1000000);
     if (static_cast<int>(result) < 0) {
         __android_log_print(ANDROID_LOG_ERROR,
@@ -116,7 +115,7 @@ float AudioEngine::amplitude() {
                             "Read %d frames",
                             result);
     }
-
+    */
     /*
     float total = 0.0;
     float entry = 0.0;
@@ -130,3 +129,15 @@ float AudioEngine::amplitude() {
     return total / (float) audioBuffer->size();
      */
 }
+
+void AudioEngine::setPlaying(bool isPlaying) {
+    if (mOutputCallback->mIsPlaying) mAudioRecording->clear();
+    mOutputCallback->mIsPlaying = isPlaying;
+}
+
+void AudioEngine::setRecording(bool isRecording) {
+    if (mInputCallback->mIsRecording) mAudioRecording->setReadPositionToStart();
+    mInputCallback->mIsRecording = isRecording;
+}
+
+
