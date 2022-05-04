@@ -17,6 +17,7 @@ import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import com.kocuni.pianoteacher.audio.PlaybackManager
 import com.kocuni.pianoteacher.audio.RecordingManager
+import com.kocuni.pianoteacher.audio.StreamAnalyzer
 import com.kocuni.pianoteacher.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -31,6 +32,8 @@ class MainActivity : AppCompatActivity() {
     val minBuffSize = 480000;
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val streamAnalyzer = StreamAnalyzer()
+
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -64,16 +67,11 @@ class MainActivity : AppCompatActivity() {
         }
         val executor: ExecutorService = Executors.newFixedThreadPool(10)
 
-        val manager = RecordingManager()
-        //manager.startRecording()
-        val manager2 = PlaybackManager()
-        manager2.testBuffer()
-
         val recordArea: View = findViewById(R.id.recordArea)
         recordArea.setOnTouchListener { _, motionEvent ->
             when(motionEvent.action) {
-                MotionEvent.ACTION_DOWN -> {binding.sampleText.text = "Recording"; }
-                MotionEvent.ACTION_UP -> {binding.sampleText.text = "Idle"; }
+                MotionEvent.ACTION_DOWN -> {binding.sampleText.text = "Recording"; streamAnalyzer.startAnalyzing()}
+                MotionEvent.ACTION_UP -> {binding.sampleText.text = "Idle"; streamAnalyzer.endAnalyzing()}
             }
             true
         }
@@ -81,12 +79,8 @@ class MainActivity : AppCompatActivity() {
         val playArea: View = findViewById(R.id.playArea)
         playArea.setOnTouchListener { _, motionEvent ->
             when(motionEvent.action) {
-                MotionEvent.ACTION_DOWN -> {binding.sampleText.text = "Playing"; runBlocking {
-                    launch {
-                        manager2.write()
+                MotionEvent.ACTION_DOWN -> {binding.sampleText.text = "Playing";
 
-                    }
-                }
                 }
                 MotionEvent.ACTION_UP -> {binding.sampleText.text = "Idle"; }
             }
