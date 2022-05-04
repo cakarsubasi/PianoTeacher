@@ -1,8 +1,10 @@
 #include <jni.h>
 #include <string>
 #include "AudioEngine.h"
+#include <android/log.h>
 
 static AudioEngine engine;
+int RIDICULOUS_INT = 0;
 
 extern "C"
 JNIEXPORT jstring JNICALL
@@ -35,4 +37,12 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_kocuni_pianoteacher_JNIBridge_setPlaying(JNIEnv *env, jobject thiz, jboolean is_playing) {
     // TODO: implement setPlaying()
+}
+
+extern "C"
+JNIEXPORT jfloat JNICALL
+Java_com_kocuni_pianoteacher_JNIBridge_marshallTest(JNIEnv *env, jobject thiz) {
+    // TODO: implement marshallTest()
+
+    return engine.amplitude();
 }

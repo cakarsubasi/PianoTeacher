@@ -25,6 +25,9 @@ add_library( # Sets the name of the library.
         AudioEngine.h
         AudioEngine.cpp
         Callbacks.h
+        SoundRecording.h
+        SoundRecording.cpp
+
 
         minfft/minfft.h
         minfft/minfft.c

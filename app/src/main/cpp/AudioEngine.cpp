@@ -10,7 +10,7 @@ void stopStream(std::shared_ptr<oboe::AudioStream> stream);
 
 AudioEngine::AudioEngine()
     : mOutputCallback(std::make_unique<OutputCallback>()),
-    mInputCallback(std::make_unique<InputCallback>()) {
+    mInputCallback(std::make_unique<InputCallback>(audioBuffer)) {
 }
 
 bool AudioEngine::start() {
@@ -20,9 +20,10 @@ bool AudioEngine::start() {
     ->setChannelCount(mChannelCount)
     ->setSharingMode(oboe::SharingMode::Exclusive)
     ->setPerformanceMode(oboe::PerformanceMode::LowLatency)
-    ->setSampleRate(kSampleRate)
-    ->setDataCallback(mInputCallback.get());
-
+    ->setSampleRate(kSampleRate); /*
+    ->setDataCallback(mInputCallback.get())
+    ->setFramesPerCallback(512);
+    */
 
     oboe::Result result = inBuilder.openStream(mRecordingStream);
     if (result != oboe::Result::OK) {
@@ -37,7 +38,7 @@ bool AudioEngine::start() {
                         "AudioEngine",
                         "Successfully opened input stream.");
 
-    //mRecordingStream->requestStart();
+    mRecordingStream->requestStart();
 
     oboe::AudioStreamBuilder outBuilder;
     outBuilder.setDirection(oboe::Direction::Output)
@@ -45,7 +46,8 @@ bool AudioEngine::start() {
     ->setSharingMode(oboe::SharingMode::Exclusive)
     ->setPerformanceMode(oboe::PerformanceMode::LowLatency)
     ->setSampleRate(mRecordingStream->getSampleRate())
-    ->setDataCallback(mOutputCallback.get());
+    ->setDataCallback(mOutputCallback.get())
+    ->setFramesPerCallback(512);
 
     result = outBuilder.openStream(mPlaybackStream);
     if (result != oboe::Result::OK) {
@@ -56,7 +58,7 @@ bool AudioEngine::start() {
         return false;
     }
 
-    mPlaybackStream->requestStart();
+    //mPlaybackStream->requestStart();
 
     __android_log_print(ANDROID_LOG_DEBUG,
                         "AudioEngine",
@@ -99,4 +101,32 @@ void stopStream(std::shared_ptr<oboe::AudioStream> stream) {
 void AudioEngine::restart() {
     // TODO
 
+}
+
+float AudioEngine::amplitude() {
+    oboe::Result result = mRecordingStream->read(audioBuffer->data(), 8192, 1000000);
+    if (static_cast<int>(result) < 0) {
+        __android_log_print(ANDROID_LOG_ERROR,
+                            "SongActivityDebug",
+                            "Failed read");
+    }
+    if (static_cast<int>(result) <= 8192) {
+        __android_log_print(ANDROID_LOG_DEBUG,
+                            "SongActivityDebug",
+                            "Read %d frames",
+                            result);
+    }
+
+    /*
+    float total = 0.0;
+    float entry = 0.0;
+    for (int i = 0; i < audioBuffer->size(); ++i) {
+        entry = audioBuffer->at(i);
+        total += entry*entry;
+    }
+    __android_log_print(ANDROID_LOG_DEBUG,
+                        "SongActivityDebug",
+                        "amplitude %f", total/buffersize);
+    return total / (float) audioBuffer->size();
+     */
 }

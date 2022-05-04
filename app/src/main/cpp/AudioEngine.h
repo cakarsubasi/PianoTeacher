@@ -10,7 +10,7 @@
 #include <math.h>
 #include <android/log.h>
 #include "minfft/minfft.h"
-//#include "Callbacks.h"
+#include "Callbacks.h"
 
 class AudioEngine {
 public:
@@ -20,6 +20,10 @@ public:
     bool start();
     void stop();
     void restart();
+
+    float avgamplitude = 0.0;
+
+    float amplitude();
 
 private:
     static void sineWave(float* floatData, int32_t numFrames, float mPhase) {
@@ -33,6 +37,7 @@ private:
         }
     }
 
+    /*
     class InputCallback: public oboe::AudioStreamDataCallback {
     public:
         oboe::DataCallbackResult onAudioReady(oboe::AudioStream *oboeStream,
@@ -60,7 +65,7 @@ private:
         float mPhase = 0.0;
         oboe::AudioStream *mStream = nullptr;
     };
-
+    */
     int32_t mRecordingDeviceId = oboe::kUnspecified;
     static oboe::AudioFormat constexpr mFormat = oboe::AudioFormat::Float;
     int32_t mSampleRate = oboe::kUnspecified;
@@ -69,6 +74,9 @@ private:
     std::mutex mLock;
     std::shared_ptr<oboe::AudioStream> mRecordingStream;
     std::shared_ptr<oboe::AudioStream> mPlaybackStream;
+
+    static size_t constexpr buffersize = 8192;
+    std::shared_ptr<std::array<float, buffersize>> audioBuffer = std::make_shared<std::array<float, buffersize>>();
 
     std::unique_ptr<InputCallback> mInputCallback;
     std::unique_ptr<OutputCallback> mOutputCallback;
