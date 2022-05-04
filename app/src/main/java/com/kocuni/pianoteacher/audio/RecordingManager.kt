@@ -1,22 +1,19 @@
 package com.kocuni.pianoteacher.audio
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.content.pm.PackageManager
 import android.media.*
 import android.util.Log
-import androidx.core.app.ActivityCompat
 import kotlin.math.PI
 import kotlin.math.sin
-import kotlin.math.sinh
+
 
 @SuppressLint("MissingPermission")
 class RecordingManager {
 
-    val TAG = "RecordingManager"
+    private val TAG = "RecordingManager"
 
     val sampleRate = 44100
-    val buffersize = sampleRate * 2
+    val buffersize = 1024
     val buffer = FloatArray(buffersize)
     var recorder: AudioRecord = AudioRecord.Builder()
         .setAudioSource(MediaRecorder.AudioSource.DEFAULT)
@@ -28,38 +25,13 @@ class RecordingManager {
                 .build()
         )
         .setBufferSizeInBytes(buffersize * 4)
-        .build();
-
-    fun startRecording() {
-        recorder.startRecording()
-    }
-
-    fun stopRecording() {
-        recorder.stop()
-    }
+        .build()
 
     suspend fun read() {
             recorder.startRecording()
-            recorder.read(buffer, 0, sampleRate/2, AudioRecord.READ_BLOCKING)
-            Log.d(TAG, "Read 1")
-            recorder.read(buffer, 0, sampleRate/2, AudioRecord.READ_BLOCKING)
-            Log.d(TAG, "Read 2")
+            recorder.read(buffer, 0, buffersize, AudioRecord.READ_BLOCKING)
+            Log.d(TAG, "Read buffer")
             recorder.stop()
-    }
-
-    fun bufferStats() {
-        var peak_amp = 0.0F
-        var avg_amp = 0.0F
-
-        for (i in 0 until sampleRate/2) {
-            var elem = buffer[i]*buffer[i]
-            if (elem > peak_amp) peak_amp = elem
-            avg_amp += elem
-        }
-        avg_amp = 2.0F*avg_amp/sampleRate
-
-        Log.d(TAG, "Peak: $peak_amp\nAvg:  $avg_amp")
-
     }
 }
 
