@@ -7,20 +7,11 @@ import android.widget.Button
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.AudioFormat
-import android.media.AudioManager
 import android.media.AudioRecord
-import android.media.MediaRecorder
 import android.view.MotionEvent
-import android.widget.Switch
-import android.widget.TextView
 import androidx.core.app.ActivityCompat
-import com.kocuni.pianoteacher.audio.PlaybackManager
-import com.kocuni.pianoteacher.audio.RecordingManager
 import com.kocuni.pianoteacher.audio.StreamAnalyzer
 import com.kocuni.pianoteacher.databinding.ActivityMainBinding
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -39,12 +30,18 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val button: Button = findViewById(R.id.closeButton);
-        button.setOnClickListener { _ ->
+        val songButton: Button = findViewById(R.id.songButton);
+        songButton.setOnClickListener { _ ->
             val intent = Intent(this, SongActivity::class.java).apply {  }
             startActivity(intent)
-            binding.sampleText.text = "Button pressed"
         }
+
+        val pitchButton: Button = findViewById(R.id.pitchButton);
+        pitchButton.setOnClickListener { _ ->
+            val intent = Intent(this, PitchActivity::class.java).apply {  }
+            startActivity(intent)
+        }
+
 
         if (!isRecordPermissionGranted()) {
             requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO),

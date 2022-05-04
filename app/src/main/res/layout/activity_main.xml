@@ -17,20 +17,6 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/playArea" />
 
-    <Button
-        android:id="@+id/closeButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="131dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="131dp"
-        android:layout_marginBottom="231dp"
-        android:text="test Button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/streamSwitch" />
-
     <TextView
         android:id="@+id/recordArea"
         android:layout_width="0dp"
@@ -69,10 +55,45 @@
         android:layout_marginStart="162dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="161dp"
+        android:layout_marginBottom="65dp"
         android:text="Stream Switch"
-        app:layout_constraintBottom_toTopOf="@+id/closeButton"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sample_text" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="410dp"
+        android:layout_height="126dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="65dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="1dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/streamSwitch"
+        app:layout_constraintVertical_bias="1.0"
+        tools:visibility="visible">
+
+        <Button
+            android:id="@+id/songButton"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Song Activity"
+            android:visibility="visible"
+            tools:visibility="visible" />
+
+        <Button
+            android:id="@+id/pitchButton"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pitch Activity" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
