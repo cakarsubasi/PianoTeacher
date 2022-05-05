@@ -1,105 +1,283 @@
 package com.kocuni.pianoteacher.music
 
-import com.kocuni.pianoteacher.music.AbstractSong
-import com.kocuni.pianoteacher.music.Chord
-import com.kocuni.pianoteacher.music.GlyphNote
+import android.util.Log
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.math.roundToInt
 
-class Stream(abstractSong: AbstractSong) {
-    val stream = TreeMap<Int, Chord>()
+/**
+ * A stream is a section of a song larger than a measure
+ * It can be a line, a page, or the whole song. It
+ * is constructed recursively so there can be many levels
+ */
+class Stream(var stream: LinkedList<IStreamable>) : IStreamable {
+    private var idx = 0
     /**
      * Traverse each measure in the song, generate chords and measures
      *
      * One handed case first
      */
-    init {
-
-    }
 
     /**
-     * TODO
      * Return the current chord
      */
-    fun getCurrentChord() {
-
+    override fun currChord(): Chord? {
+        return if (stream.isEmpty()) {
+            null
+        } else {
+            stream[idx].currChord()
+        }
     }
 
     /**
-     * TODO
      * Return the part which holds the current chord
      */
-    fun getCurrentPart() {
-
+    fun getCurrentPart() : IStreamable {
+        return stream[idx]
     }
 
     /**
-     * TODO
      * Move the pointer to the next chord
      */
-    fun nextChord() {
-
+    override fun nextChord(): Chord? {
+        return if (idx == stream.size) {
+            null // end of the stream
+        } else {
+            val next = stream[idx].nextChord()
+            if (next == null) {
+                ++idx // end of the current part
+                stream[idx].first()
+            } else {
+                next // next chord in the part
+            }
+        }
     }
 
     /**
-     * TODO
      * Move the pointer to the previous chord
      */
-    fun prevChord() {
-
+    override fun prevChord(): Chord? {
+        return if (idx == -1) {
+            null // end of the stream
+        } else {
+            val prev = stream[idx].prevChord()
+            if (prev == null) {
+                --idx // go to the prev part
+                stream[idx].last()
+            } else {
+                prev // next chord in the part
+            }
+        }
     }
 
     /**
-     * TODO
      * Move the pointer to the first chord in the next
      * measure
      */
-    fun nextPart() {
+    fun nextPart() : Chord? {
+        ++idx
+        return if (idx >= stream.size) {
+            null
+        } else {
+            stream[idx].first()
+        }
 
     }
 
     /**
-     * TODO
      * Move the pointer to the first chord in the previous
-     * measure
+     * section
      */
-    fun prevPart() {
-
+    fun prevPart() : Chord? {
+        --idx
+        return if (idx == -1) {
+            null
+        } else {
+            stream[idx].first()
+        }
     }
 
     /**
-     * TODO
      * Move the pointer to the first chord in the current measure
      */
-    fun currPart() {
+    fun currPart() : Chord? {
+        return if (idx == -1 && idx >= stream.size) {
+            null
+        } else {
+            stream[idx].first()
+        }
 
     }
 
     /**
-     * TODO
      * Move the pointer to the first chord
      */
-    fun first() {
+    override fun first(): Chord? {
+        idx = 0
+        return if (stream.isEmpty()) {
+            null
+        } else {
+            val chord = stream[idx].first()
+            if (chord == null) {
+                stream[idx].nextChord()
+            } else {
+                chord
+            }
+        }
+    }
 
+    /**
+     * Move the pointer to the last chord
+     */
+    override fun last(): Chord? {
+        idx = stream.size - 1
+        return if (stream.isEmpty()) {
+            null
+        } else {
+            val chord = stream[idx].last()
+            if (chord == null) {
+                stream[idx].prevChord()
+            } else {
+                chord
+            }
+        }
     }
 
     override fun toString(): String {
-        return super.toString()
+        var str = "--\n"
+        for (s in stream) {
+            str += "$--\n{s}--\n"
+        }
+        return "$str--\n"
+    }
+
+    /**
+     * A part is essentially a measure
+     */
+    class Part(var chords: List<Chord>) : IStreamable {
+
+        private var idx: Int = -1
+
+        override fun currChord(): Chord? {
+            return if (chords.isEmpty()) {
+                null
+            } else {
+                chords[idx]
+            }
+        }
+
+        override fun nextChord() : Chord? {
+            ++idx
+            return if (idx == chords.size) {
+                null // call first() on next Part
+            } else {
+                chords[idx]
+            }
+        }
+
+        override fun prevChord() : Chord? {
+            --idx
+            return if (idx == -1) {
+                null // call last() on next Part
+            } else {
+                chords[idx]
+            }
+        }
+
+        override fun first() : Chord? {
+            idx = 0
+            return if (chords.isEmpty()) {
+                null // empty case
+            } else {
+                chords[idx]
+            }
+        }
+
+        override fun last() : Chord? {
+            idx = chords.size - 1
+            return if (chords.isEmpty()) {
+                null // empty case
+            } else {
+                chords[idx]
+            }
+        }
+
+        override fun toString() : String {
+            var str = String()
+            for (chord in chords) {
+                str += "$chord\n"
+            }
+            return str
+        }
+    }
+
+    /**
+     * A list of notes that must be played at
+     * the same time.
+     */
+    class Chord() {
+        val notes: ArrayList<Note> = ArrayList()
+        var timeIndex: Double = 0.0
+
+        constructor(note: Note) : this() {
+            this.notes.add(note)
+            this.timeIndex = note.glyph.x
+        }
+
+        // merge the chords
+        operator fun plus(o: Chord) : Chord {
+            val chord = Chord()
+            chord.notes.addAll(this.notes)
+            chord.notes.addAll(o.notes)
+            chord.timeIndex = (this.timeIndex + o.timeIndex)/2.0
+            return chord
+        }
+
+        override fun toString() : String {
+            var str = ""
+            for (note in notes) {
+                str += note.toString()
+            }
+            return str
+        }
+
+    }
+
+    class Note(){
+        constructor(glyph: GlyphNote, name: String) : this(name) {
+            this.glyph = glyph
+        }
+        constructor(name: String) : this() {
+            this.name = name
+        }
+
+        var pitch: Double = 0.0
+        var name: String = "C4"
+        var glyph: GlyphNote = GlyphNote()
+
+        override fun toString() : String {
+            return this.name
+        }
     }
 
     object Builder {
+        private val TAG = "StreamFactory"
 
         fun build(abstractSong: AbstractSong): Stream {
+            val staffs = LinkedList<IStreamable>()
+            for (abstractStaff in abstractSong.staffs) {
+                val gap = (abstractStaff.ymax - abstractStaff.ymin) * 0.25
 
-            for (staff in abstractSong.staffs) {
-                val gap = (staff.ymax - staff.ymin)*0.25
-                for (measure in staff.measures) {
+                val measures = LinkedList<IStreamable>()
+                for (abstractMeasure in abstractStaff.measures) {
 
-
-                    for (glyph in measure.glyphs) {
+                    val chords = LinkedList<Chord>()
+                    for (glyph in abstractMeasure.glyphs) {
                         if (glyph is GlyphNote) {
                             // infer pitch add
-                            val pos = relativePos(glyph.y, staff.ymax, gap)
+                            val pos = relativePos(glyph.y, abstractStaff.ymax, gap)
+                            // TODO: consider other clefs
                             val noteName: String? = gclefmap[pos]
                             val chord: Chord
                             val note: Note
@@ -107,16 +285,20 @@ class Stream(abstractSong: AbstractSong) {
                                 note = Note(glyph, noteName)
 
                             } else {
-                                println("Note out of bounds at $pos")
+                                Log.d(TAG, "Note out of bounds at $pos")
                                 note = Note(glyph, "Unknown")
                             }
                             chord = Chord(note)
-
+                            chords.add(chord)
                         }
                     }
+                    val part = Part(chords)
+                    measures.add(part)
                 }
+                val staff = Stream(measures)
+                staffs.add(staff)
             }
-            return Stream(abstractSong)
+            return Stream(staffs)
         }
 
         val relativePos = { notehead:    Double,
@@ -188,9 +370,4 @@ class Stream(abstractSong: AbstractSong) {
             return 0.0
         }
     }
-}
-
-fun main() {
-
-
 }

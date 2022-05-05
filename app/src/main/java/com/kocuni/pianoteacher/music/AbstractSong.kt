@@ -1,6 +1,5 @@
 package com.kocuni.pianoteacher.music
 
-import java.util.*
 import kotlin.collections.ArrayList
 
 class AbstractSong {
@@ -62,47 +61,6 @@ class GlyphClef(x: Double = 0.0,
     var type: String = "gClef"
 }
 
-
-class Part() {
-
-}
-
-/**
- * A list of notes that must be played at
- * the same time.
- */
-class Chord() {
-    val notes: ArrayList<Note> = ArrayList()
-    var timeIndex: Double = 0.0;
-
-    constructor(note: Note) : this() {
-        this.notes.add(note)
-        this.timeIndex = note.glyph.x
-    }
-
-    // merge the chords
-    operator fun plus(o: Chord) : Chord {
-        val chord = Chord()
-        chord.notes.addAll(this.notes)
-        chord.notes.addAll(o.notes)
-        chord.timeIndex = (this.timeIndex + o.timeIndex)/2.0
-        return chord
-    }
-
-}
-
-class Note(){
-    constructor(glyph: GlyphNote, name: String) : this(name) {
-        this.glyph = glyph
-    }
-    constructor(name: String) : this() {
-        this.name = name
-    }
-
-    var pitch: Double = 0.0
-    var name: String = "C4"
-    var glyph: GlyphNote = GlyphNote()
-}
 
 enum class Clef {
     GCLEF, FCLEF, CCLEF
