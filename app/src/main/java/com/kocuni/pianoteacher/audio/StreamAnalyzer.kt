@@ -20,6 +20,7 @@ class StreamAnalyzer {
     var bufferFront = FloatArray(bufferSize)
 
     var isRecording: Boolean = false
+    val analysisDelay: Long = 500L
 
     private val streamScope = MainScope()
     private lateinit var recordJob: Job
@@ -29,6 +30,7 @@ class StreamAnalyzer {
 
     /**
      * Start threads that record and analyze
+     * TODO: no wait analysis
      */
     fun startAnalyzing() {
         var i = 0
@@ -37,7 +39,12 @@ class StreamAnalyzer {
         recordJob = streamScope.launch(Dispatchers.Default) {
 
             while (isActive) {
-                delay(500L)
+                /*
+                The delay is mainly for debug,
+                ideally there should not be any
+                delay during regular operation
+                 */
+                delay(analysisDelay)
                 i++
                 Log.d(TAG, "record job $i")
                 manager.read()
@@ -75,21 +82,6 @@ class StreamAnalyzer {
         recordJob.cancelAndJoin()
         analyzeJob.cancelAndJoin()
     }
-    /*
-    fun bufferStats() {
-        var peak_amp = 0.0F
-        var avg_amp = 0.0F
-
-        for (i in 0 until sampleRate/2) {
-            var elem = buffer[i]*buffer[i]
-            if (elem > peak_amp) peak_amp = elem
-            avg_amp += elem
-        }
-        avg_amp = 2.0F*avg_amp/sampleRate
-
-        Log.d(TAG, "Peak: $peak_amp\nAvg:  $avg_amp")
-
-    } */
 
     fun analyzeBuffer(buffer: FloatArray) {
         var peak_amp = 0.0F

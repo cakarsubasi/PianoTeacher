@@ -3,6 +3,7 @@ package com.kocuni.jsontest
 import org.json.JSONObject
 import java.io.File
 import java.io.FileReader
+import java.util.stream.Stream
 
 fun main() {
     println("Hello world")
@@ -14,10 +15,9 @@ fun main() {
 
     val jsonstr: String = String(buffer)
 
-    val abstractSong = JSONObject(jsonstr)
-    println(abstractSong.toString(4))
+    val songjson = JSONObject(jsonstr)
+    println(songjson.toString(4))
 
-    val song = JSONParser.parse(abstractSong)
+    val abstractsong = JSONParser.parse(songjson)
 
-    val tutor = SongTutor(song)
 }

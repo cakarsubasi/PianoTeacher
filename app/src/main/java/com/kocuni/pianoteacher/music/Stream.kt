@@ -1,5 +1,8 @@
-package com.kocuni.jsontest
+package com.kocuni.pianoteacher.music
 
+import com.kocuni.pianoteacher.music.AbstractSong
+import com.kocuni.pianoteacher.music.Chord
+import com.kocuni.pianoteacher.music.GlyphNote
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -187,3 +190,7 @@ class Stream(abstractSong: AbstractSong) {
     }
 }
 
+fun main() {
+
+
+}

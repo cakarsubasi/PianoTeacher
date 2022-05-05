@@ -1,47 +1,11 @@
-package com.kocuni.jsontest
+package com.kocuni.pianoteacher.music
 
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.math.roundToInt
 
 class AbstractSong {
-    /**
-     * Ideas:
-     * Song
-     *   System
-     *     Staff
-     *     Measure
-     *       Glyphs
-     *   toStream
-     *
-     * Stream
-     *   Chord
-     *     Note
-     *       pitch
-     *       length (unimportant for now)
-     *   nextMeasure
-     *   prevMeasure
-     *   nextChord
-     *   prevChord
-     *
-     * Tutor
-     *   'should hold a stream'
-     *   'should be user controllable'
-     *   'communicate with JNI'
-     *   'likely in C++, detect dominant frequencies and amplitude'
-     *   'if within sufficient margins, give positive callback'
-     *   'otherwise give neutral or negative callback'
-     *
-     *   Cpp
-     *   jni_bridge
-     *   AudioEngine
-     *   Callback class?
-     *   Utils
-     *     FT/Spectrogram
-     */
     var staffs: List<SystemStaff> = ArrayList()
     var isOneHanded: Boolean = true
-    val systems: TreeMap<Int, Array<Int>> = TreeMap()
 }
 
 class SystemStaff {
