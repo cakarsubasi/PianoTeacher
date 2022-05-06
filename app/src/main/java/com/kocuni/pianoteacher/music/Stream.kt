@@ -83,18 +83,16 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
         return if (idx == -1) {
             null // end of the stream
         } else {
-            val prev = stream[idx].prevChord()
-            if (prev == null) {
-                --idx // go to the prev part
-                if (idx < 0) {
-                    null
+            var prev = stream[idx].prevChord()
+            while (prev == null) {
+                --idx
+                if (idx < 0) { // out of bounds
+                    return null
                 } else {
-                    stream[idx].last()
-                    currChord()
+                    prev = stream[idx].last()
                 }
-            } else {
-                prev // next chord in the part
             }
+            return prev
         }
     }
 
