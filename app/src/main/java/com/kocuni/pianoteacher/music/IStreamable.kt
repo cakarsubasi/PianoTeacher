@@ -2,6 +2,8 @@ package com.kocuni.pianoteacher.music
 
 interface IStreamable {
 
+    var idx: Int
+
     fun currChord() : Stream.Chord?
 
     fun nextChord() : Stream.Chord?

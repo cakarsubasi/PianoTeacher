@@ -12,12 +12,21 @@ import kotlin.math.roundToInt
  * is constructed recursively so there can be many levels
  */
 class Stream(var stream: List<IStreamable>) : IStreamable {
-    private var idx = 0
+    override var idx = 0
     /**
      * Traverse each measure in the song, generate chords and measures
      *
      * One handed case first
      */
+    init {
+        /**
+         * When a new stream is constructed, reset the internal
+         * state of every part or stream inside for more consistent behavior
+         */
+        for (s in stream) {
+            s.first()
+        }
+    }
 
     /**
      * Return the current chord
@@ -57,7 +66,12 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
             val next = stream[idx].nextChord()
             if (next == null) {
                 ++idx // end of the current part
-                stream[idx].first()
+                if (idx >= stream.size) {
+                    null // end of the stream
+                } else {
+                    stream[idx].first()
+                    currChord()
+                }
             } else {
                 next // next chord in the part
             }
@@ -74,7 +88,12 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
             val prev = stream[idx].prevChord()
             if (prev == null) {
                 --idx // go to the prev part
-                stream[idx].last()
+                if (idx < 0) {
+                    null
+                } else {
+                    stream[idx].last()
+                    currChord()
+                }
             } else {
                 prev // next chord in the part
             }
@@ -147,7 +166,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
         } else {
             val chord = stream[idx].last()
             if (chord == null) {
-                stream[idx].prevChord()
+                prevChord()
             } else {
                 chord
             }
@@ -167,7 +186,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
      */
     class Part(var chords: List<Chord>) : IStreamable {
 
-        private var idx: Int = 0
+        override var idx: Int = 0
 
         override fun currChord(): Chord? {
             return if (chords.isEmpty()) {
@@ -179,7 +198,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
 
         override fun nextChord() : Chord? {
             ++idx
-            return if (idx == chords.size) {
+            return if (idx >= chords.size) {
                 null // call first() on next Part
             } else {
                 chords[idx]
@@ -188,7 +207,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
 
         override fun prevChord() : Chord? {
             --idx
-            return if (idx == -1) {
+            return if (idx <= -1) {
                 null // call last() on next Part
             } else {
                 chords[idx]
