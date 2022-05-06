@@ -255,14 +255,48 @@ class StreamTest {
         assertEquals(stream5.prevPart(), note1)
         assertNull(stream5.prevPart())
         assertEquals(stream5.nextPart(), note1)
+
+        val part5 = Stream.Part(listOf(note1, note2, note3))
+        val stream6 = Stream(listOf(part5))
+        assertNull(stream6.nextPart())
+        assertEquals(stream6.prevPart(), note1)
+        val stream7 = Stream(listOf(stream6, part5, stream6)) // {{n1, n2, n3}}, {n1, n2, n3}, {{n1, n2, n3}}
+        assertNull(stream7.prevPart())
+        assertEquals(stream7.nextPart(), note1)
+        assertEquals(stream7.nextPart(), note1)
+        assertEquals(stream7.nextPart(), note1)
+        assertNull(stream7.nextPart())
+        assertEquals(stream7.prevPart(), note1)
+        assertEquals(stream7.prevPart(), note1)
+        assertEquals(stream7.prevPart(), note1)
     }
 
     @Test
     fun prevSegment() {
+
     }
 
     @Test
     fun currPart() {
+        val note1 = Stream.Chord(Stream.Note("C4"))
+        val note2 = Stream.Chord(Stream.Note("D4"))
+        val note3 = Stream.Chord(Stream.Note("E4"))
+
+        val part1 = Stream.Part(listOf())
+        val part2 = Stream.Part(listOf(note1))
+        val part3 = Stream.Part(listOf(note1, note2, note3))
+        val part4 = Stream.Part(listOf(note2, note3, note1))
+        val part5 = Stream.Part(listOf(note3, note2, note1))
+
+        val stream1 = Stream(listOf())
+        val stream2 = Stream(listOf(part1))
+
+        assertNull(stream1.currPart())
+        assertNull(stream2.currPart())
+        stream1.nextPart()
+        assertNull(stream1.currPart())
+        stream2.nextPart()
+        assertNull(stream2.currPart())
     }
 
     @Test

@@ -145,16 +145,28 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
 
     /**
      * Move the pointer to the first chord in the previous
-     * section (TODO)
+     * nonempty measure
+     *
+     * @return first chord in the measure previous to the last
+     * measure that was pointed to. null if the pointer was
+     * pointing at the first measure. If the pointer is out of
+     * bounds due to nextPart() calls, the first chord in the last measure
+     * TODO: fix the bug so the behavior is as stated
      */
     fun prevPart() : Chord? {
         return if (stream.isEmpty()) {
             null
         } else {
             if (idx >= stream.size) {
-                return last()
+                last()
+                when (val st = stream[idx]) {
+                    is Part -> {return st.first()}
+                    is Stream -> { st.last(); st.nextChord(); return st.prevPart() }
+                    else -> return null
+                }
             }
             when (val st = stream[idx]) {
+                // Unwanted behavior here
                 is Part -> {st.first(); return prevChord()}
                 is Stream -> return st.prevPart() ?: prevChord()
                 else -> return null
@@ -180,16 +192,28 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
      * Move the pointer to the first chord in the current measure
      */
     fun currPart() : Chord? {
-        return if (idx == -1 && idx >= stream.size) {
+        return if (stream.isEmpty()) {
             null
         } else {
-            stream[idx].first()
+            if (idx >= stream.size) {
+                null
+            } else {
+                when (val st = stream[idx]) {
+                    is Part -> st.first()
+                    is Stream -> {
+                        st.currPart() ?: nextChord()
+                    }
+                    else -> null
+                }
+            }
         }
-
     }
 
     /**
      * Move the pointer to the first chord
+     *
+     * @return the first chord in the stream.
+     * null if stream is empty
      */
     override fun first(): Chord? {
         idx = 0
@@ -207,6 +231,9 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
 
     /**
      * Move the pointer to the last chord
+     *
+     * @return the last chord in the stream.
+     * null if stream is empty
      */
     override fun last(): Chord? {
         idx = stream.size - 1
@@ -377,7 +404,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
     }
 
     object Builder {
-        private val TAG = "StreamFactory"
+        private const val TAG = "StreamFactory"
 
         fun build(abstractSong: AbstractSong): Stream {
             val staffs = LinkedList<IStreamable>()
