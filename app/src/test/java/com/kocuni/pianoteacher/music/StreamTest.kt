@@ -35,11 +35,21 @@ class StreamTest {
         val note1 = Stream.Chord(Stream.Note("C4"))
         val note2 = Stream.Chord(Stream.Note("D4"))
         val part1 = Stream.Part(listOf(note1, note2))
-        val part2 = Stream.Part(listOf())
+        val part2 = Stream.Part(listOf()) // empty part
         val part3 = generatePart()
         assertEquals(part1.currChord(), note1)
         assertNull(part2.currChord())
         assertEquals(part3.currChord(), note1)
+
+        val stream1 = Stream(listOf(part1))
+        val stream2 = Stream(listOf(part1, part2, part3))
+        val stream3 = Stream(listOf(part2)) // empty stream
+        val stream4 = Stream(listOf(part2, part1)) // first part is empty but stream is not
+
+        assertEquals(stream1.currChord(), note1)
+        assertEquals(stream2.currChord(), note1)
+        assertNull(stream3.currChord())
+        assertEquals(stream4.currChord(), note1)
     }
 
     @Test

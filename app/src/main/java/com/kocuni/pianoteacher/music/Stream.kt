@@ -11,7 +11,7 @@ import kotlin.math.roundToInt
  * It can be a line, a page, or the whole song. It
  * is constructed recursively so there can be many levels
  */
-class Stream(var stream: LinkedList<IStreamable>) : IStreamable {
+class Stream(var stream: List<IStreamable>) : IStreamable {
     private var idx = 0
     /**
      * Traverse each measure in the song, generate chords and measures
@@ -26,7 +26,17 @@ class Stream(var stream: LinkedList<IStreamable>) : IStreamable {
         return if (stream.isEmpty()) {
             null
         } else {
-            stream[idx].currChord()
+            if (idx >= stream.size) {
+                return null
+            } else {
+                val chord = stream[idx].currChord()
+                if (chord == null) { // empty part
+                    idx++
+                    return currChord()
+                } else {
+                    return chord
+                }
+            }
         }
     }
 
@@ -147,7 +157,7 @@ class Stream(var stream: LinkedList<IStreamable>) : IStreamable {
     override fun toString(): String {
         var str = "--\n"
         for (s in stream) {
-            str += "$--\n{s}--\n"
+            str += "${s}\n"
         }
         return "$str--\n"
     }
@@ -206,7 +216,7 @@ class Stream(var stream: LinkedList<IStreamable>) : IStreamable {
         override fun toString() : String {
             var str = String()
             for (chord in chords) {
-                str += "$chord\n"
+                str += "$chord "
             }
             return str
         }
