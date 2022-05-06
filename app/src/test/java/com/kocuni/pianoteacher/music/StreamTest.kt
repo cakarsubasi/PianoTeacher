@@ -13,6 +13,24 @@ class StreamTest {
     }
 
     @Test
+    fun equals() {
+        val note1 = Stream.Note("C4")
+        val note2 = Stream.Note("C4")
+        val note3 = Stream.Note("C4#")
+        assertEquals(note1, note2)
+        assertNotEquals(note1, note3)
+        val chord1 = Stream.Chord(note1)
+        val chord2 = Stream.Chord(note2)
+        val chord3 = Stream.Chord(note3)
+        val chord4 = chord1 + chord3
+        assertEquals(chord1, chord2)
+        assertNotEquals(chord1, chord3)
+        assertNotEquals(chord1, note1)
+        assertNotEquals(chord1, chord4)
+        assertNotEquals(chord4, chord1)
+    }
+
+    @Test
     fun currChord() {
         val note1 = Stream.Chord(Stream.Note("C4"))
         val note2 = Stream.Chord(Stream.Note("D4"))
