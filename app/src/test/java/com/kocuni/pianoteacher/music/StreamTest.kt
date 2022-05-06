@@ -83,6 +83,7 @@ class StreamTest {
         assertEquals(stream2.nextChord(), note1)
         assertEquals(stream2.nextChord(), note1)
 
+        // note1, note2, note1, empty part, note1, note2, note1
         val stream3 = Stream(listOf(stream1, part1, stream2))
         assertEquals(stream3.nextChord(), note2)
         assertEquals(stream3.nextChord(), note1)
@@ -114,6 +115,26 @@ class StreamTest {
 
         assertNull(part1.first())
         assertNull(stream1.first())
+
+        val part2 = Stream.Part(listOf(note1, note2))
+        assertEquals(part2.first(), note1)
+        part2.nextChord()
+        assertEquals(part2.first(), note1)
+
+        val stream2 = Stream(listOf(part2))
+        assertEquals(stream2.first(), note1)
+        stream2.nextChord()
+        assertEquals(stream2.first(), note1)
+
+        val stream3 = Stream(listOf(part1, part2)) // empty part, then note 1
+        assertEquals(stream3.first(), note1)
+        stream3.nextChord()
+        assertEquals(stream3.first(), note1)
+
+        val stream4 = Stream(listOf(stream1, part2)) // empty stream, then note 1
+        assertEquals(stream4.first(), note1)
+        stream4.nextChord()
+        assertEquals(stream4.first(), note1)
     }
 
     @Test

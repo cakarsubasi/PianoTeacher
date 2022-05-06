@@ -149,7 +149,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
         } else {
             val chord = stream[idx].first()
             if (chord == null) {
-                stream[idx].nextChord()
+                nextChord()
             } else {
                 chord
             }
