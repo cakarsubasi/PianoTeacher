@@ -30,6 +30,10 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
 
     /**
      * Return the current chord
+     *
+     * @return Chord the index is pointing to
+     * null if the stream is empty or if the pointer is ahead of the beginning
+     * of the stream or beyond the end of the stream
      */
     override fun currChord(): Chord? {
         return if (stream.isEmpty()) {
@@ -57,7 +61,12 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
     }
 
     /**
-     * Move the pointer to the next chord
+     * Move the pointer to the next chord,
+     *
+     * This method mutates the stream.
+     *
+     * @return newly pointed upon chord.
+     * null if stream is empty or the chord was at the end of the stream prior to the call
      */
     override fun nextChord(): Chord? {
         return if (idx == stream.size) {
@@ -78,6 +87,11 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
 
     /**
      * Move the pointer to the previous chord
+     *
+     * This method mutates the stream.
+     *
+     * @return newly pointed upon chord.
+     * null if stream is empty or the chord was at the beginning of the stream prior to the call
      */
     override fun prevChord(): Chord? {
         return if (idx == -1) {
@@ -98,23 +112,58 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
 
     /**
      * Move the pointer to the first chord in the next
-     * measure
+     * nonempty measure
      */
     fun nextPart() : Chord? {
+        return if (stream.isEmpty()) {
+            null
+        } else {
+            val st = stream[idx]
+            if (st is Part) {
+                st.last()
+                nextChord()
+            } else if (st is Stream) {
+                st.nextPart() ?: nextChord()
+            } else {
+                null
+            }
+        }
+
+    }
+
+    /**
+     * Moves the pointer to the first chord in the next element in
+     * the top most stream. If this stream only contains Parts,
+     * this method is semantically equivalent to nextPart()
+     */
+    fun nextSegment() : Chord? {
         ++idx
         return if (idx >= stream.size) {
             null
         } else {
             stream[idx].first()
         }
-
     }
 
     /**
      * Move the pointer to the first chord in the previous
-     * section
+     * section (TODO)
      */
     fun prevPart() : Chord? {
+        --idx
+        return if (idx == -1) {
+            null
+        } else {
+            stream[idx].first()
+        }
+    }
+
+    /**
+     * Moves the pointer to the first chord in the previous element in
+     * the top most stream. If this stream only contains Parts,
+     * this method is semantically equivalent to prevPart()
+     */
+    fun prevSegment() : Chord? {
         --idx
         return if (idx == -1) {
             null
