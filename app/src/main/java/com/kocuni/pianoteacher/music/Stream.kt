@@ -118,17 +118,15 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
         return if (stream.isEmpty()) {
             null
         } else {
-            val st = stream[idx]
-            if (st is Part) {
-                st.last()
-                nextChord()
-            } else if (st is Stream) {
-                st.nextPart() ?: nextChord()
-            } else {
-                null
+            if (idx < 0) {
+                return first()
+            }
+            when (val st = stream[idx]) {
+                is Part -> {st.last(); return nextChord()}
+                is Stream -> return st.nextPart() ?: nextChord()
+                else -> return null
             }
         }
-
     }
 
     /**
@@ -150,11 +148,17 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
      * section (TODO)
      */
     fun prevPart() : Chord? {
-        --idx
-        return if (idx == -1) {
+        return if (stream.isEmpty()) {
             null
         } else {
-            stream[idx].first()
+            if (idx >= stream.size) {
+                return last()
+            }
+            when (val st = stream[idx]) {
+                is Part -> {st.first(); return prevChord()}
+                is Stream -> return st.prevPart() ?: prevChord()
+                else -> return null
+            }
         }
     }
 
