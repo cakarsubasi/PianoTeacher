@@ -42,18 +42,26 @@ class StreamTest {
         assertEquals(part3.currChord(), note1)
 
         val stream1 = Stream(listOf(part1))
-        val stream2 = Stream(listOf(part1, part2, part3))
-        val stream3 = Stream(listOf(part2)) // empty stream
-        val stream4 = Stream(listOf(part2, part1)) // first part is empty but stream is not
-        val stream5 = Stream(listOf(part2, part2)) // two empty parts
-        val stream6 = Stream(listOf(stream5, stream2)) // beginning with a stream of two empty parts
-
         assertEquals(stream1.currChord(), note1)
+
+        val stream2 = Stream(listOf(part1, part2, part3))
         assertEquals(stream2.currChord(), note1)
+
+        val stream3 = Stream(listOf(part2)) // empty stream
         assertNull(stream3.currChord())
+
+        val stream4 = Stream(listOf(part2, part1)) // first part is empty but stream is not
         assertEquals(stream4.currChord(), note1)
+
+        val stream5 = Stream(listOf(part2, part2)) // two empty parts
         assertNull(stream5.currChord())
+
+        val stream6 = Stream(listOf(stream5, stream2)) // beginning with a stream of two empty parts
         assertEquals(stream6.currChord(), note1)
+
+        val stream7 = Stream(listOf(stream5, part2, stream6))
+        assertEquals(stream7.currChord(), note1)
+
     }
 
     @Test
@@ -83,11 +91,16 @@ class StreamTest {
         assertEquals(stream2.nextChord(), note1)
         assertEquals(stream2.nextChord(), note1)
 
-        // note1, note2, note1, empty part, note1, note2, note1
-        val stream3 = Stream(listOf(stream1, part1, stream2))
+        val stream3 = Stream(listOf(part3, part1, part3))
         assertEquals(stream3.nextChord(), note2)
         assertEquals(stream3.nextChord(), note1)
         assertEquals(stream3.nextChord(), note1)
+
+        // note1, note2, note1, empty part, note1, note2, note1
+        val stream4 = Stream(listOf(stream1, part1, stream2))
+        assertEquals(stream4.nextChord(), note2)
+        assertEquals(stream4.nextChord(), note1)
+        assertEquals(stream4.nextChord(), note1)
     }
 
     @Test

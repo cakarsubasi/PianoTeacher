@@ -63,18 +63,16 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
         return if (idx == stream.size) {
             null // end of the stream
         } else {
-            val next = stream[idx].nextChord()
-            if (next == null) {
-                ++idx // end of the current part
-                if (idx >= stream.size) {
-                    null // end of the stream
+            var next = stream[idx].nextChord()
+            while (next == null) {
+                ++idx
+                if (idx >= stream.size) { // end of the stream
+                    return null
                 } else {
-                    stream[idx].first()
-                    currChord()
+                    next = stream[idx].first()
                 }
-            } else {
-                next // next chord in the part
             }
+            return next
         }
     }
 
@@ -190,6 +188,8 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
 
         override fun currChord(): Chord? {
             return if (chords.isEmpty()) {
+                null
+            } else if (idx >= chords.size || idx < 0) {
                 null
             } else {
                 chords[idx]
