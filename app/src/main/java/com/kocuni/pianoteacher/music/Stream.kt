@@ -157,7 +157,7 @@ class Stream(var stream: LinkedList<IStreamable>) : IStreamable {
      */
     class Part(var chords: List<Chord>) : IStreamable {
 
-        private var idx: Int = -1
+        private var idx: Int = 0
 
         override fun currChord(): Chord? {
             return if (chords.isEmpty()) {
@@ -234,6 +234,14 @@ class Stream(var stream: LinkedList<IStreamable>) : IStreamable {
             return chord
         }
 
+        override fun equals(other: Any?): Boolean {
+            return if (other is Chord) {
+                notes.containsAll(other.notes)
+            } else {
+                super.equals(other)
+            }
+        }
+
         override fun toString() : String {
             var str = ""
             for (note in notes) {
@@ -242,9 +250,17 @@ class Stream(var stream: LinkedList<IStreamable>) : IStreamable {
             return str
         }
 
+        override fun hashCode(): Int {
+            var hash = 1;
+            for (note in notes) {
+                hash *= note.hashCode() // usually unique
+            }
+            return hash
+        }
+
     }
 
-    class Note(){
+    class Note() {
         constructor(glyph: GlyphNote, name: String) : this(name) {
             this.glyph = glyph
         }
@@ -256,8 +272,27 @@ class Stream(var stream: LinkedList<IStreamable>) : IStreamable {
         var name: String = "C4"
         var glyph: GlyphNote = GlyphNote()
 
+        override fun equals(other: Any?): Boolean {
+            return if (other is Note)  {
+                this.name == other.name
+            } else {
+                super.equals(other) // always false
+            }
+
+        }
+
         override fun toString() : String {
             return this.name
+        }
+
+        override fun hashCode(): Int {
+            val code = MidiTable.table[this.name]
+            return if (code == null) {
+                0 // represents an invalid value
+            } else {
+                code + 1
+            }
+
         }
     }
 
@@ -272,14 +307,14 @@ class Stream(var stream: LinkedList<IStreamable>) : IStreamable {
                 val measures = LinkedList<IStreamable>()
                 for (abstractMeasure in abstractStaff.measures) {
 
-                    val chords = LinkedList<Chord>()
+                    val chords = LinkedList<Stream.Chord>()
                     for (glyph in abstractMeasure.glyphs) {
                         if (glyph is GlyphNote) {
                             // infer pitch add
                             val pos = relativePos(glyph.y, abstractStaff.ymax, gap)
                             // TODO: consider other clefs
                             val noteName: String? = gclefmap[pos]
-                            val chord: Chord
+                            val chord: Stream.Chord
                             val note: Note
                             if (noteName != null) {
                                 note = Note(glyph, noteName)
