@@ -192,7 +192,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
      */
     fun prevSegment() : Chord? {
         --idx
-        return if (idx == -1) {
+        return if (idx <= -1) {
             null
         } else {
             stream[idx].first()
@@ -201,6 +201,9 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
 
     /**
      * Move the pointer to the first chord in the current measure
+     *
+     * @return the first chord in the current measure.
+     * null if current part is out of bounds. null if pointing at an empty measure under select circumstances.
      */
     fun currPart() : Chord? {
         return if (stream.isEmpty()) {

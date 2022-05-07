@@ -194,6 +194,7 @@ class StreamTest {
         val stream4 = Stream(listOf(stream2, stream1, part1))
 
         assertNull(stream1.nextSegment())
+        assertNull(stream1.nextSegment())
         assertNull(stream2.nextSegment())
         assertNull(stream2.nextSegment())
         assertNull(stream3.nextSegment())
@@ -273,6 +274,40 @@ class StreamTest {
 
     @Test
     fun prevSegment() {
+        val note1 = Stream.Chord(Stream.Note("C4"))
+        val note2 = Stream.Chord(Stream.Note("D4"))
+        val note3 = Stream.Chord(Stream.Note("E4"))
+
+        val part1 = Stream.Part(listOf())
+
+        val stream1 = Stream(listOf())
+        val stream2 = Stream(listOf(part1))
+        val stream3 = Stream(listOf(stream2, stream1, part1))
+
+        assertNull(stream1.prevSegment())
+        assertNull(stream1.prevSegment())
+        assertNull(stream2.prevSegment())
+        assertNull(stream2.prevSegment())
+        stream3.last()
+        assertNull(stream3.prevSegment())
+        assertNull(stream3.prevSegment())
+        assertNull(stream3.prevSegment())
+
+        val part2 = Stream.Part(listOf(note1, note2, note3))
+        val part3 = Stream.Part(listOf(note2, note1, note3))
+        val part4 = Stream.Part(listOf(note3, note1, note2))
+
+        val stream4 = Stream(listOf(part2, part3, part4)) // n1 n2 n3
+        stream4.last()
+        assertEquals(stream4.prevSegment(), note2)
+        assertEquals(stream4.prevSegment(), note1)
+        assertNull(stream4.prevSegment())
+
+        val stream5 = Stream(listOf(part1, part2)) // e n1 n2 n3
+        stream5.nextSegment()
+        stream5.nextSegment()
+        assertEquals(stream5.prevSegment(), note1) // empty parts are still valid parts!
+        assertNull(stream5.prevSegment())
 
     }
 
@@ -297,6 +332,29 @@ class StreamTest {
         assertNull(stream1.currPart())
         stream2.nextPart()
         assertNull(stream2.currPart())
+
+        val stream3 = Stream(listOf(part1, part2)) // e, n1
+        assertNull(stream3.currPart())
+        stream3.last()
+        assertEquals(stream3.currPart(), note1)
+        stream3.nextPart()
+        assertNull(stream3.currPart())
+        stream3.prevPart()
+        assertEquals(stream3.currPart(), note1)
+
+        val stream4 = Stream(listOf(part3, part4, part5))
+        assertEquals(stream4.currPart(), note1)
+        stream4.nextPart()
+        assertEquals(stream4.currPart(), note2)
+        stream4.nextPart()
+        assertEquals(stream4.currPart(), note3)
+
+        val stream5 = Stream(listOf(stream3, part1, stream3)) // e, n1, e, e, n1
+        assertEquals(stream5.currPart(), note1) // empty parts that are wrapped are inaccessible
+        stream5.nextPart()
+        assertEquals(stream5.currPart(), note1) // nextPart() skips empty parts
+        stream5.nextPart()
+        assertNull(stream5.currPart())
     }
 
     @Test
