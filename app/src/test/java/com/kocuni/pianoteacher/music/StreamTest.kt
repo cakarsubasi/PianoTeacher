@@ -417,7 +417,23 @@ class StreamTest {
 
     @Test
     fun combinedTest() {
+        val chordify = {str: String -> Stream.Chord(Stream.Note(str))}
 
+        var str = "C4 D4 E4"
+        val list: List<Stream.Chord> = listOf()
+
+        for (i in str.indices step 3) {
+            (chordify(str.subSequence(i, i+2) as String))
+        }
+
+        val sequence = sequence {
+            val start = 0
+
+            yield(start)
+        }
+
+
+        println(chordify("C4"))
     }
 
 }

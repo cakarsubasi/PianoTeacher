@@ -408,11 +408,35 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
     }
 
     object Builder {
-        private const val TAG = "StreamFactory"
+        private const val TAG = "StreamBuilder"
 
-        fun build(abstractSong: AbstractSong): Stream {
+        fun build(abstractSong: AbstractSong) : Stream {
+            return if (abstractSong.isOneHanded) { // one handed
+                val clef: String = "gClef"
+                val stream = buildSingleStream(abstractSong.staffs, clef)
+                stream
+            } else { // two handed
+                val clef1: String = "gClef"
+                val clef2: String = "fClef"
+                // split staffs
+                val staffsR = abstractSong.staffs.filterIndexed { index, _ ->
+                    index % 2 == 0
+                }
+                val staffsL = abstractSong.staffs.filterIndexed { index, _ ->
+                    index % 2 == 1
+                }
+                val streamR = buildSingleStream(staffsR, clef1)
+                val streamL = buildSingleStream(staffsL, clef2)
+                Stream(listOf(streamR, streamL)) // stream is not private and easily accessible!
+            }
+        }
+
+        private fun buildSingleStream(abstractStaffs: List<SystemStaff>, clef: String) : Stream {
+            // determine which mapping will be used
+            val clefmap: HashMap<Int, String> = ClefMaps.clefs[clef] ?: ClefMaps.gclefmap
+
             val staffs = LinkedList<IStreamable>()
-            for (abstractStaff in abstractSong.staffs) {
+            for (abstractStaff in abstractStaffs) {
                 val gap = (abstractStaff.ymax - abstractStaff.ymin) * 0.25
 
                 val measures = LinkedList<IStreamable>()
@@ -421,23 +445,20 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
                     val chords = LinkedList<Chord>()
                     for (glyph in abstractMeasure.glyphs) {
                         if (glyph is GlyphNote) {
-                            // infer pitch add
+                            // infer pitch
                             val pos = relativePos(glyph.y, abstractStaff.ymax, gap)
-                            // TODO: consider other clefs
-                            val noteName: String? = gclefmap[pos]
-                            val chord: Chord
-                            val note: Note
-                            if (noteName != null) {
-                                note = Note(glyph, noteName)
-
+                            val noteName: String? = clefmap[pos]
+                            val note: Note = if (noteName != null) {
+                                Note(glyph, noteName)
                             } else {
                                 Log.d(TAG, "Note out of bounds at $pos")
-                                note = Note(glyph, "Unknown")
+                                Note(glyph, "Unknown")
                             }
-                            chord = Chord(note)
+                            val chord: Chord = Chord(note)
                             chords.add(chord)
                         }
                     }
+                    // TODO: Merge chords
                     val part = Part(chords)
                     measures.add(part)
                 }
@@ -455,65 +476,11 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
 
         val getNote = {}
 
-        val gclefmap = HashMap<Int, String>().also {
-            it[-2] = "C4"
-            it[-1] = "D4"
-            it[0]  = "E4"
-            it[1]  = "F4"
-            it[2]  = "G4"
-            it[3]  = "A4"
-            it[4]  = "B4"
-            it[5]  = "C5"
-            it[6]  = "D5"
-            it[7]  = "E5"
-            it[8]  = "F5"
-            it[9]  = "G5"
-            it[10]  = "A5"
-            it[11]  = "B5"
-            it[12]  = "C6"
-        }
-
-        val fclefmap = HashMap<Int, String>().also {
-            // TODO: Insert the correct note names
-            it[-2] = "C4"
-            it[-1] = "D4"
-            it[0]  = "E4"
-            it[1]  = "F4"
-            it[2]  = "G4"
-            it[3]  = "A4"
-            it[4]  = "B4"
-            it[5]  = "C5"
-            it[6]  = "D5"
-            it[7]  = "E5"
-            it[8]  = "F5"
-            it[9]  = "G5"
-            it[10]  = "A5"
-            it[11]  = "B5"
-            it[12]  = "C6"
-        }
-
-        val cclefmap = HashMap<Int, String>().also {
-            // TODO: Insert the correct note names
-            it[-2] = "C4"
-            it[-1] = "D4"
-            it[0]  = "E4"
-            it[1]  = "F4"
-            it[2]  = "G4"
-            it[3]  = "A4"
-            it[4]  = "B4"
-            it[5]  = "C5"
-            it[6]  = "D5"
-            it[7]  = "E5"
-            it[8]  = "F5"
-            it[9]  = "G5"
-            it[10]  = "A5"
-            it[11]  = "B5"
-            it[12]  = "C6"
-        }
 
         fun getPitch(name: String) : Double {
             // TODO, either add a LUT or a formula to calculate pitch
             return 0.0
         }
     }
+
 }

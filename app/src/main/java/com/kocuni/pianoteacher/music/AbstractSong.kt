@@ -15,12 +15,21 @@ class SystemStaff {
     var staffs: List<Staff> = ArrayList()
 }
 
-class Staff {
+class Staff() {
+    constructor(top: Double, bottom: Double) : this() {
+        this.top = top
+        this.bottom = bottom
+    }
+
     var top: Double = 0.0
     var bottom: Double = 0.0
 }
 
-class Measure {
+class Measure() {
+    constructor(glyphs: List<Glyph>) : this() {
+        this.glyphs = glyphs
+    }
+
     var glyphs: List<Glyph> = ArrayList()
     var index: Int = -1
 }
