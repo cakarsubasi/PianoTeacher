@@ -459,6 +459,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
                         }
                     }
                     // TODO: Merge chords
+                    // TODO: Consider accidentals
                     val part = Part(chords)
                     measures.add(part)
                 }
