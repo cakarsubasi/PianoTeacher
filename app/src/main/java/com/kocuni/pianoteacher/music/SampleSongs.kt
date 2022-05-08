@@ -8,8 +8,6 @@ object SampleSongs {
 
     fun song1() : Stream {
 
-
-
         val chordify = {str: String -> Stream.Chord(Stream.Note(str))}
 
 
