@@ -421,9 +421,9 @@ class StreamTest {
 
         var str = "C4 D4 E4"
         val list: List<Stream.Chord> = listOf()
-
-        for (i in str.indices step 3) {
-            (chordify(str.subSequence(i, i+2) as String))
+        var strseq = str.splitToSequence(" ")
+        strseq.forEach {
+            println(chordify(it))
         }
 
         val sequence = sequence {
@@ -433,7 +433,6 @@ class StreamTest {
         }
 
 
-        println(chordify("C4"))
     }
 
 }
