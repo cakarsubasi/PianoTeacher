@@ -37,7 +37,7 @@ public class ServerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_server);
     }
 
     void connectServer(View v){
@@ -114,7 +114,7 @@ public class ServerActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.setType("*/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, 0);
+
     }
 
     @Override
