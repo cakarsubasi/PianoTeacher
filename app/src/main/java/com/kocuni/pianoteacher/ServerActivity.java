@@ -64,7 +64,7 @@ public class ServerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_server);
     }
 
-     void connectServer(View v){
+     public void connectServer(View v){
         EditText ipv4AddressView = findViewById(R.id.IPAddress);
         String ipv4Address = ipv4AddressView.getText().toString();
         EditText portNumberView = findViewById(R.id.portNumber);
