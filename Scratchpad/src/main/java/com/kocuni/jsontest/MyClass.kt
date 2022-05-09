@@ -3,7 +3,6 @@ package com.kocuni.jsontest
 import org.json.JSONObject
 import java.io.File
 import java.io.FileReader
-import java.util.stream.Stream
 
 fun main() {
     println("Hello world")
