@@ -41,6 +41,11 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, PitchActivity::class.java).apply {  }
             startActivity(intent)
         }
+        val serverButton: Button = findViewById(R.id.pitchButton);
+        serverButton.setOnClickListener { _ ->
+            val intent = Intent(this, ServerActivity::class.java).apply {  }
+            startActivity(intent)
+        }
 
 
         if (!isRecordPermissionGranted()) {

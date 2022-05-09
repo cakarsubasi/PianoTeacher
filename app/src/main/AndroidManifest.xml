@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PianoTeacher">
         <activity
+            android:name=".ServerActivity"
+            android:exported="false" />
+        <activity
             android:name=".PitchActivity"
             android:exported="false" />
         <activity
