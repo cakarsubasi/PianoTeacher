@@ -1,4 +1,4 @@
-package com.kocuni.pianoteacher.music
+package com.kocuni.jsontest
 
 import kotlin.collections.ArrayList
 
@@ -15,21 +15,12 @@ class SystemStaff {
     var staffs: List<Staff> = ArrayList()
 }
 
-class Staff() {
-    constructor(top: Double, bottom: Double) : this() {
-        this.top = top
-        this.bottom = bottom
-    }
-
+class Staff {
     var top: Double = 0.0
     var bottom: Double = 0.0
 }
 
-class Measure() {
-    constructor(glyphs: List<Glyph>) : this() {
-        this.glyphs = glyphs
-    }
-
+class Measure {
     var glyphs: List<Glyph> = ArrayList()
     var index: Int = -1
 }
