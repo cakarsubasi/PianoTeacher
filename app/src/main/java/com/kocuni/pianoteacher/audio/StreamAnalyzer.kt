@@ -2,6 +2,7 @@ package com.kocuni.pianoteacher.audio
 
 import android.icu.text.AlphabeticIndex
 import android.util.Log
+import be.tarsos.dsp.pitch.FastYin
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,8 @@ class StreamAnalyzer {
     // user double buffering
     val bufferBack = FloatArray(bufferSize)
     var bufferFront = FloatArray(bufferSize)
+    // Yin from tarsos DSP
+    val detector = FastYin(44100F, bufferSize)
 
     var isRecording: Boolean = false
     val analysisDelay: Long = 500L
@@ -94,7 +97,10 @@ class StreamAnalyzer {
         }
         avg_amp = 2.0F*avg_amp/buffer.size
 
-        Log.d(TAG, "Peak: $peak_amp\nAvg:  $avg_amp")
+        val pitch = detector.getPitch(buffer)
+
+        Log.d(TAG, "Peak: $peak_amp, Avg:  $avg_amp")
+        Log.d(TAG, "Pitch: ${pitch.pitch}, Prob: ${pitch.probability}")
     }
 
     /*
