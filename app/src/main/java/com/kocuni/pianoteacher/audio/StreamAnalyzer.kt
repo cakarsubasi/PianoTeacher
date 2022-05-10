@@ -30,6 +30,7 @@ class StreamAnalyzer {
     var bufferFront = FloatArray(bufferSize)
     // Yin from tarsos DSP
     val detector = FastYin(44100F, bufferSize)
+    var listener: (()->Unit)? = null
 
     var isRecording: Boolean = false
     val analysisDelay: Long = 500L
@@ -74,6 +75,7 @@ class StreamAnalyzer {
                 val buffer = channel.receive()
                 Log.d(TAG, "analyze job")
                 analyzeBuffer(buffer)
+                listener?.invoke()
                 /*
                 if (ready.get()) {
                     Log.d(TAG, "analyze job $i")

@@ -2,6 +2,7 @@ package com.kocuni.pianoteacher
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
@@ -13,6 +14,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class PitchViewModel: ViewModel() {
+    private val TAG = "PitchViewModel"
+
     data class PitchUiState(
         val isRecording: Boolean = false,
         val amplitude: Float = 0.0F,
@@ -24,6 +27,13 @@ class PitchViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(PitchUiState())
     val uiState: StateFlow<PitchUiState> = _uiState.asStateFlow()
     val analyzer = StreamAnalyzer()
+
+    init {
+        analyzer.listener = {
+            Log.d(TAG, "callback")
+        }
+    }
+
 }
 
 class PitchActivity : AppCompatActivity() {
