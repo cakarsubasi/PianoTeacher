@@ -13,6 +13,15 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 class StreamAnalyzer {
 
+    data class bufferInfo(
+        val amplitude: Float = 0.0F,
+        val peak: Float = 0.0F,
+        val frequency: Float = 0.0F,
+        val confidence: Float = 0.0F,
+    )
+
+    
+
     val bufferSize = 1024
     val TAG = "StreamAnalyzer"
 
