@@ -3,14 +3,12 @@ package com.kocuni.pianoteacher
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import androidx.activity.viewModels
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.*
 import com.kocuni.pianoteacher.audio.StreamAnalyzer
 import com.kocuni.pianoteacher.databinding.ActivityPitchBinding
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class PitchViewModel: ViewModel() {
@@ -30,7 +28,13 @@ class PitchViewModel: ViewModel() {
 
     init {
         analyzer.listener = {
-            Log.d(TAG, "callback")
+            viewModelScope.launch {
+                val info = analyzer.info
+                val newState = PitchUiState(true, info.amplitude, info.frequency, info.confidence, "")
+                _uiState.update {
+                    newState
+                }
+            }
         }
     }
 
@@ -47,7 +51,12 @@ class PitchActivity : AppCompatActivity() {
         setContentView(R.layout.activity_pitch)
 
         lifecycleScope.launch {
-
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect {
+                    val view: TextView = findViewById(R.id.textView3)
+                    view.text = it.pitch.toString()
+                }
+            }
         }
     }
 

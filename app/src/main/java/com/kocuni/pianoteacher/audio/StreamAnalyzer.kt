@@ -11,18 +11,15 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * Manage and analyze an incoming audio stream
  */
-class StreamAnalyzer {
+class StreamAnalyzer(val bufferSize: Int = 1024) {
 
-    data class bufferInfo(
+    data class BufferInfo(
         val amplitude: Float = 0.0F,
         val peak: Float = 0.0F,
         val frequency: Float = 0.0F,
         val confidence: Float = 0.0F,
     )
 
-    
-
-    val bufferSize = 1024
     val TAG = "StreamAnalyzer"
 
     // user double buffering
@@ -30,10 +27,11 @@ class StreamAnalyzer {
     var bufferFront = FloatArray(bufferSize)
     // Yin from tarsos DSP
     val detector = FastYin(44100F, bufferSize)
+    var info = BufferInfo()
     var listener: (()->Unit)? = null
 
     var isRecording: Boolean = false
-    val analysisDelay: Long = 500L
+    val analysisDelay: Long = 0L
 
     private val streamScope = MainScope()
     private lateinit var recordJob: Job
@@ -76,14 +74,7 @@ class StreamAnalyzer {
                 Log.d(TAG, "analyze job")
                 analyzeBuffer(buffer)
                 listener?.invoke()
-                /*
-                if (ready.get()) {
-                    Log.d(TAG, "analyze job $i")
-                    ready.set(false)
-                } else {
-                    delay(50L)
-                }
-                */
+
             }
 
         }
@@ -109,6 +100,8 @@ class StreamAnalyzer {
         avg_amp = 2.0F*avg_amp/buffer.size
 
         val pitch = detector.getPitch(buffer)
+
+        info = BufferInfo(avg_amp, peak_amp, pitch.pitch, pitch.probability)
 
         Log.d(TAG, "Peak: $peak_amp, Avg:  $avg_amp")
         Log.d(TAG, "Pitch: ${pitch.pitch}, Prob: ${pitch.probability}")
