@@ -2,6 +2,7 @@ package com.kocuni.pianoteacher;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -64,13 +65,41 @@ public class ServerActivity extends AppCompatActivity {
                         // There are no request codes
 
                         Intent data = result.getData();
-                        Uri uri = data.getData();
-                        selectedImagePath = getPath(getApplicationContext(), uri);
-                        EditText imgPath = findViewById(R.id.imgPath);
-                        imgPath.setText(selectedImagePath);
-                        Toast.makeText(getApplicationContext(), selectedImagePath, Toast.LENGTH_LONG).show();
+
+                        String currentImagePath;
+                        selectedImagesPaths = new ArrayList<>();
+                        TextView numSelectedImages = findViewById(R.id.numSelectedImages);
+                        if (data.getData() != null) {
+                            Uri uri = data.getData();
+                            currentImagePath = getPath(getApplicationContext(), uri);
+                            Log.d("ImageDetails", "Single Image URI : " + uri);
+                            Log.d("ImageDetails", "Single Image Path : " + currentImagePath);
+                            selectedImagesPaths.add(currentImagePath);
+                            imagesSelected = true;
+                            numSelectedImages.setText("Number of Selected Images : " + selectedImagesPaths.size());
+                        } else {
+                            // When multiple images are selected.
+                            // Thanks tp Laith Mihyar for this Stackoverflow answer : https://stackoverflow.com/a/34047251/5426539
+                            if (data.getClipData() != null) {
+                                ClipData clipData = data.getClipData();
+                                for (int i = 0; i < clipData.getItemCount(); i++) {
+
+                                    ClipData.Item item = clipData.getItemAt(i);
+                                    Uri uri = item.getUri();
+
+                                    currentImagePath = getPath(getApplicationContext(), uri);
+                                    selectedImagesPaths.add(currentImagePath);
+                                    Log.d("ImageDetails", "Image URI " + i + " = " + uri);
+                                    Log.d("ImageDetails", "Image Path " + i + " = " + currentImagePath);
+                                    imagesSelected = true;
+                                    numSelectedImages.setText("Number of Selected Images : " + selectedImagesPaths.size());
+                                }
+                            }
+                        }
 
                     }
+                    Toast.makeText(getApplicationContext(), selectedImagesPaths.size() + " Image(s) Selected.", Toast.LENGTH_LONG).show();
+
                 }
             });
     @Override
@@ -198,24 +227,12 @@ public class ServerActivity extends AppCompatActivity {
         });
     }
     public void selectImage(View v) {
-        Intent intent = new Intent();
-        intent.setType("*/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        someActivityResultLauncher.launch(intent);
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+        photoPickerIntent.setType("image/*");
+        someActivityResultLauncher.launch(photoPickerIntent);
     }
 
-    @Override
-    protected void onActivityResult(int reqCode, int resCode, Intent data) {
-        super.onActivityResult(reqCode, resCode, data);
-        if (resCode == RESULT_OK && data != null) {
-            Uri uri = data.getData();
 
-            selectedImagePath = getPath(getApplicationContext(), uri);
-            EditText imgPath = findViewById(R.id.imgPath);
-            imgPath.setText(selectedImagePath);
-            Toast.makeText(getApplicationContext(), selectedImagePath, Toast.LENGTH_LONG).show();
-        }
-    }
 
     // Implementation of the getPath() method and all its requirements is taken from the StackOverflow Paul Burke's answer: https://stackoverflow.com/a/20559175/5426539
     public static String getPath(final Context context, final Uri uri) {
