@@ -33,6 +33,8 @@ import androidx.core.app.ActivityCompat;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -185,7 +187,7 @@ public class ServerActivity extends AppCompatActivity {
     }
     void postRequest(String postUrl, RequestBody postBody) {
 
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = new OkHttpClient().newBuilder().readTimeout(30,TimeUnit.SECONDS).build();
 
         Request request = new Request.Builder()
                 .url(postUrl)
@@ -193,6 +195,7 @@ public class ServerActivity extends AppCompatActivity {
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
+
             @Override
             public void onFailure(Call call, IOException e) {
                 // Cancel the post on failure.
@@ -205,6 +208,8 @@ public class ServerActivity extends AppCompatActivity {
                     public void run() {
                         TextView responseText = findViewById(R.id.responseText);
                         responseText.setText("Failed to Connect to Server. Please Try Again.");
+
+
                     }
                 });
             }
@@ -215,16 +220,26 @@ public class ServerActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
                         TextView responseText = findViewById(R.id.responseText);
                         try {
-                            responseText.setText("Server's Response\n" + response.body().string());
-                        } catch (IOException e) {
+
+
+                            responseText.setText( response.body().string());
+
+
+                        } catch (IOException  e) {
                             e.printStackTrace();
                         }
                     }
                 });
+
             }
-        });
+
+
+        }
+        );
+
     }
     public void selectImage(View v) {
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
