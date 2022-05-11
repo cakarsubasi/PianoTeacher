@@ -2,6 +2,7 @@ package com.kocuni.pianoteacher.audio
 
 import android.icu.text.AlphabeticIndex
 import android.util.Log
+import be.tarsos.dsp.pitch.FastYin
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -12,12 +13,24 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 class StreamAnalyzer {
 
+    data class bufferInfo(
+        val amplitude: Float = 0.0F,
+        val peak: Float = 0.0F,
+        val frequency: Float = 0.0F,
+        val confidence: Float = 0.0F,
+    )
+
+    
+
     val bufferSize = 1024
     val TAG = "StreamAnalyzer"
 
     // user double buffering
     val bufferBack = FloatArray(bufferSize)
     var bufferFront = FloatArray(bufferSize)
+    // Yin from tarsos DSP
+    val detector = FastYin(44100F, bufferSize)
+    var listener: (()->Unit)? = null
 
     var isRecording: Boolean = false
     val analysisDelay: Long = 500L
@@ -62,6 +75,7 @@ class StreamAnalyzer {
                 val buffer = channel.receive()
                 Log.d(TAG, "analyze job")
                 analyzeBuffer(buffer)
+                listener?.invoke()
                 /*
                 if (ready.get()) {
                     Log.d(TAG, "analyze job $i")
@@ -94,7 +108,10 @@ class StreamAnalyzer {
         }
         avg_amp = 2.0F*avg_amp/buffer.size
 
-        Log.d(TAG, "Peak: $peak_amp\nAvg:  $avg_amp")
+        val pitch = detector.getPitch(buffer)
+
+        Log.d(TAG, "Peak: $peak_amp, Avg:  $avg_amp")
+        Log.d(TAG, "Pitch: ${pitch.pitch}, Prob: ${pitch.probability}")
     }
 
     /*

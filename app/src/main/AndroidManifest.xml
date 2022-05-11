@@ -17,6 +17,11 @@
             android:name=".ServerActivity"
             android:exported="false" />
         <activity
+            android:name=".ComposeActivity"
+            android:exported="false"
+            android:label="@string/title_activity_compose"
+            android:theme="@style/Theme.PianoTeacher" />
+        <activity
             android:name=".PitchActivity"
             android:exported="false" />
         <activity
