@@ -23,6 +23,12 @@ class MainActivity : AppCompatActivity() {
     val minBuffSize = 480000;
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (!isRecordPermissionGranted()) {
+            requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO),
+                micRequest
+            )
+        }
+
         val streamAnalyzer = StreamAnalyzer()
 
         super.onCreate(savedInstanceState)
@@ -47,12 +53,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-
-        if (!isRecordPermissionGranted()) {
-            requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO),
-            micRequest
-            )
-        }
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.RECORD_AUDIO
