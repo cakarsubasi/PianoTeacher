@@ -1,5 +1,8 @@
 package com.kocuni.pianoteacher.music
 
+import be.tarsos.dsp.util.PitchConverter
+import java.util.Collections.copy
+
 class SongTutor (val stream: Stream){
 
     /**
@@ -17,10 +20,13 @@ class SongTutor (val stream: Stream){
 
     val endToEnd = flatten(stream)
 
-    /**
-     *
-     *
-     */
+    fun next() {
+        stream.nextChord()
+    }
+
+    fun prev() {
+        stream.prevChord()
+    }
 
     /**
      * From the stream, get the latest frequency
@@ -32,7 +38,9 @@ class SongTutor (val stream: Stream){
         return false
     }
 
+    fun endSong() {
 
+    }
 
     private fun flatten(streamOrPart: IStreamable) : List<NoteBlock> {
         var note = streamOrPart.first()

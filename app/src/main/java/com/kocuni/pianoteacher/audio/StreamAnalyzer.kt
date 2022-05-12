@@ -32,7 +32,7 @@ class StreamAnalyzer(scope: CoroutineScope, val bufferSize: Int = 1024) {
     var listener: (()->Unit)? = null
 
     var isRecording: Boolean = false
-    val analysisDelay: Long = 500L
+    val analysisDelay: Long = 0L
 
     private val streamScope = scope
     private lateinit var recordJob: Job

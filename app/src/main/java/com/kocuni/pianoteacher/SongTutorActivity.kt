@@ -16,6 +16,10 @@ import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 
 class SongTutorViewModel : ViewModel() {
 
+    data class SongTutorUiState(
+        val isPlaying: Boolean = true,
+
+        ) { }
 
 
 

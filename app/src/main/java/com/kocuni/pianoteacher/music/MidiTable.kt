@@ -21,6 +21,10 @@ object MidiTable {
         } // last four entries are invalid, but that is not important
     }
 
+    val midiToKey = mutableMapOf<Int, String>().also {
+        table.forEach { (k, v) -> it[v] = k }
+    }
+
     fun getFrequency(midiCode: Int): Double {
         // A4 (57) is 440.0
         val f0 = 440.0

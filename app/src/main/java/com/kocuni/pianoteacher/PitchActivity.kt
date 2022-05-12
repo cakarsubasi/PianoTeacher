@@ -5,7 +5,9 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
@@ -20,7 +22,9 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
+import be.tarsos.dsp.util.PitchConverter
 import com.kocuni.pianoteacher.audio.StreamAnalyzer
+import com.kocuni.pianoteacher.music.MidiTable
 import com.kocuni.pianoteacher.music.SampleSongs
 import com.kocuni.pianoteacher.music.SongTutor
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
@@ -119,11 +123,15 @@ fun DefaultPreview2() {
 @Composable
 fun PitchInfo(pitchState: PitchViewModel.PitchUiState) {
     Column {
+        val midi = PitchConverter.hertzToMidiKey(pitchState.pitch.toDouble()) - 12
+        val note = MidiTable.midiToKey[midi]
         Text(text = "Recording? : ${pitchState.isRecording}")
         Text(text = "Avg  : ${pitchState.amplitude}")
         Text(text = "Peak : ")
         Text(text = "Pitch: ${pitchState.pitch}")
         Text(text = "Prob : ${pitchState.confidence}")
+        Text(text = "MIDI : $midi")
+        Text(text = "Note : $note")
     }
 }
 
@@ -131,7 +139,9 @@ fun PitchInfo(pitchState: PitchViewModel.PitchUiState) {
 @Composable
 fun NoteList() {
     val notelist = SongTutor(SampleSongs.song1()).endToEnd
-        LazyRow {
+        LazyRow(
+            contentPadding = PaddingValues(1.dp)
+        ) {
             items(notelist) {
                 note -> Note(note.note.toString())
         }
@@ -141,7 +151,10 @@ fun NoteList() {
 @Preview
 @Composable
 fun Note(str: String = "C4") {
-    Surface(shape= MaterialTheme.shapes.large, elevation= 1.dp,
+    Surface(
+        modifier = Modifier.padding(all = 2.dp),
+        shape= MaterialTheme.shapes.large,
+        elevation= 1.dp,
     color = Color.Blue) {
         Text(
             text = str,
