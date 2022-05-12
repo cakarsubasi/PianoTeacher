@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         val songButton: Button = findViewById(R.id.songButton);
         songButton.setOnClickListener { _ ->
-            val intent = Intent(this, SongActivity::class.java).apply {  }
+            val intent = Intent(this, SongTutorActivity::class.java).apply {  }
             startActivity(intent)
         }
 

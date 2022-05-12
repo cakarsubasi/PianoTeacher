@@ -4,12 +4,10 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -138,7 +136,7 @@ fun PitchInfo(pitchState: PitchViewModel.PitchUiState) {
 @Preview
 @Composable
 fun NoteList() {
-    val notelist = SongTutor(SampleSongs.song1()).endToEnd
+    val notelist = SongTutor(stream = SampleSongs.song1()).endToEnd
         LazyRow(
             contentPadding = PaddingValues(1.dp)
         ) {
@@ -160,5 +158,27 @@ fun Note(str: String = "C4") {
             text = str,
             )
     }
+}
 
+@Preview
+@Composable
+fun TutorControls() {
+    Column {
+        Row {
+            Button(onClick = {  }) {
+                Text("Beginning")
+            }
+        }
+        Row {
+            Button(onClick = {  }) {
+                Text("Auto Advance")
+            }
+            Button(onClick = {  }) {
+                Text("Next Chord")
+            }
+            Button(onClick = {  }) {
+                Text("Next Measure")
+            }
+        }
+    }
 }

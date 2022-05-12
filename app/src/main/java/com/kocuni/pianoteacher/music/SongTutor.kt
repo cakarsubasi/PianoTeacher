@@ -1,9 +1,16 @@
 package com.kocuni.pianoteacher.music
 
 import be.tarsos.dsp.util.PitchConverter
+import kotlinx.coroutines.*
 import java.util.Collections.copy
 
-class SongTutor (val stream: Stream){
+class SongTutor (val scope: CoroutineScope = GlobalScope, val stream: Stream){
+
+    enum class STATE {
+        CORRECT,
+        FALSE,
+        IDLE,
+    }
 
     /**
      * Construct with a stream
@@ -19,6 +26,18 @@ class SongTutor (val stream: Stream){
      */
 
     val endToEnd = flatten(stream)
+
+    val callback: (() -> Unit)? = null
+    var autoAdvance: Boolean = false
+
+    lateinit var tutorJob: Job
+    private val tutorScope = scope
+
+    fun beginTutor() {
+        tutorJob = tutorScope.launch(Dispatchers.Default) {
+
+        }
+    }
 
     fun next() {
         stream.nextChord()
