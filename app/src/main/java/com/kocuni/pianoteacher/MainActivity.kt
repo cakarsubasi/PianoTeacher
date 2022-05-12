@@ -12,6 +12,7 @@ import android.view.MotionEvent
 import androidx.core.app.ActivityCompat
 import com.kocuni.pianoteacher.audio.StreamAnalyzer
 import com.kocuni.pianoteacher.databinding.ActivityMainBinding
+import kotlinx.coroutines.MainScope
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -23,7 +24,13 @@ class MainActivity : AppCompatActivity() {
     val minBuffSize = 480000;
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val streamAnalyzer = StreamAnalyzer()
+        if (!isRecordPermissionGranted()) {
+            requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO),
+                micRequest
+            )
+        }
+
+        //val streamAnalyzer = StreamAnalyzer(MainScope())
 
         super.onCreate(savedInstanceState)
 
@@ -47,12 +54,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-
-        if (!isRecordPermissionGranted()) {
-            requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO),
-            micRequest
-            )
-        }
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.RECORD_AUDIO
@@ -69,6 +70,7 @@ class MainActivity : AppCompatActivity() {
         }
         val executor: ExecutorService = Executors.newFixedThreadPool(10)
 
+        /*
         val recordArea: View = findViewById(R.id.recordArea)
         recordArea.setOnTouchListener { _, motionEvent ->
             when(motionEvent.action) {
@@ -88,6 +90,8 @@ class MainActivity : AppCompatActivity() {
             }
             true;
         }
+        */
+
 
         /*
         val streamSwitch: Switch = findViewById(R.id.streamSwitch)
