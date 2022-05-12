@@ -14,6 +14,11 @@
         android:theme="@style/Theme.PianoTeacher"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".SongTutorActivity"
+            android:exported="false"
+            android:label="@string/title_activity_song_tutor"
+            android:theme="@style/Theme.PianoTeacher" />
+        <activity
             android:name=".PitchActivity"
             android:exported="false"
             android:label="@string/title_activity_pitch"

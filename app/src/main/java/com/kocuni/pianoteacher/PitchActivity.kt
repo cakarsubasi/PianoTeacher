@@ -6,15 +6,21 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import com.kocuni.pianoteacher.audio.StreamAnalyzer
+import com.kocuni.pianoteacher.music.SampleSongs
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +28,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class PitchViewModel: ViewModel() {
+class PitchViewModel(val analyzer: StreamAnalyzer): ViewModel() {
     private val TAG = "PitchViewModel"
 
     data class PitchUiState(
@@ -35,7 +41,7 @@ class PitchViewModel: ViewModel() {
 
     var uiState by mutableStateOf(PitchUiState())
         private set
-    val analyzer: StreamAnalyzer = StreamAnalyzer(viewModelScope)
+    //val analyzer: StreamAnalyzer = StreamAnalyzer(viewModelScope)
 
     init {
         Log.d(TAG, "pitch view model")
@@ -49,13 +55,17 @@ class PitchViewModel: ViewModel() {
             }
         }
     }
+
+
 }
 
 class PitchActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val viewModel = PitchViewModel()
+        val analyzer = StreamAnalyzer(lifecycleScope)
+        val viewModel = PitchViewModel(analyzer)
+
 
         setContent {
             PianoTeacherTheme {
@@ -70,6 +80,17 @@ class PitchActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+    }
+
+
 }
 
 @Composable
@@ -83,19 +104,13 @@ fun PitchPanel(
     PitchInfo(uiState)
 }
 
-@Composable
-fun Greeting2(name: String, uiState: PitchViewModel.PitchUiState) {
-    Column {
-        Text(text = "Hello $name!")
-        PitchInfo(uiState)
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview2() {
+    val st = SampleSongs.song1()
+
     PianoTeacherTheme {
-        Greeting2("Android", uiState = PitchViewModel.PitchUiState())
+        PitchInfo(pitchState = PitchViewModel.PitchUiState())
     }
 }
 
@@ -108,4 +123,23 @@ fun PitchInfo(pitchState: PitchViewModel.PitchUiState) {
         Text(text = "Pitch: ${pitchState.pitch}")
         Text(text = "Prob : ${pitchState.confidence}")
     }
+}
+
+@Composable
+fun NoteList() {
+    LazyRow {
+
+    }
+}
+
+@Preview
+@Composable
+fun Note() {
+    Surface(shape= MaterialTheme.shapes.large, elevation= 1.dp,
+    color = Color.Blue) {
+        Text(
+            text = "C4",
+            )
+    }
+
 }
