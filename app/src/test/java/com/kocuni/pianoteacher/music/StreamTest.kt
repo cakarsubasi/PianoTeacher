@@ -419,18 +419,19 @@ class StreamTest {
     fun combinedTest() {
         val chordify = {str: String -> Stream.Chord(Stream.Note(str))}
 
-        var str = "C4 D4 E4"
-        val list: List<Stream.Chord> = listOf()
-        var strseq = str.splitToSequence(" ")
-        strseq.forEach {
-            println(chordify(it))
+        val str = "C4 D4 E4"
+
+        val generatePart = { str: String ->
+            val list: MutableList<Stream.Chord> = mutableListOf()
+            str.splitToSequence(" ").forEach {
+                list.add(chordify(it))
+            }
+            Stream.Part(list)
         }
 
-        val sequence = sequence {
-            val start = 0
+        val stream = Stream(listOf(generatePart(str)))
 
-            yield(start)
-        }
+        println(stream)
 
 
     }

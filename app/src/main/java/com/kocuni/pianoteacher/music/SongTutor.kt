@@ -1,6 +1,6 @@
 package com.kocuni.pianoteacher.music
 
-class SongTutor (){
+class SongTutor (val stream: Stream){
 
     /**
      * Construct with a stream
@@ -14,5 +14,40 @@ class SongTutor (){
      * beginning() -> return to the beginning
      * endSong() -> to execute after the last chord is played
      */
+
+    val endToEnd = flatten(stream)
+
+    /**
+     *
+     *
+     */
+
+    /**
+     * From the stream, get the latest frequency
+     * Get the note for that frequency
+     * compare to the current note
+     */
+    fun matchNote(): Boolean {
+
+        return false
+    }
+
+
+
+    private fun flatten(streamOrPart: IStreamable) : List<NoteBlock> {
+        var note = streamOrPart.first()
+        val blocks: MutableList<NoteBlock> = mutableListOf()
+        while (note != null) {
+            blocks.add(NoteBlock(note))
+            note = streamOrPart.nextChord()
+        }
+        streamOrPart.first()
+        return blocks
+    }
+
+    class NoteBlock(val note: Stream.Chord) {
+
+    }
+
 
 }

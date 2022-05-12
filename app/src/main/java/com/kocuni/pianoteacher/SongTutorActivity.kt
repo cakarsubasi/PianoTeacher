@@ -15,7 +15,7 @@ import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 
 
 class SongTutorViewModel : ViewModel() {
-    
+
 
 
 
@@ -49,4 +49,10 @@ fun DefaultPreview3() {
     PianoTeacherTheme {
         Greeting3("Android")
     }
+}
+
+
+@Composable
+fun Piano() {
+
 }

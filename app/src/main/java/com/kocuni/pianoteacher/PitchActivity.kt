@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -21,6 +22,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import com.kocuni.pianoteacher.audio.StreamAnalyzer
 import com.kocuni.pianoteacher.music.SampleSongs
+import com.kocuni.pianoteacher.music.SongTutor
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -125,20 +127,24 @@ fun PitchInfo(pitchState: PitchViewModel.PitchUiState) {
     }
 }
 
+@Preview
 @Composable
 fun NoteList() {
-    LazyRow {
-
+    val notelist = SongTutor(SampleSongs.song1()).endToEnd
+        LazyRow {
+            items(notelist) {
+                note -> Note(note.note.toString())
+        }
     }
 }
 
 @Preview
 @Composable
-fun Note() {
+fun Note(str: String = "C4") {
     Surface(shape= MaterialTheme.shapes.large, elevation= 1.dp,
     color = Color.Blue) {
         Text(
-            text = "C4",
+            text = str,
             )
     }
 
