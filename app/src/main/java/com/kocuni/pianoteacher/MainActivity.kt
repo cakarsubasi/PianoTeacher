@@ -12,6 +12,7 @@ import android.view.MotionEvent
 import androidx.core.app.ActivityCompat
 import com.kocuni.pianoteacher.audio.StreamAnalyzer
 import com.kocuni.pianoteacher.databinding.ActivityMainBinding
+import kotlinx.coroutines.MainScope
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -29,7 +30,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        val streamAnalyzer = StreamAnalyzer()
+        //val streamAnalyzer = StreamAnalyzer(MainScope())
 
         super.onCreate(savedInstanceState)
 
@@ -69,6 +70,7 @@ class MainActivity : AppCompatActivity() {
         }
         val executor: ExecutorService = Executors.newFixedThreadPool(10)
 
+        /*
         val recordArea: View = findViewById(R.id.recordArea)
         recordArea.setOnTouchListener { _, motionEvent ->
             when(motionEvent.action) {
@@ -88,6 +90,8 @@ class MainActivity : AppCompatActivity() {
             }
             true;
         }
+        */
+
 
         /*
         val streamSwitch: Switch = findViewById(R.id.streamSwitch)

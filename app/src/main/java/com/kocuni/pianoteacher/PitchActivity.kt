@@ -1,14 +1,25 @@
 package com.kocuni.pianoteacher
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.TextView
-import androidx.activity.viewModels
-import androidx.lifecycle.*
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.kocuni.pianoteacher.audio.StreamAnalyzer
-import com.kocuni.pianoteacher.databinding.ActivityPitchBinding
-import kotlinx.coroutines.flow.*
+import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PitchViewModel: ViewModel() {
@@ -22,51 +33,79 @@ class PitchViewModel: ViewModel() {
         val note: String? = null
     )
 
-    private val _uiState = MutableStateFlow(PitchUiState())
-    val uiState: StateFlow<PitchUiState> = _uiState.asStateFlow()
-    val analyzer = StreamAnalyzer()
+    var uiState by mutableStateOf(PitchUiState())
+        private set
+    val analyzer: StreamAnalyzer = StreamAnalyzer(viewModelScope)
 
     init {
+        Log.d(TAG, "pitch view model")
+        analyzer.startAnalyzing()
         analyzer.listener = {
             viewModelScope.launch {
+                Log.d(TAG, "callback")
                 val info = analyzer.info
                 val newState = PitchUiState(true, info.amplitude, info.frequency, info.confidence, "")
-                _uiState.update {
-                    newState
-                }
+                uiState = newState
             }
         }
     }
-
 }
 
-class PitchActivity : AppCompatActivity() {
-
-
-    private lateinit var binding: ActivityPitchBinding
-    private val viewModel: PitchViewModel by viewModels()
-
+class PitchActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_pitch)
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collect {
-                    val view: TextView = findViewById(R.id.textView3)
-                    view.text = it.pitch.toString()
+        val viewModel = PitchViewModel()
+
+        setContent {
+            PianoTeacherTheme {
+                // A surface container using the 'background' color from the theme
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colors.background
+                ) {
+                    //Greeting2("Android", viewModel.uiState)
+                    PitchPanel(viewModel)
                 }
             }
         }
     }
+}
 
-    override fun onPause() {
-        super.onPause()
-        viewModel.analyzer.endAnalyzing()
+@Composable
+fun PitchPanel(
+    viewModel: PitchViewModel,
+) {
+    var uiState = viewModel.uiState
+    LaunchedEffect(viewModel.uiState) {
+        uiState = viewModel.uiState
     }
+    PitchInfo(uiState)
+}
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.analyzer.startAnalyzing()
+@Composable
+fun Greeting2(name: String, uiState: PitchViewModel.PitchUiState) {
+    Column {
+        Text(text = "Hello $name!")
+        PitchInfo(uiState)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview2() {
+    PianoTeacherTheme {
+        Greeting2("Android", uiState = PitchViewModel.PitchUiState())
+    }
+}
+
+@Composable
+fun PitchInfo(pitchState: PitchViewModel.PitchUiState) {
+    Column {
+        Text(text = "Recording? : ${pitchState.isRecording}")
+        Text(text = "Avg  : ${pitchState.amplitude}")
+        Text(text = "Peak : ")
+        Text(text = "Pitch: ${pitchState.pitch}")
+        Text(text = "Prob : ${pitchState.confidence}")
     }
 }

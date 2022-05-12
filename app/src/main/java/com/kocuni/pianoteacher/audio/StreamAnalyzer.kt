@@ -2,6 +2,7 @@ package com.kocuni.pianoteacher.audio
 
 import android.icu.text.AlphabeticIndex
 import android.util.Log
+import androidx.lifecycle.LifecycleCoroutineScope
 import be.tarsos.dsp.pitch.FastYin
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -11,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * Manage and analyze an incoming audio stream
  */
-class StreamAnalyzer(val bufferSize: Int = 1024) {
+class StreamAnalyzer(scope: CoroutineScope, val bufferSize: Int = 1024) {
 
     data class BufferInfo(
         val amplitude: Float = 0.0F,
@@ -31,9 +32,9 @@ class StreamAnalyzer(val bufferSize: Int = 1024) {
     var listener: (()->Unit)? = null
 
     var isRecording: Boolean = false
-    val analysisDelay: Long = 0L
+    val analysisDelay: Long = 500L
 
-    private val streamScope = MainScope()
+    private val streamScope = scope
     private lateinit var recordJob: Job
     private lateinit var analyzeJob: Job
 
