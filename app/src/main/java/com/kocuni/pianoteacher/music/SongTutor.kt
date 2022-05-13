@@ -116,7 +116,15 @@ class SongTutor (val scope: CoroutineScope = GlobalScope, val stream: Stream){
         return list
     }
 
-    class NoteBlock(val note: Stream.Chord) {
+    interface Block {
+
+    }
+
+    class NoteBlock(val note: Stream.Chord) : Block {
+
+    }
+
+    class MeasureBreak : Block {
 
     }
 

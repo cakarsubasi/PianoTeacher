@@ -28,6 +28,10 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
         }
     }
 
+    operator fun get(i: Int) : IStreamable {
+        return stream[i]
+    }
+
     /**
      * Return the current chord
      *
@@ -54,10 +58,40 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
     }
 
     /**
-     * Return the part which holds the current chord
+     * Return the strean which holds the current chord
      */
     fun getCurrentPart() : IStreamable {
         return stream[idx]
+    }
+
+    fun currPart() : Part? {
+        val part: IStreamable = stream[idx]
+        if (part is Part) {
+            return part
+        } else if (part is Stream){
+            return part.currPart()
+        }
+        return null
+    }
+
+    /**
+     * Lazy abomination of an implementation
+     */
+    fun nextPart() : Part? {
+        nextPartChord()
+        val ret = currPart()
+        prevPartChord()
+        return ret
+    }
+
+    /**
+     * Lazy abomination of an implementation
+     */
+    fun prevPart() : Part? {
+        prevPartChord()
+        val ret = currPart()
+        nextPartChord()
+        return ret
     }
 
     /**
@@ -114,7 +148,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
      * Move the pointer to the first chord in the next
      * nonempty measure
      */
-    fun nextPart() : Chord? {
+    fun nextPartChord() : Chord? {
         return if (stream.isEmpty()) {
             null
         } else {
@@ -123,7 +157,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
             }
             when (val st = stream[idx]) {
                 is Part -> {st.last(); return nextChord()}
-                is Stream -> return st.nextPart() ?: nextChord()
+                is Stream -> return st.nextPartChord() ?: nextChord()
                 else -> return null
             }
         }
@@ -152,13 +186,13 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
      * pointing at the first measure. If the pointer is out of
      * bounds due to nextPart() calls, the first chord in the last measure
      */
-    fun prevPart() : Chord? {
+    fun prevPartChord() : Chord? {
         return if (stream.isEmpty()) {
             null
         } else {
             if (idx >= stream.size) {
                 last()
-                return currPart()
+                return currPartChord()
             }
             if (idx < 0) {
                 return null
@@ -166,16 +200,16 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
             when (val st = stream[idx]) {
                 is Part -> {
                     if (prevChord() != null) {
-                        return currPart()
+                        return currPartChord()
                     } else {
                         return null
                     }
                 }
                 is Stream -> {
-                    val st2 = st.prevPart()
+                    val st2 = st.prevPartChord()
                     if (st2 == null) {
                         prevChord()
-                        return currPart()
+                        return currPartChord()
                     } else {
                         return st2
                     }
@@ -205,7 +239,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
      * @return the first chord in the current measure.
      * null if current part is out of bounds. null if pointing at an empty measure under select circumstances.
      */
-    fun currPart() : Chord? {
+    fun currPartChord() : Chord? {
         return if (stream.isEmpty()) {
             null
         } else {
@@ -216,7 +250,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
             }
             when (val st = stream[idx]) {
                 is Part -> st.first()
-                is Stream -> st.currPart() ?: nextChord()
+                is Stream -> st.currPartChord() ?: nextChord()
                 else -> null
             }
 
@@ -267,6 +301,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
     class Part(var chords: List<Chord>) : IStreamable {
 
         override var idx: Int = 0
+        var size = chords.size
 
         override fun currChord(): Chord? {
             return if (chords.isEmpty()) {
@@ -321,6 +356,11 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
             }
             return str
         }
+
+        operator fun get(i: Int) : Stream.Chord {
+            return chords[i]
+        }
+
     }
 
     /**
@@ -469,10 +509,23 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
             return Stream(staffs)
         }
 
-        val relativePos = { notehead:    Double,
+        private val relativePos = { notehead:    Double,
                             staffbottom: Double,
                             staffgap:    Double ->
             (2.0*(staffbottom - notehead)/staffgap).roundToInt()
+        }
+
+        fun flattenStream(stream: Stream) : Stream {
+            val list: MutableList<Part> = mutableListOf()
+            stream.first()
+            stream.prevPartChord()
+            while (stream.nextPartChord() != null) {
+                val part = stream.currPart()
+                if (part != null) {
+                    list.add(part)
+                }
+            }
+            return Stream(list)
         }
 
         val getNote = {}
