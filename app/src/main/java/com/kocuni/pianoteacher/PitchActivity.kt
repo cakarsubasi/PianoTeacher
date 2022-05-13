@@ -136,32 +136,7 @@ fun PitchInfo(pitchState: PitchViewModel.PitchUiState) {
     }
 }
 
-@Preview
-@Composable
-fun NoteList() {
-    val notelist = SongTutor(stream = SampleSongs.song1()).endToEnd
-        LazyRow(
-            contentPadding = PaddingValues(1.dp)
-        ) {
-            items(notelist) {
-                note -> Note(note.note.toString())
-        }
-    }
-}
 
-@Preview
-@Composable
-fun Note(str: String = "C4") {
-    Surface(
-        modifier = Modifier.padding(all = 2.dp),
-        shape= MaterialTheme.shapes.large,
-        elevation= 1.dp,
-    color = Color.Blue) {
-        Text(
-            text = str,
-            )
-    }
-}
 
 @Preview
 @Composable

@@ -13,6 +13,7 @@ import kotlin.math.roundToInt
  */
 class Stream(var stream: List<IStreamable>) : IStreamable {
     override var idx = 0
+    var size = stream.size
     /**
      * Traverse each measure in the song, generate chords and measures
      *
