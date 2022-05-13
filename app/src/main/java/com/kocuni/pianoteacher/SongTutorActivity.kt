@@ -15,29 +15,53 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import com.kocuni.pianoteacher.audio.StreamAnalyzer
 import com.kocuni.pianoteacher.music.SampleSongs
 import com.kocuni.pianoteacher.music.SongTutor
 import com.kocuni.pianoteacher.music.Stream
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
+import kotlinx.coroutines.launch
 
 
-class SongTutorViewModel() : ViewModel() {
+class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : ViewModel() {
 
-    constructor(tutor: SongTutor, analyzer: StreamAnalyzer) : this () {
 
-    }
 
     data class SongTutorUiState(
         val autoAdvance: Boolean = false,
-
+        val nextNotes: List<SongTutor.NoteBlock> = mutableListOf(),
         val playedNote: Int = -1,
+        val expectedNote: String = "C0",
         val status: SongTutor.STATE = SongTutor.STATE.IDLE,
 
         ) { }
 
     var uiState by mutableStateOf(SongTutorUiState())
         private set
+
+    init {
+        analyzer.startAnalyzing()
+        analyzer.listener = {
+            viewModelScope.launch {
+                val tutorState = tutor.beginTutor(analyzer.info.frequency)
+                val newState = SongTutorUiState(
+                    autoAdvance = false,
+                    playedNote = -1,
+                    expectedNote = "C0",
+                    status = tutorState)
+                uiState = newState
+            }
+        }
+    }
+
+    fun updateUiState() {
+        val autoAdvance = false
+        val playedNote = -1;
+        val expectedNote = "C0"
+        val displayedStream: List<SongTutor.NoteBlock> = mutableListOf()
+        val tutorState = SongTutor.STATE.IDLE
+    }
 
 }
 

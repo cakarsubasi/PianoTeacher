@@ -4,13 +4,14 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,7 +53,6 @@ class PitchViewModel(val analyzer: StreamAnalyzer): ViewModel() {
         analyzer.startAnalyzing()
         analyzer.listener = {
             viewModelScope.launch {
-                Log.d(TAG, "callback")
                 val info = analyzer.info
                 val newState = PitchUiState(true, info.amplitude, info.frequency, info.confidence, "")
                 uiState = newState
@@ -105,7 +105,10 @@ fun PitchPanel(
     LaunchedEffect(viewModel.uiState) {
         uiState = viewModel.uiState
     }
-    PitchInfo(uiState)
+    Column {
+        PitchInfo(uiState)
+        TutorControls()
+    }
 }
 
 @Preview(showBackground = true)
@@ -163,13 +166,28 @@ fun Note(str: String = "C4") {
 @Preview
 @Composable
 fun TutorControls() {
+    var pushed by remember { mutableStateOf(false)}
     Column {
         Row {
+            Surface(
+                shape = MaterialTheme.shapes.small
+            ) {
+                IconToggleButton(
+                    modifier = Modifier.background(color=Color.Green),
+                    checked = pushed,
+                    onCheckedChange = { pushed = it}) {
+                    val tint by animateColorAsState(
+                        if (pushed) Color(0xFFEC407A) else Color(0xFFB0BEC5))
+                    Icon(Icons.Filled.PlayArrow, contentDescription = "", tint = tint)
+                }
+            }
+
             Button(onClick = {  }) {
                 Text("Beginning")
             }
         }
         Row {
+
             Button(onClick = {  }) {
                 Text("Auto Advance")
             }
