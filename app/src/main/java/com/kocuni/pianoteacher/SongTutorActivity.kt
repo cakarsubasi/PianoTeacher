@@ -45,11 +45,20 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
 
         ) { }
 
+    // TODO
+    val controls = LambdaTutorControls(
+        playToggle = { tutor.autoAdvance = !tutor.autoAdvance},
+        nextChord = { tutor.next() },
+        prevChord = { tutor.prev() },
+        beginning = { }
+    )
+
     var uiState by mutableStateOf(SongTutorUiState())
         private set
 
     init {
         analyzer.startAnalyzing()
+
         analyzer.listener = {
             viewModelScope.launch {
                 val tutorState = tutor.beginTutor(analyzer.info.frequency)
@@ -94,6 +103,7 @@ class SongTutorActivity : ComponentActivity() {
                     Column() {
                         Greeting("Android")
                         Status()
+                        Tutor(viewModel)
                     }
 
                 }
@@ -116,13 +126,13 @@ fun Tutor(
         // top menu bar
 
         // note stream
-
-        // expected note
-
+        NoteList(uiState.nextNotes)
+        // detected note
+        Note(uiState.expectedNote)
         // piano
 
         // controls
-        TutorControls()
+        TutorControls(controls = viewModel.controls)
     }
 }
 
@@ -152,6 +162,9 @@ fun DefaultPreview3() {
     }
 }
 
+/**
+ * TODO: correct current note
+ */
 @Preview(showBackground = true)
 @Composable
 fun NoteList(notelist: List<SongTutor.NoteBlock> = SongTutor(stream = SampleSongs.song1()).endToEnd) {
@@ -165,6 +178,9 @@ fun NoteList(notelist: List<SongTutor.NoteBlock> = SongTutor(stream = SampleSong
     }
 }
 
+/**
+ * TODO: Adaptive coloring
+ */
 @Preview
 @Composable
 fun Note(str: String = "C4", current: Boolean = false) {
@@ -175,7 +191,7 @@ fun Note(str: String = "C4", current: Boolean = false) {
     ) {
         Surface(
             modifier = Modifier.padding(all = 4.dp),
-            shape= MaterialTheme.shapes.large,
+            shape= MaterialTheme.shapes.small,
             elevation= 2.dp,
             color = if (current) Color.Green else Color.Blue,) {
             Text(
@@ -207,9 +223,16 @@ fun Piano() {
     )
 }
 
+data class LambdaTutorControls(
+    val playToggle: () -> Unit = {},
+    val nextChord: () -> Unit = {},
+    val prevChord: () -> Unit = {},
+    val beginning: () -> Unit = {},
+) {}
+
 @Preview
 @Composable
-fun TutorControls() {
+fun TutorControls(controls: LambdaTutorControls = LambdaTutorControls()) {
     var pushed by remember { mutableStateOf(false)}
     Column {
         Row {
@@ -226,7 +249,7 @@ fun TutorControls() {
                 }
             }
 
-            Button(onClick = {  }) {
+            Button(onClick = { controls.beginning() }) {
                 Text("Beginning")
             }
         }
@@ -235,10 +258,10 @@ fun TutorControls() {
             Button(onClick = {  }) {
                 Text("Auto Advance")
             }
-            Button(onClick = {  }) {
+            Button(onClick = { controls.nextChord() }) {
                 Text("Next Chord")
             }
-            Button(onClick = {  }) {
+            Button(onClick = { controls.prevChord() }) {
                 Text("Next Measure")
             }
         }
