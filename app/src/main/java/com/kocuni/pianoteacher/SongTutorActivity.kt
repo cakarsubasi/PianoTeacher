@@ -4,18 +4,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,7 +22,6 @@ import androidx.lifecycle.viewModelScope
 import com.kocuni.pianoteacher.audio.StreamAnalyzer
 import com.kocuni.pianoteacher.music.SampleSongs
 import com.kocuni.pianoteacher.music.SongTutor
-import com.kocuni.pianoteacher.music.Stream
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 import kotlinx.coroutines.launch
 
@@ -87,15 +82,6 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
             }
         }
     }
-
-    fun updateUiState() {
-        val autoAdvance = false
-        val playedNote = -1;
-        val expectedNote = "C0"
-        val displayedStream: List<SongTutor.NoteBlock> = mutableListOf()
-        val tutorState = SongTutor.STATE.IDLE
-    }
-
 }
 
 class SongTutorActivity : ComponentActivity() {
@@ -188,14 +174,14 @@ fun DefaultPreview3() {
 @Preview(showBackground = true)
 @Composable
 fun NoteList(
-    notelist: List<SongTutor.NoteBlock> = SongTutor(stream = SampleSongs.song1()).endToEnd,
+    noteList: List<SongTutor.NoteBlock> = SongTutor(stream = SampleSongs.song1()).endToEnd,
     currentPos: Int = 1,
 ) {
     LazyRow(
         contentPadding = PaddingValues(1.dp)
     ) {
-        items(notelist.size) {index ->
-                Note(notelist[index].note.notes[0].toString(), (index == currentPos))
+        items(noteList.size) { index ->
+                Note(noteList[index].name, (index == currentPos))
         }
     }
 }

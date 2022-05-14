@@ -22,7 +22,7 @@ class SongTutor (var stream: Stream){
     var autoAdvance: Boolean = false
 
     fun beginTutor(freq: Float) : STATE {
-        var state = STATE.IDLE
+        val state: STATE
         if (freq == -1.0F) {
             state = STATE.IDLE
         } else if (matchNote(freq)) {
@@ -42,6 +42,14 @@ class SongTutor (var stream: Stream){
 
     fun prev() {
         stream.prevChord()
+    }
+
+    fun nextMeasure() {
+        stream.nextPartChord()
+    }
+
+    fun prevMeasure() {
+        stream.prevPartChord()
     }
 
     /**
@@ -125,8 +133,14 @@ class SongTutor (var stream: Stream){
 
     }
 
-    class NoteBlock(val note: Stream.Chord) : Block {
-
+    class NoteBlock() : Block {
+        constructor(note: Stream.Chord) : this() {
+            name = note.notes[0].name
+        }
+        constructor(name: String) : this() {
+            this.name = name
+        }
+        var name: String = "C0"
     }
 
     class MeasureBreak : Block {
