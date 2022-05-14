@@ -52,6 +52,10 @@ class SongTutor (var stream: Stream){
         stream.prevPartChord()
     }
 
+    fun beginning() {
+        stream.first()
+    }
+
     /**
      * From the stream, get the latest frequency
      * Get the note for that frequency

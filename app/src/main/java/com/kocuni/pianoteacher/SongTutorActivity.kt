@@ -55,9 +55,11 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
     val controls = LambdaTutorControls(
         playToggle = { tutor.autoAdvance = !tutor.autoAdvance},
         playSet = {tutor.autoAdvance = it},
+        nextMeasure = { tutor.nextMeasure() },
+        prevMeasure = { tutor.prevMeasure() },
         nextChord = { tutor.next() },
         prevChord = { tutor.prev() },
-        beginning = { }
+        beginning = { tutor.beginning() },
     )
 
     var uiState by mutableStateOf(SongTutorUiState())
