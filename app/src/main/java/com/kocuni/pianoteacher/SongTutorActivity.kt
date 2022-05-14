@@ -48,6 +48,7 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
     // TODO
     val controls = LambdaTutorControls(
         playToggle = { tutor.autoAdvance = !tutor.autoAdvance},
+        playSet = {tutor.autoAdvance = it},
         nextChord = { tutor.next() },
         prevChord = { tutor.prev() },
         beginning = { }
@@ -63,11 +64,12 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
             viewModelScope.launch {
                 val tutorState = tutor.beginTutor(analyzer.info.frequency)
                 val songDisplay = tutor.getNextNMeasures(2)
+                val playedNote = -1
                 val newState = SongTutorUiState(
                     autoAdvance = tutor.autoAdvance,
                     nextNotes = songDisplay.second,
                     currentNote = songDisplay.first,
-                    playedNote = -1,
+                    playedNote = playedNote,
                     expectedNote = "C0",
                     status = tutorState)
                 uiState = newState
@@ -122,18 +124,25 @@ fun Tutor(
     LaunchedEffect(viewModel.uiState) {
         uiState = viewModel.uiState
     }
-    Column {
+    val status: String =
+    when (uiState.status) {
+        SongTutor.STATE.IDLE -> "idle"
+        SongTutor.STATE.FALSE -> "false"
+        else -> "true" }
         // top menu bar
 
         // note stream
-        NoteList(uiState.nextNotes)
+        NoteList(uiState.nextNotes, currentPos = uiState.currentNote)
         // detected note
-        Note(uiState.expectedNote)
+        Row {
+            Note(uiState.expectedNote)
+            Text( text = status )
+        }
+
         // piano
 
         // controls
         TutorControls(controls = viewModel.controls)
-    }
 }
 
 @Preview(showSystemUi = true, showBackground = true)
@@ -167,13 +176,15 @@ fun DefaultPreview3() {
  */
 @Preview(showBackground = true)
 @Composable
-fun NoteList(notelist: List<SongTutor.NoteBlock> = SongTutor(stream = SampleSongs.song1()).endToEnd) {
+fun NoteList(
+    notelist: List<SongTutor.NoteBlock> = SongTutor(stream = SampleSongs.song1()).endToEnd,
+    currentPos: Int = 1,
+) {
     LazyRow(
         contentPadding = PaddingValues(1.dp)
     ) {
         items(notelist.size) {index ->
-                val current = 1
-                Note(notelist[index].note.notes[0].toString(), (index == current))
+                Note(notelist[index].note.notes[0].toString(), (index == currentPos))
         }
     }
 }
@@ -225,8 +236,11 @@ fun Piano() {
 
 data class LambdaTutorControls(
     val playToggle: () -> Unit = {},
+    val playSet: (Boolean) -> Unit = {},
     val nextChord: () -> Unit = {},
     val prevChord: () -> Unit = {},
+    val nextMeasure: () -> Unit = {},
+    val prevMeasure: () -> Unit = {},
     val beginning: () -> Unit = {},
 ) {}
 
@@ -242,7 +256,7 @@ fun TutorControls(controls: LambdaTutorControls = LambdaTutorControls()) {
                 IconToggleButton(
                     modifier = Modifier.background(color=Color.Green),
                     checked = pushed,
-                    onCheckedChange = { pushed = it}) {
+                    onCheckedChange = { pushed = it; controls.playSet(it) }) {
                     val tint by animateColorAsState(
                         if (pushed) Color(0xFFEC407A) else Color(0xFFB0BEC5))
                     Icon(Icons.Filled.PlayArrow, contentDescription = "", tint = tint)
@@ -261,7 +275,7 @@ fun TutorControls(controls: LambdaTutorControls = LambdaTutorControls()) {
             Button(onClick = { controls.nextChord() }) {
                 Text("Next Chord")
             }
-            Button(onClick = { controls.prevChord() }) {
+            Button(onClick = {  }) {
                 Text("Next Measure")
             }
         }
