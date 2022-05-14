@@ -11,16 +11,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -41,6 +40,7 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
     data class SongTutorUiState(
         val autoAdvance: Boolean = false,
         val nextNotes: List<SongTutor.NoteBlock> = mutableListOf(),
+        val currentNote: Int = 0,
         val playedNote: Int = -1,
         val expectedNote: String = "C0",
         val status: SongTutor.STATE = SongTutor.STATE.IDLE,
@@ -57,7 +57,9 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
                 val tutorState = tutor.beginTutor(analyzer.info.frequency)
                 val songDisplay = tutor.getNextNMeasures(2)
                 val newState = SongTutorUiState(
-                    autoAdvance = false,
+                    autoAdvance = tutor.autoAdvance,
+                    nextNotes = songDisplay.second,
+                    currentNote = songDisplay.first,
                     playedNote = -1,
                     expectedNote = "C0",
                     status = tutorState)
@@ -92,11 +94,12 @@ class SongTutorActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     Column() {
-                        Greeting3("Android")
+                        Greeting("Android")
                         Status()
                     }
 
                 }
+
             }
         }
 
@@ -104,19 +107,42 @@ class SongTutorActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting3(name: String) {
-    Text(text = "Hello $name!")
-}
+fun Tutor(
+    viewModel: SongTutorViewModel
+) {
+    var uiState = viewModel.uiState
+    LaunchedEffect(viewModel.uiState) {
+        uiState = viewModel.uiState
+    }
+    Column {
+        // top menu bar
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview3() {
-    PianoTeacherTheme {
-        Greeting3("Android")
+        // note stream
+
+        // expected note
+
+        // piano
+
+        // controls
+        TutorControls()
     }
 }
 
-@Preview
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+fun DefaultPreview3() {
+    PianoTeacherTheme {
+        Greeting("Android")
+        Column {
+            NoteList()
+            Note()
+            Piano()
+            TutorControls()
+        }
+    }
+}
+
+@Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun NoteList(notelist: List<SongTutor.NoteBlock> = SongTutor(stream = SampleSongs.song1()).endToEnd) {
     LazyRow(
@@ -156,7 +182,11 @@ fun ExpectedNote() {
 
 }
 
+@Preview
 @Composable
 fun Piano() {
-
+    Icon(
+        painter = painterResource(id = R.drawable.ic_piano88key),
+        contentDescription = null,
+    )
 }
