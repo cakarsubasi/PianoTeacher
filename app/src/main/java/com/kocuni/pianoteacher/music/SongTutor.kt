@@ -37,19 +37,27 @@ class SongTutor (var stream: Stream){
     }
 
     fun next() {
-        stream.nextChord()
+        val chord = stream.nextChord()
+        if (chord == null)
+            stream.last()
     }
 
     fun prev() {
-        stream.prevChord()
+        val chord = stream.prevChord()
+        if (chord == null)
+            stream.first()
     }
 
     fun nextMeasure() {
-        stream.nextPartChord()
+        val chord = stream.nextPartChord()
+        if (chord == null)
+            stream.last()
     }
 
     fun prevMeasure() {
-        stream.prevPartChord()
+        val chord = stream.prevPartChord()
+        if (chord == null)
+            stream.first()
     }
 
     fun beginning() {

@@ -27,10 +27,9 @@ import kotlinx.coroutines.launch
 
 /**
  * Things TODO:
- * * Functional prevChord, nextMeasure, prevMeasure buttons
+ * * Indicate end or beginning of the song?
  * * Functional current note display and last detected note display
  * * Adaptive colors for notes
- * * Check for the end and beginning of the songs
  * * Song selection menu that performs a transaction with this activity
  *   so that a rudimentary song can be loaded
  * * Piano visuals
@@ -249,6 +248,18 @@ fun TutorControls(controls: LambdaTutorControls = LambdaTutorControls()) {
     var pushed by remember { mutableStateOf(false)}
     Column {
         Row {
+            Button(onClick = { controls.beginning() }) {
+                Text("Beginning")
+            }
+            Button(onClick = { controls.nextMeasure() }) {
+                Text("Next Measure")
+            }
+            Button(onClick = { controls.prevMeasure() }) {
+                Text("Prev Measure")
+            }
+
+        }
+        Row {
             Surface(
                 shape = MaterialTheme.shapes.small
             ) {
@@ -261,21 +272,11 @@ fun TutorControls(controls: LambdaTutorControls = LambdaTutorControls()) {
                     Icon(Icons.Filled.PlayArrow, contentDescription = "", tint = tint)
                 }
             }
-
-            Button(onClick = { controls.beginning() }) {
-                Text("Beginning")
-            }
-        }
-        Row {
-
-            Button(onClick = {  }) {
-                Text("Auto Advance")
-            }
             Button(onClick = { controls.nextChord() }) {
                 Text("Next Chord")
             }
-            Button(onClick = {  }) {
-                Text("Next Measure")
+            Button(onClick = { controls.prevChord() }) {
+                Text("Prev Chord")
             }
         }
     }
