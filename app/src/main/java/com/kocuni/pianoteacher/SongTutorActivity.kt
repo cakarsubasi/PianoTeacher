@@ -3,18 +3,16 @@ package com.kocuni.pianoteacher
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -134,15 +132,27 @@ fun DefaultPreview3() {
     PianoTeacherTheme {
         Greeting("Android")
         Column {
-            NoteList()
-            Note()
-            Piano()
-            TutorControls()
+            Card(
+                modifier = Modifier.padding(4.dp),
+                elevation = 10.dp,
+            ) {
+                NoteList()
+            }
+            Card {
+                Note()
+            }
+            Card {
+                Piano()
+            }
+            Card {
+                TutorControls()
+            }
         }
+
     }
 }
 
-@Preview(showSystemUi = true, showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun NoteList(notelist: List<SongTutor.NoteBlock> = SongTutor(stream = SampleSongs.song1()).endToEnd) {
     LazyRow(
@@ -158,14 +168,20 @@ fun NoteList(notelist: List<SongTutor.NoteBlock> = SongTutor(stream = SampleSong
 @Preview
 @Composable
 fun Note(str: String = "C4", current: Boolean = false) {
-    Surface(
-        modifier = Modifier.padding(all = 4.dp),
-        shape= MaterialTheme.shapes.large,
-        elevation= 2.dp,
-        color = if (current) Color.Green else Color.Blue,) {
-        Text(
-            text = str,
-        )
+    Card(
+        elevation = 2.dp,
+        backgroundColor = Color.Blue
+
+    ) {
+        Surface(
+            modifier = Modifier.padding(all = 4.dp),
+            shape= MaterialTheme.shapes.large,
+            elevation= 2.dp,
+            color = if (current) Color.Green else Color.Blue,) {
+            Text(
+                text = str,
+            )
+        }
     }
 }
 
@@ -189,4 +205,42 @@ fun Piano() {
         painter = painterResource(id = R.drawable.ic_piano88key),
         contentDescription = null,
     )
+}
+
+@Preview
+@Composable
+fun TutorControls() {
+    var pushed by remember { mutableStateOf(false)}
+    Column {
+        Row {
+            Surface(
+                shape = MaterialTheme.shapes.small
+            ) {
+                IconToggleButton(
+                    modifier = Modifier.background(color=Color.Green),
+                    checked = pushed,
+                    onCheckedChange = { pushed = it}) {
+                    val tint by animateColorAsState(
+                        if (pushed) Color(0xFFEC407A) else Color(0xFFB0BEC5))
+                    Icon(Icons.Filled.PlayArrow, contentDescription = "", tint = tint)
+                }
+            }
+
+            Button(onClick = {  }) {
+                Text("Beginning")
+            }
+        }
+        Row {
+
+            Button(onClick = {  }) {
+                Text("Auto Advance")
+            }
+            Button(onClick = {  }) {
+                Text("Next Chord")
+            }
+            Button(onClick = {  }) {
+                Text("Next Measure")
+            }
+        }
+    }
 }
