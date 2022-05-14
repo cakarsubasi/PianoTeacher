@@ -1,7 +1,6 @@
 package com.kocuni.pianoteacher.music
 
 import be.tarsos.dsp.util.PitchConverter
-import kotlinx.coroutines.*
 
 class SongTutor (var stream: Stream){
 
@@ -78,6 +77,13 @@ class SongTutor (var stream: Stream){
         } else {
             false
         }
+    }
+
+    fun getNoteName(frequency: Float): String? {
+        val midiKey =
+            PitchConverter.hertzToMidiKey(frequency.toDouble()) - 12 // bad solution to buggy library
+
+        return MidiTable.midiToKey[midiKey]
     }
 
     fun endSong() {

@@ -19,7 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.Navigation
 import com.kocuni.pianoteacher.audio.StreamAnalyzer
+import com.kocuni.pianoteacher.music.MidiTable
 import com.kocuni.pianoteacher.music.SampleSongs
 import com.kocuni.pianoteacher.music.SongTutor
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
@@ -28,7 +30,7 @@ import kotlinx.coroutines.launch
 /**
  * Things TODO:
  * * Indicate end or beginning of the song?
- * * Functional current note display and last detected note display
+ * * Less sensitive note detection (voice detection?)
  * * Adaptive colors for notes
  * * Song selection menu that performs a transaction with this activity
  *   so that a rudimentary song can be loaded
@@ -43,8 +45,8 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
     data class SongTutorUiState(
         val autoAdvance: Boolean = false,
         val nextNotes: List<SongTutor.NoteBlock> = mutableListOf(),
-        val currentNote: Int = 0,
-        val playedNote: Int = -1,
+        val currentNote: Int = 0, // index of the current note in nextNotes
+        val playedNote: String = "C0",
         val expectedNote: String = "C0",
         val status: SongTutor.STATE = SongTutor.STATE.IDLE,
 
@@ -69,14 +71,16 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
 
         analyzer.listener = {
             viewModelScope.launch {
-                val tutorState = tutor.beginTutor(analyzer.info.frequency)
+                val frequency = analyzer.info.frequency
+                val tutorState = tutor.beginTutor(frequency)
                 val songDisplay = tutor.getNextNMeasures(2)
-                val playedNote = -1
+                val playedNote: String? = tutor.getNoteName(frequency)
+
                 val newState = SongTutorUiState(
                     autoAdvance = tutor.autoAdvance,
                     nextNotes = songDisplay.second,
                     currentNote = songDisplay.first,
-                    playedNote = playedNote,
+                    playedNote = playedNote ?: uiState.playedNote,
                     expectedNote = "C0",
                     status = tutorState)
                 uiState = newState
@@ -128,12 +132,14 @@ fun Tutor(
         SongTutor.STATE.FALSE -> "false"
         else -> "true" }
         // top menu bar
-
+        Row {
+            
+        }
         // note stream
         NoteList(uiState.nextNotes, currentPos = uiState.currentNote)
         // detected note
         Row {
-            Note(uiState.expectedNote)
+            Note(uiState.playedNote)
             Text( text = status )
         }
 
@@ -149,6 +155,16 @@ fun DefaultPreview3() {
     PianoTeacherTheme {
         Greeting("Android")
         Column {
+            Row() {
+                TopAppBar() {
+                    IconButton(
+                        onClick = { /*TODO*/ },
+
+                    ) {
+
+                    }
+                }
+            }
             Card(
                 modifier = Modifier.padding(4.dp),
                 elevation = 10.dp,
