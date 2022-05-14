@@ -30,7 +30,18 @@ import com.kocuni.pianoteacher.music.Stream
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 import kotlinx.coroutines.launch
 
-
+/**
+ * Things TODO:
+ * * Functional prevChord, nextMeasure, prevMeasure buttons
+ * * Functional current note display and last detected note display
+ * * Adaptive colors for notes
+ * * Check for the end and beginning of the songs
+ * * Song selection menu that performs a transaction with this activity
+ *   so that a rudimentary song can be loaded
+ * * Piano visuals
+ * * "More" information
+ * * Improved layout
+ */
 class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : ViewModel() {
 
     val MAX_MEASURES: Int = 2
