@@ -1,4 +1,4 @@
-package com.kocuni.pianoteacher.music
+package com.kocuni.pianoteacher.music.data
 
 import kotlin.math.pow
 

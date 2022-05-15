@@ -1,11 +1,13 @@
-package com.kocuni.pianoteacher.music
+package com.kocuni.pianoteacher.music.data
+
+import com.kocuni.pianoteacher.music.Stream
 
 /**
  * Hardcoded sample songs
  * TODO(implement)
  */
 object SampleSongs {
-    val chordify = {str: String -> Stream.Chord(Stream.Note(str))}
+    val chordify = {str: String -> Stream.Chord(Stream.Note(str)) }
     val generatePart = { str: String ->
         val list: MutableList<Stream.Chord> = mutableListOf()
         str.splitToSequence(" ").forEach {
@@ -15,8 +17,6 @@ object SampleSongs {
     }
 
     fun song1() : Stream {
-
-
 
         val measure1 = "C4 D4 E4 D4"
         val measure2 = "A4 C4 D4 A4"

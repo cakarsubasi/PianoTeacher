@@ -1,5 +1,6 @@
 package com.kocuni.pianoteacher.music
 
+import com.kocuni.pianoteacher.music.data.SampleSongs
 import org.junit.Assert.*
 
 import org.junit.Test

@@ -16,20 +16,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import androidx.navigation.Navigation
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.kocuni.pianoteacher.audio.StreamAnalyzer
-import com.kocuni.pianoteacher.music.MidiTable
-import com.kocuni.pianoteacher.music.SampleSongs
+import com.kocuni.pianoteacher.music.data.SampleSongs
 import com.kocuni.pianoteacher.music.SongTutor
 import com.kocuni.pianoteacher.music.Stream
 import com.kocuni.pianoteacher.ui.songselection.SongSelection
@@ -121,7 +116,6 @@ class SongTutorActivity : ComponentActivity() {
 fun TutorApp(viewModel: SongTutorViewModel) {
     PianoTeacherTheme {
         val navController = rememberNavController()
-
 
         // A surface container using the 'background' color from the theme
         Surface(

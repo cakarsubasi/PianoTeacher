@@ -1,6 +1,8 @@
 package com.kocuni.pianoteacher.music
 
 import android.util.Log
+import com.kocuni.pianoteacher.music.data.ClefMaps
+import com.kocuni.pianoteacher.music.data.MidiTable
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -358,7 +360,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
             return str
         }
 
-        operator fun get(i: Int) : Stream.Chord {
+        operator fun get(i: Int) : Chord {
             return chords[i]
         }
 
@@ -453,12 +455,12 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
 
         fun build(abstractSong: AbstractSong) : Stream {
             return if (abstractSong.isOneHanded) { // one handed
-                val clef: String = "gClef"
+                val clef = "gClef"
                 val stream = buildSingleStream(abstractSong.staffs, clef)
                 stream
             } else { // two handed
-                val clef1: String = "gClef"
-                val clef2: String = "fClef"
+                val clef1 = "gClef"
+                val clef2 = "fClef"
                 // split staffs
                 val staffsR = abstractSong.staffs.filterIndexed { index, _ ->
                     index % 2 == 0
@@ -495,7 +497,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
                                 Log.d(TAG, "Note out of bounds at $pos")
                                 Note(glyph, "Unknown")
                             }
-                            val chord: Chord = Chord(note)
+                            val chord = Chord(note)
                             chords.add(chord)
                         }
                     }
@@ -529,13 +531,6 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
             return Stream(list)
         }
 
-        val getNote = {}
-
-
-        fun getPitch(name: String) : Double {
-            // TODO, either add a LUT or a formula to calculate pitch
-            return 0.0
-        }
     }
 
 }

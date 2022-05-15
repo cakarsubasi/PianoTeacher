@@ -1,6 +1,7 @@
 package com.kocuni.pianoteacher.music
 
 import be.tarsos.dsp.util.PitchConverter
+import com.kocuni.pianoteacher.music.data.MidiTable
 
 class SongTutor (var stream: Stream){
 
