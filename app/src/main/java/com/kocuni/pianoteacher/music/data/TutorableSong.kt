@@ -1,5 +1,6 @@
 package com.kocuni.pianoteacher.music.data
 
+import com.kocuni.pianoteacher.music.AbstractSong
 import com.kocuni.pianoteacher.music.Stream
 
 /**
@@ -29,6 +30,20 @@ class TutorableSong(rawStream: Stream, var voices: List<Voices> = listOf(Voices.
                 val st = Stream.Builder.flattenStream(rawStream[i] as Stream)
                 streams.add(st)
             }
+        }
+    }
+
+    companion object {
+        /**
+         * Use this to construct songs for the Song Tutor from inference results.
+         */
+        fun buildTutorable(abstractSong: AbstractSong) : TutorableSong {
+            val voices = mutableListOf<Voices>(Voices.SOPRANO)
+            if (!abstractSong.isOneHanded) {
+                voices.add(Voices.TENOR)
+            }
+            val rawStream = Stream.Builder.build(abstractSong = abstractSong)
+            return TutorableSong(rawStream, voices)
         }
     }
 }

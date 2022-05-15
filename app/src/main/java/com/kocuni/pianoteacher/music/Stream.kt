@@ -3,6 +3,8 @@ package com.kocuni.pianoteacher.music
 import android.util.Log
 import com.kocuni.pianoteacher.music.data.ClefMaps
 import com.kocuni.pianoteacher.music.data.MidiTable
+import com.kocuni.pianoteacher.music.data.TutorableSong
+import com.kocuni.pianoteacher.music.data.Voices
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -452,6 +454,18 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
 
     object Builder {
         private const val TAG = "StreamBuilder"
+
+        /**
+         * Use this to construct songs for the Song Tutor from inference results.
+         */
+        fun buildTutorable(abstractSong: AbstractSong) : TutorableSong {
+            val voices = mutableListOf<Voices>(Voices.SOPRANO)
+            if (!abstractSong.isOneHanded) {
+                voices.add(Voices.TENOR)
+            }
+            val rawStream = build(abstractSong = abstractSong)
+            return TutorableSong(rawStream, voices)
+        }
 
         fun build(abstractSong: AbstractSong) : Stream {
             return if (abstractSong.isOneHanded) { // one handed
