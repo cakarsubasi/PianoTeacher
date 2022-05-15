@@ -116,6 +116,7 @@ fun TutorApp(viewModel: SongTutorViewModel) {
     PianoTeacherTheme {
         val navController = rememberNavController()
 
+
         // A surface container using the 'background' color from the theme
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -143,7 +144,7 @@ fun TutorNavHost(
 ) {
     NavHost(navController = navController, startDestination = "SongTutor") {
         composable("SongTutor") {
-            Tutor(viewModel)
+            Tutor(viewModel, song_select = {navController.navigate("TestScreen")})
         }
         composable("TestScreen") {
             EmptyScreen()
@@ -154,7 +155,8 @@ fun TutorNavHost(
 
 @Composable
 fun Tutor(
-    viewModel: SongTutorViewModel
+    viewModel: SongTutorViewModel,
+    song_select: () -> Unit = {},
 ) {
     var uiState = viewModel.uiState
     LaunchedEffect(viewModel.uiState) {
@@ -167,6 +169,11 @@ fun Tutor(
         else -> "true" }
     Column() {
         // top menu bar
+        TopAppBar() {
+            FloatingActionButton(onClick = song_select) {
+
+            }
+        }
         Row {
 
         }
