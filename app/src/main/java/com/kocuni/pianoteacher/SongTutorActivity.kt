@@ -32,6 +32,7 @@ import com.kocuni.pianoteacher.music.MidiTable
 import com.kocuni.pianoteacher.music.SampleSongs
 import com.kocuni.pianoteacher.music.SongTutor
 import com.kocuni.pianoteacher.music.Stream
+import com.kocuni.pianoteacher.ui.songselection.SongSelection
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 import kotlinx.coroutines.launch
 
@@ -149,10 +150,10 @@ fun TutorNavHost(
 ) {
     NavHost(navController = navController, startDestination = "SongTutor") {
         composable("SongTutor") {
-            Tutor(viewModel, song_select = {navController.navigate("TestScreen")})
+            Tutor(viewModel, song_select = {navController.navigate("SongSelection")})
         }
-        composable("TestScreen") {
-            EmptyScreen()
+        composable("SongSelection") {
+            SongSelection()
         }
     }
 
