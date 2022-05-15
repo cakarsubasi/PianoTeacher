@@ -31,6 +31,7 @@ import com.kocuni.pianoteacher.audio.StreamAnalyzer
 import com.kocuni.pianoteacher.music.MidiTable
 import com.kocuni.pianoteacher.music.SampleSongs
 import com.kocuni.pianoteacher.music.SongTutor
+import com.kocuni.pianoteacher.music.Stream
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 import kotlinx.coroutines.launch
 
@@ -93,6 +94,10 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
                 uiState = newState
             }
         }
+    }
+
+    val setStream = { stream: Stream ->
+        tutor = SongTutor(stream)
     }
 }
 
