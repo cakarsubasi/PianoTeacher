@@ -18,4 +18,11 @@
     <action
         android:id="@+id/action_global_mainActivity"
         app:destination="@id/mainActivity" />
+    <navigation android:id="@+id/navigation"
+        app:startDestination="@id/songTutorActivity">
+        <activity
+            android:id="@+id/songTutorActivity"
+            android:name="com.kocuni.pianoteacher.SongTutorActivity"
+            android:label="SongTutorActivity" />
+    </navigation>
 </navigation>

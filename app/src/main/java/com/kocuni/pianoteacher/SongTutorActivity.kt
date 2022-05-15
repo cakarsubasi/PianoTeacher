@@ -16,10 +16,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import androidx.navigation.Navigation
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.kocuni.pianoteacher.audio.StreamAnalyzer
 import com.kocuni.pianoteacher.music.MidiTable
 import com.kocuni.pianoteacher.music.SampleSongs
@@ -98,24 +105,51 @@ class SongTutorActivity : ComponentActivity() {
         val viewModel = SongTutorViewModel(tutor = tutor, analyzer = analyzer)
 
         setContent {
-            PianoTeacherTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    Column() {
-                        Greeting("Android")
-                        Status()
-                        Tutor(viewModel)
-                    }
-
-                }
-
-            }
+            TutorApp(viewModel)
         }
 
     }
+}
+
+@Composable
+fun TutorApp(viewModel: SongTutorViewModel) {
+    PianoTeacherTheme {
+        val navController = rememberNavController()
+
+        // A surface container using the 'background' color from the theme
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colors.background
+        ) {
+            Column() {
+                TutorNavHost(navController = navController, viewModel = viewModel)
+            }
+        }
+    }
+}
+
+@Composable
+fun EmptyScreen() {
+    PianoTeacherTheme() {
+        Text("Navigated")
+    }
+}
+
+
+@Composable
+fun TutorNavHost(
+    navController: NavHostController,
+    viewModel: SongTutorViewModel,
+) {
+    NavHost(navController = navController, startDestination = "SongTutor") {
+        composable("SongTutor") {
+            Tutor(viewModel)
+        }
+        composable("TestScreen") {
+            EmptyScreen()
+        }
+    }
+
 }
 
 @Composable
@@ -131,9 +165,10 @@ fun Tutor(
         SongTutor.STATE.IDLE -> "idle"
         SongTutor.STATE.FALSE -> "false"
         else -> "true" }
+    Column() {
         // top menu bar
         Row {
-            
+
         }
         // note stream
         NoteList(uiState.nextNotes, currentPos = uiState.currentNote)
@@ -147,6 +182,7 @@ fun Tutor(
 
         // controls
         TutorControls(controls = viewModel.controls)
+    }
 }
 
 @Preview(showSystemUi = true, showBackground = true)
@@ -256,7 +292,7 @@ data class LambdaTutorControls(
     val nextMeasure: () -> Unit = {},
     val prevMeasure: () -> Unit = {},
     val beginning: () -> Unit = {},
-) {}
+)
 
 @Preview
 @Composable
