@@ -98,16 +98,24 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
         }
     }
 
+    /**
+     * Use callbacks to these to change the played song
+     */
     val setStream = { stream: Stream ->
         tutor = SongTutor(stream)
     }
+
+    val setSong = { song: TutorableSong ->
+        tutor = SongTutor(song)
+    }
+
 }
 
 class SongTutorActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val f = resources.openRawResource(R.raw.example_song)
+        val f = resources.openRawResource(R.raw.bach_bw101_7)
 
         val stream2 = getSongFromJSONStream(f)
         val stream = SampleSongs.song1()
