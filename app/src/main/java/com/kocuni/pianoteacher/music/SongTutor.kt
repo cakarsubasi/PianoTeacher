@@ -2,13 +2,23 @@ package com.kocuni.pianoteacher.music
 
 import be.tarsos.dsp.util.PitchConverter
 import com.kocuni.pianoteacher.music.data.MidiTable
+import com.kocuni.pianoteacher.music.data.TutorableSong
+import com.kocuni.pianoteacher.music.data.Voices
 
-class SongTutor (var stream: Stream){
+class SongTutor() {
+    private lateinit var song: TutorableSong
+    var stream: Stream = Stream(listOf())
 
-    init {
-        // TODO: separate hands
-        stream = Stream.Builder.flattenStream(stream)
+    constructor(stream: Stream) : this() {
+        this.song = TutorableSong(stream, listOf(Voices.SOPRANO))
+        this.stream = song.SOPRANO()
     }
+
+    constructor(song: TutorableSong) : this() {
+        this.song = song
+        stream = song.SOPRANO()
+    }
+
 
     enum class STATE {
         CORRECT,
