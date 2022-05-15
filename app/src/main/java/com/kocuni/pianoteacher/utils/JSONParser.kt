@@ -9,7 +9,7 @@ object JSONParser {
             val songObjects = songjson.getJSONObject("objects")
             val isOneHanded = songjson.getBoolean("one_handed")
 
-            val abstractSong: AbstractSong = AbstractSong()
+            val abstractSong = AbstractSong()
             val systems = ArrayList<SystemStaff>()
 
             for (systemIndex in songObjects.keys()) {
@@ -52,11 +52,11 @@ object JSONParser {
                         val glyph: Glyph = when (glyphType) {
                             "Note" -> GlyphNote(x, y, h, w)
                             "Accidental" -> {
-                                val acc = jNoteObject.getJSONObject("objects").getString("type")
+                                val acc = jNoteObject.getJSONObject("objects").getString("accidentalType")
                                 GlyphAccidental(x, y, h, w, acc)
                             }
                             "Clef" -> {
-                                val acc = jNoteObject.getJSONObject("objects").getString("type")
+                                val acc = jNoteObject.getJSONObject("objects").getString("clefType")
                                 GlyphClef(x, y, h, w, acc)
                             }
                             else -> Glyph(x, y, h, w)

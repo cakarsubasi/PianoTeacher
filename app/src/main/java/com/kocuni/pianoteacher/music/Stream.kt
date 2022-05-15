@@ -494,7 +494,9 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
 
             val staffs = LinkedList<IStreamable>()
             for (abstractStaff in abstractStaffs) {
-                val gap = (abstractStaff.ymax - abstractStaff.ymin) * 0.25
+                val bottom = abstractStaff.staffs[0].bottom
+                val top = abstractStaff.staffs[0].top
+                val gap = (bottom - top) * 0.25
 
                 val measures = LinkedList<IStreamable>()
                 for (abstractMeasure in abstractStaff.measures) {
@@ -503,7 +505,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
                     for (glyph in abstractMeasure.glyphs) {
                         if (glyph is GlyphNote) {
                             // infer pitch
-                            val pos = relativePos(glyph.y, abstractStaff.ymax, gap)
+                            val pos = relativePos(glyph.y, bottom, gap)
                             val noteName: String? = clefmap[pos]
                             val note: Note = if (noteName != null) {
                                 Note(glyph, noteName)

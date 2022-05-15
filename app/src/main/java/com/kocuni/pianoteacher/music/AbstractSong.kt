@@ -54,17 +54,17 @@ class GlyphAccidental(x: Double = 0.0,
                       y: Double = 0.0,
                       h: Double = 0.0,
                       w: Double = 0.0) : Glyph(x, y, h, w) {
-    constructor(x: Double, y: Double, h: Double, w: Double, type: String) : this() {
+    constructor(x: Double, y: Double, h: Double, w: Double, type: String) : this(x, y, h, w) {
         this.type = type
     }
-    var type: String = "Natural"
+    var type: String = "accidentalNatural"
 }
 
 class GlyphClef(x: Double = 0.0,
                 y: Double = 0.0,
                 h: Double = 0.0,
                 w: Double = 0.0) : Glyph(x, y, h, w) {
-    constructor(x: Double, y: Double, h: Double, w: Double, type: String) : this() {
+    constructor(x: Double, y: Double, h: Double, w: Double, type: String) : this(x, y, h, w) {
         this.type = type
     }
     var type: String = "gClef"
