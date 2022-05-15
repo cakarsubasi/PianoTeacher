@@ -1,6 +1,10 @@
 package com.kocuni.pianoteacher.music.data
 
 import com.kocuni.pianoteacher.music.Stream
+import com.kocuni.pianoteacher.utils.JSONParser
+import org.json.JSONObject
+import java.io.File
+import java.io.FileReader
 
 /**
  * Hardcoded sample songs
@@ -41,5 +45,21 @@ object SampleSongs {
         val stream2 = Stream(listOf(measure4, measure2, measure3))
 
         return Stream.Builder.flattenStream(Stream(listOf(stream1, stream2, stream1)))
+    }
+
+    fun songFromJson() {
+
+
+        val buffer = CharArray(100_000)
+        val examplesong = File("Scratchpad/src/main/java/com/kocuni/jsontest/song.json")
+        val fileReader = FileReader(examplesong)
+        fileReader.read(buffer)
+
+        val jsonstr: String = String(buffer)
+
+        val songjson = JSONObject(jsonstr)
+        println(songjson.toString(4))
+
+        val abstractsong = JSONParser.parse(songjson)
     }
 }

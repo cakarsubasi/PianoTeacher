@@ -27,9 +27,15 @@ import com.kocuni.pianoteacher.audio.StreamAnalyzer
 import com.kocuni.pianoteacher.music.data.SampleSongs
 import com.kocuni.pianoteacher.music.SongTutor
 import com.kocuni.pianoteacher.music.Stream
+import com.kocuni.pianoteacher.music.data.TutorableSong
 import com.kocuni.pianoteacher.ui.songselection.SongSelection
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
+import com.kocuni.pianoteacher.utils.FileManager.Companion.getSongFromJSONStream
+import com.kocuni.pianoteacher.utils.JSONParser
 import kotlinx.coroutines.launch
+import org.json.JSONObject
+import java.io.InputStream
+import java.lang.NullPointerException
 
 /**
  * Things TODO:
@@ -101,8 +107,13 @@ class SongTutorActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val f = resources.openRawResource(R.raw.example_song)
+
+        val stream2 = getSongFromJSONStream(f)
+        val stream = SampleSongs.song1()
+
         val analyzer = StreamAnalyzer(lifecycleScope)
-        val tutor = SongTutor(stream = SampleSongs.song1())
+        val tutor = SongTutor(stream2)
         val viewModel = SongTutorViewModel(tutor = tutor, analyzer = analyzer)
 
         setContent {
@@ -111,6 +122,8 @@ class SongTutorActivity : ComponentActivity() {
 
     }
 }
+
+
 
 @Composable
 fun TutorApp(viewModel: SongTutorViewModel) {
