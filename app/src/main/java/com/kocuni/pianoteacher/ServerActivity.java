@@ -31,6 +31,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -203,36 +206,38 @@ public class ServerActivity extends AppCompatActivity {
                 Log.d("FAIL", e.getMessage());
 
                 // In order to access the TextView inside the UI thread, the code is executed inside runOnUiThread()
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+                Thread gfgThread = new Thread(() -> {
+
                         TextView responseText = findViewById(R.id.responseText);
                         responseText.setText("Failed to Connect to Server. Please Try Again.");
 
 
-                    }
+
                 });
+                gfgThread.start();
             }
 
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
                 // In order to access the TextView inside the UI thread, the code is executed inside runOnUiThread()
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+                Thread gfgThread = new Thread(() -> {
+                    String fileDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getPath();
+                    TextView responseText = findViewById(R.id.responseText);
+                    try {
 
-                        TextView responseText = findViewById(R.id.responseText);
-                        try {
+                        String string= response.body().string();
+                        System.out.println(string);
+                        responseText.setText( "response.body().string()");
 
+                        FileWriter file = new FileWriter(fileDirectory +  "/" + "songfromserver.json");
+                        file.write(string);
 
-                            responseText.setText( response.body().string());
-
-
-                        } catch (IOException  e) {
-                            e.printStackTrace();
-                        }
+                        file.close();
+                    } catch (IOException  e) {
+                        e.printStackTrace();
                     }
                 });
+                gfgThread.start();
 
             }
 
