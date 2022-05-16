@@ -24,6 +24,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.kocuni.pianoteacher.audio.StreamAnalyzer
+import com.kocuni.pianoteacher.music.MIDIPlayer
 import com.kocuni.pianoteacher.music.data.SampleSongs
 import com.kocuni.pianoteacher.music.SongTutor
 import com.kocuni.pianoteacher.music.Stream
@@ -32,6 +33,7 @@ import com.kocuni.pianoteacher.ui.songselection.SongSelection
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 import com.kocuni.pianoteacher.utils.FileManager.Companion.getSongFromJSONStream
 import com.kocuni.pianoteacher.utils.JSONParser
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.InputStream
@@ -51,6 +53,7 @@ import java.lang.NullPointerException
 class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : ViewModel() {
 
     val MAX_MEASURES: Int = 2
+    val midi = MIDIPlayer()
 
     data class SongTutorUiState(
         val autoAdvance: Boolean = false,
@@ -96,6 +99,16 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
                     expectedNote = "C0",
                     status = tutorState)
                 uiState = newState
+            }
+        }
+
+        /**
+         * TODO MidiPlayer
+         */
+        viewModelScope.launch {
+            while (true) {
+                // midi.testNote()
+                delay(1000L)
             }
         }
     }
