@@ -20,9 +20,7 @@ import java.util.concurrent.Executors
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    lateinit var recorder: AudioRecord
     private val permissions = 0
-    val minBuffSize = 480000
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // get permissions
