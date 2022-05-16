@@ -30,6 +30,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.kocuni.pianoteacher.utils.MyJSON;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -221,18 +223,15 @@ public class ServerActivity extends AppCompatActivity {
             public void onResponse(Call call, final Response response) throws IOException {
                 // In order to access the TextView inside the UI thread, the code is executed inside runOnUiThread()
                 Thread gfgThread = new Thread(() -> {
-                    String fileDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getPath();
+
                     TextView responseText = findViewById(R.id.responseText);
                     try {
 
-                        String string= response.body().string();
-                        System.out.println(string);
+                        String serverResponse= response.body().string();
+
                         responseText.setText( "response.body().string()");
-
-                        FileWriter file = new FileWriter(fileDirectory +  "/" + "songfromserver.json");
-                        file.write(string);
-
-                        file.close();
+                        MyJSON.saveData(serverResponse);
+                        System.out.println(MyJSON.getData());
                     } catch (IOException  e) {
                         e.printStackTrace();
                     }
