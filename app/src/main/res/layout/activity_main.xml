@@ -6,98 +6,51 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/sample_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toTopOf="@+id/streamSwitch"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/playArea" />
-
-    <TextView
-        android:id="@+id/recordArea"
-        android:layout_width="0dp"
-        android:layout_height="100dp"
-        android:layout_marginStart="13dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="#FF9B9B"
-        android:text="Hold to record"
-        android:textAlignment="center"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/playArea"
-        android:layout_width="0dp"
-        android:layout_height="200dp"
-        android:layout_marginStart="13dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="28dp"
-        android:background="#B6E480"
-        android:text="Hold to play"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/sample_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recordArea" />
-
-    <Switch
-        android:id="@+id/streamSwitch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="162dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="161dp"
-        android:layout_marginBottom="65dp"
-        android:text="Stream Switch"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sample_text" />
-
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="410dp"
         android:layout_height="126dp"
         android:layout_marginTop="65dp"
-        android:layout_marginBottom="1dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/streamSwitch"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
         tools:visibility="visible">
-
-        <Button
-            android:id="@+id/songButton"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Song Activity"
-            android:visibility="visible"
-            tools:visibility="visible" />
 
         <Button
             android:id="@+id/pitchButton"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pitch Activity" />
-        <Button
-            android:id="@+id/serverButton"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Server" />
+            android:text="@string/title_activity_pitch" />
     </LinearLayout>
+
+    <Button
+        android:id="@+id/songButton"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="300dp"
+        android:layout_height="81dp"
+        android:layout_marginBottom="222dp"
+        android:text="@string/title_activity_song_tutor"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/serverButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/serverButton"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="300dp"
+        android:layout_height="80dp"
+        android:text="@string/title_activity_server"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/songButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
