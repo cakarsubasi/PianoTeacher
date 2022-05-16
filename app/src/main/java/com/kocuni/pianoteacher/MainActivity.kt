@@ -12,6 +12,7 @@ import android.view.MotionEvent
 import androidx.core.app.ActivityCompat
 import com.kocuni.pianoteacher.audio.StreamAnalyzer
 import com.kocuni.pianoteacher.databinding.ActivityMainBinding
+import com.kocuni.pianoteacher.ui.Permissions
 import kotlinx.coroutines.MainScope
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -20,35 +21,36 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     lateinit var recorder: AudioRecord
-    private val micRequest = 0;
-    val minBuffSize = 480000;
+    private val permissions = 0
+    val minBuffSize = 480000
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (!isRecordPermissionGranted()) {
-            requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO),
-                micRequest
+        // get permissions
+        if (!Permissions.isRecordPermissionGranted(this) ||
+                !Permissions.isReadExternalStoragePermissionGranted(this)) {
+            requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.READ_EXTERNAL_STORAGE),
+                permissions
             )
         }
-
-        //val streamAnalyzer = StreamAnalyzer(MainScope())
 
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val songButton: Button = findViewById(R.id.songButton);
+        val songButton: Button = findViewById(R.id.songButton)
         songButton.setOnClickListener { _ ->
             val intent = Intent(this, SongTutorActivity::class.java).apply {  }
             startActivity(intent)
         }
 
-        val pitchButton: Button = findViewById(R.id.pitchButton);
+        val pitchButton: Button = findViewById(R.id.pitchButton)
         pitchButton.setOnClickListener { _ ->
             val intent = Intent(this, PitchActivity::class.java).apply {  }
             startActivity(intent)
         }
-        val serverButton: Button = findViewById(R.id.serverButton);
+        val serverButton: Button = findViewById(R.id.serverButton)
         serverButton.setOnClickListener { _ ->
             val intent = Intent(this, ServerActivity::class.java).apply {  }
             startActivity(intent)
@@ -68,7 +70,6 @@ class MainActivity : AppCompatActivity() {
             // for ActivityCompat#requestPermissions for more details.
             return
         }
-        val executor: ExecutorService = Executors.newFixedThreadPool(10)
 
         /*
         val recordArea: View = findViewById(R.id.recordArea)
@@ -106,7 +107,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun isRecordPermissionGranted(): Boolean {
         return ActivityCompat.checkSelfPermission(this,
-        Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+        Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
     }
 
 }

@@ -30,6 +30,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.kocuni.pianoteacher.ui.Permissions;
 import com.kocuni.pianoteacher.utils.MyJSON;
 
 import java.io.ByteArrayOutputStream;
@@ -53,6 +54,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ServerActivity extends AppCompatActivity {
+
+    private String TAG = "ServerActivity";
     String selectedImagePath;
     private static final Pattern IP_ADDRESS
             = Pattern.compile(
@@ -111,10 +114,10 @@ public class ServerActivity extends AppCompatActivity {
             });
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ActivityCompat.requestPermissions(ServerActivity.this, new String[]{Manifest.permission.INTERNET}, 2);
-        ActivityCompat.requestPermissions(ServerActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+        requestPermissions(new String[]{Manifest.permission.INTERNET}, 2);
+        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
 
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server);
     }
     @Override
@@ -173,6 +176,7 @@ public class ServerActivity extends AppCompatActivity {
                  Bitmap bitmap = BitmapFactory.decodeFile(selectedImagesPaths.get(i), options);
                  bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
              }catch(Exception e){
+                 Log.e(TAG, e.toString());
                  responseText.setText("Please Make Sure the Selected File is an Image.");
                  return;
              }
@@ -349,5 +353,10 @@ public class ServerActivity extends AppCompatActivity {
 
     public static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
+    }
+
+    private boolean isFileReadPermissionGranted() {
+        return ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
 }
