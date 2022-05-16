@@ -77,7 +77,9 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
         private set
 
     init {
-        analyzer.startAnalyzing()
+        viewModelScope.launch {
+            analyzer.startAnalyzing()
+        }
 
         analyzer.listener = {
             viewModelScope.launch {
@@ -112,6 +114,9 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
 }
 
 class SongTutorActivity : ComponentActivity() {
+
+    lateinit var analyzer: StreamAnalyzer
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -120,14 +125,22 @@ class SongTutorActivity : ComponentActivity() {
         val stream2 = getSongFromJSONStream(f)
         val stream = SampleSongs.song1()
 
-        val analyzer = StreamAnalyzer(lifecycleScope)
+        analyzer = StreamAnalyzer(lifecycleScope)
         val tutor = SongTutor(stream2)
         val viewModel = SongTutorViewModel(tutor = tutor, analyzer = analyzer)
 
         setContent {
             TutorApp(viewModel)
         }
+    }
 
+    /**
+     * TODO: replace this with a viewmodel control to more robustly begin
+     * and end recordings.
+     */
+    override fun onPause() {
+        super.onPause()
+        analyzer.endAnalyzing()
     }
 }
 
