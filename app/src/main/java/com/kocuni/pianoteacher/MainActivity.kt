@@ -70,44 +70,6 @@ class MainActivity : AppCompatActivity() {
             // for ActivityCompat#requestPermissions for more details.
             return
         }
-
-        /*
-        val recordArea: View = findViewById(R.id.recordArea)
-        recordArea.setOnTouchListener { _, motionEvent ->
-            when(motionEvent.action) {
-                MotionEvent.ACTION_DOWN -> {binding.sampleText.text = "Recording"; streamAnalyzer.startAnalyzing()}
-                MotionEvent.ACTION_UP -> {binding.sampleText.text = "Idle"; streamAnalyzer.endAnalyzing()}
-            }
-            true
-        }
-
-        val playArea: View = findViewById(R.id.playArea)
-        playArea.setOnTouchListener { _, motionEvent ->
-            when(motionEvent.action) {
-                MotionEvent.ACTION_DOWN -> {binding.sampleText.text = "Playing";
-
-                }
-                MotionEvent.ACTION_UP -> {binding.sampleText.text = "Idle"; }
-            }
-            true;
-        }
-        */
-
-
-        /*
-        val streamSwitch: Switch = findViewById(R.id.streamSwitch)
-        streamSwitch.setOnCheckedChangeListener { _, checked ->
-            when(checked) {
-                true -> JNIBridge.startEngine()
-                false -> JNIBridge.stopEngine() }
-        }
-         */
-    }
-
-
-    private fun isRecordPermissionGranted(): Boolean {
-        return ActivityCompat.checkSelfPermission(this,
-        Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
     }
 
 }
