@@ -12,25 +12,35 @@ class RecordingManager {
 
     private val TAG = "RecordingManager"
 
+    private val BUFFER_SIZE_FACTOR = 2
+
     val sampleRate = 44100
     val buffersize = 1024
     val buffer = FloatArray(buffersize)
+
+    private val CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO
+    private val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_FLOAT
+
+    private val BUFFER_SIZE = AudioRecord.getMinBufferSize(sampleRate,
+        CHANNEL_CONFIG,AUDIO_FORMAT) * BUFFER_SIZE_FACTOR
+
     var recorder: AudioRecord = AudioRecord.Builder()
-        .setAudioSource(MediaRecorder.AudioSource.DEFAULT)
+        .setAudioSource(MediaRecorder.AudioSource.MIC)
         .setAudioFormat(
             AudioFormat.Builder()
-                .setEncoding(AudioFormat.ENCODING_PCM_FLOAT)
+                .setEncoding(AUDIO_FORMAT)
                 .setSampleRate(sampleRate)
-                .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
+                .setChannelMask(CHANNEL_CONFIG)
                 .build()
         )
-        .setBufferSizeInBytes(buffersize * 4)
+        .setBufferSizeInBytes(BUFFER_SIZE)
         .build()
 
     suspend fun read() {
             recorder.startRecording()
-            recorder.read(buffer, 0, buffersize, AudioRecord.READ_BLOCKING)
-            Log.d(TAG, "Read buffer")
+            val result = recorder.read(buffer, 0, buffersize, AudioRecord.READ_BLOCKING)
+            Log.d(TAG, "result: $result")
+            Log.d(TAG, "${buffer.average()}")
             recorder.stop()
     }
 }

@@ -32,7 +32,7 @@ class StreamAnalyzer(scope: CoroutineScope, val bufferSize: Int = 1024) {
     var listener: (()->Unit)? = null
 
     var isRecording: Boolean = false
-    val analysisDelay: Long = 0L
+    val analysisDelay: Long = 500L
 
     private val streamScope = scope
     private lateinit var recordJob: Job
@@ -42,12 +42,10 @@ class StreamAnalyzer(scope: CoroutineScope, val bufferSize: Int = 1024) {
 
     /**
      * Start threads that record and analyze
-     * TODO: no wait analysis
      */
     fun startAnalyzing() {
         var i = 0
         val channel = Channel<FloatArray>()
-        var ready: AtomicBoolean = AtomicBoolean(false)
         recordJob = streamScope.launch(Dispatchers.Default) {
 
             while (isActive) {
@@ -63,13 +61,10 @@ class StreamAnalyzer(scope: CoroutineScope, val bufferSize: Int = 1024) {
                 // copy
                 bufferFront = manager.buffer.clone()
                 channel.send(bufferFront)
-
-                ready.set(true)
             }
         }
 
         analyzeJob = streamScope.launch(Dispatchers.Default) {
-            delay(500L)
             while (isActive) {
                 val buffer = channel.receive()
                 Log.d(TAG, "analyze job")
