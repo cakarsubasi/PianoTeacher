@@ -229,7 +229,7 @@ public class ServerActivity extends AppCompatActivity {
 
                         String serverResponse= response.body().string();
 
-                        responseText.setText( "response.body().string()");
+                        responseText.setText( "songfromserver.json created");
                         MyJSON.saveData(serverResponse);
                         System.out.println(MyJSON.getData());
                     } catch (IOException  e) {
