@@ -2,6 +2,7 @@ package com.kocuni.pianoteacher;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -29,9 +30,16 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.kocuni.pianoteacher.utils.MyJSON;
+
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,13 +72,41 @@ public class ServerActivity extends AppCompatActivity {
                         // There are no request codes
 
                         Intent data = result.getData();
-                        Uri uri = data.getData();
-                        selectedImagePath = getPath(getApplicationContext(), uri);
-                        EditText imgPath = findViewById(R.id.imgPath);
-                        imgPath.setText(selectedImagePath);
-                        Toast.makeText(getApplicationContext(), selectedImagePath, Toast.LENGTH_LONG).show();
+
+                        String currentImagePath;
+                        selectedImagesPaths = new ArrayList<>();
+                        TextView numSelectedImages = findViewById(R.id.numSelectedImages);
+                        if (data.getData() != null) {
+                            Uri uri = data.getData();
+                            currentImagePath = getPath(getApplicationContext(), uri);
+                            Log.d("ImageDetails", "Single Image URI : " + uri);
+                            Log.d("ImageDetails", "Single Image Path : " + currentImagePath);
+                            selectedImagesPaths.add(currentImagePath);
+                            imagesSelected = true;
+                            numSelectedImages.setText("Number of Selected Images : " + selectedImagesPaths.size());
+                        } else {
+                            // When multiple images are selected.
+                            // Thanks tp Laith Mihyar for this Stackoverflow answer : https://stackoverflow.com/a/34047251/5426539
+                            if (data.getClipData() != null) {
+                                ClipData clipData = data.getClipData();
+                                for (int i = 0; i < clipData.getItemCount(); i++) {
+
+                                    ClipData.Item item = clipData.getItemAt(i);
+                                    Uri uri = item.getUri();
+
+                                    currentImagePath = getPath(getApplicationContext(), uri);
+                                    selectedImagesPaths.add(currentImagePath);
+                                    Log.d("ImageDetails", "Image URI " + i + " = " + uri);
+                                    Log.d("ImageDetails", "Image Path " + i + " = " + currentImagePath);
+                                    imagesSelected = true;
+                                    numSelectedImages.setText("Number of Selected Images : " + selectedImagesPaths.size());
+                                }
+                            }
+                        }
 
                     }
+                    Toast.makeText(getApplicationContext(), selectedImagesPaths.size() + " Image(s) Selected.", Toast.LENGTH_LONG).show();
+
                 }
             });
     @Override
@@ -156,7 +192,7 @@ public class ServerActivity extends AppCompatActivity {
     }
     void postRequest(String postUrl, RequestBody postBody) {
 
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = new OkHttpClient().newBuilder().readTimeout(30,TimeUnit.SECONDS).build();
 
         Request request = new Request.Builder()
                 .url(postUrl)
@@ -164,6 +200,7 @@ public class ServerActivity extends AppCompatActivity {
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
+
             @Override
             public void onFailure(Call call, IOException e) {
                 // Cancel the post on failure.
@@ -171,51 +208,50 @@ public class ServerActivity extends AppCompatActivity {
                 Log.d("FAIL", e.getMessage());
 
                 // In order to access the TextView inside the UI thread, the code is executed inside runOnUiThread()
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+                Thread gfgThread = new Thread(() -> {
+
                         TextView responseText = findViewById(R.id.responseText);
                         responseText.setText("Failed to Connect to Server. Please Try Again.");
-                    }
+
+
+
                 });
+                gfgThread.start();
             }
 
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
                 // In order to access the TextView inside the UI thread, the code is executed inside runOnUiThread()
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        TextView responseText = findViewById(R.id.responseText);
-                        try {
-                            responseText.setText("Server's Response\n" + response.body().string());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                Thread gfgThread = new Thread(() -> {
+
+                    TextView responseText = findViewById(R.id.responseText);
+                    try {
+
+                        String serverResponse= response.body().string();
+
+                        responseText.setText( "response.body().string()");
+                        MyJSON.saveData(serverResponse);
+                        System.out.println(MyJSON.getData());
+                    } catch (IOException  e) {
+                        e.printStackTrace();
                     }
                 });
+                gfgThread.start();
+
             }
-        });
+
+
+        }
+        );
+
     }
     public void selectImage(View v) {
-        Intent intent = new Intent();
-        intent.setType("*/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        someActivityResultLauncher.launch(intent);
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+        photoPickerIntent.setType("image/*");
+        someActivityResultLauncher.launch(photoPickerIntent);
     }
 
-    @Override
-    protected void onActivityResult(int reqCode, int resCode, Intent data) {
-        super.onActivityResult(reqCode, resCode, data);
-        if (resCode == RESULT_OK && data != null) {
-            Uri uri = data.getData();
 
-            selectedImagePath = getPath(getApplicationContext(), uri);
-            EditText imgPath = findViewById(R.id.imgPath);
-            imgPath.setText(selectedImagePath);
-            Toast.makeText(getApplicationContext(), selectedImagePath, Toast.LENGTH_LONG).show();
-        }
-    }
 
     // Implementation of the getPath() method and all its requirements is taken from the StackOverflow Paul Burke's answer: https://stackoverflow.com/a/20559175/5426539
     public static String getPath(final Context context, final Uri uri) {
