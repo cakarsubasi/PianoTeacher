@@ -29,6 +29,7 @@ import com.kocuni.pianoteacher.music.data.SampleSongs
 import com.kocuni.pianoteacher.music.SongTutor
 import com.kocuni.pianoteacher.music.Stream
 import com.kocuni.pianoteacher.music.data.TutorableSong
+import com.kocuni.pianoteacher.ui.music.Piano
 import com.kocuni.pianoteacher.ui.songselection.SongSelection
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 import com.kocuni.pianoteacher.utils.FileManager.Companion.getSongFromJSONStream
@@ -194,7 +195,7 @@ fun TutorNavHost(
             Tutor(viewModel, song_select = {navController.navigate("SongSelection")})
         }
         composable("SongSelection") {
-            SongSelection()
+            SongSelection(returnToTutor = {navController.navigate("SongTutor")})
         }
     }
 
@@ -233,9 +234,15 @@ fun Tutor(
         }
 
         // piano
+        Row (modifier = Modifier.requiredHeight(75.dp)) {
+            Piano()
+        }
 
         // controls
-        TutorControls(controls = viewModel.controls)
+        Row () {
+            TutorControls(controls = viewModel.controls)
+        }
+
     }
 }
 
@@ -329,14 +336,7 @@ fun ExpectedNote() {
 
 }
 
-@Preview
-@Composable
-fun Piano() {
-    Icon(
-        painter = painterResource(id = R.drawable.ic_piano88key),
-        contentDescription = null,
-    )
-}
+
 
 data class LambdaTutorControls(
     val playToggle: () -> Unit = {},

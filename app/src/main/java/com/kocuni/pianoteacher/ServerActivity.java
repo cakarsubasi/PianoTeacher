@@ -55,7 +55,7 @@ import okhttp3.Response;
 
 public class ServerActivity extends AppCompatActivity {
 
-    private String TAG = "ServerActivity";
+    private final String TAG = "ServerActivity";
     String selectedImagePath;
     private static final Pattern IP_ADDRESS
             = Pattern.compile(

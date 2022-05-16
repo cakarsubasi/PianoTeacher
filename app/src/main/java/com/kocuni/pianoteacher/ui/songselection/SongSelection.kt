@@ -24,7 +24,9 @@ import androidx.compose.ui.unit.dp
 // TODO
 @Preview
 @Composable
-fun SongSelection() {
+fun SongSelection(
+    returnToTutor: () -> Unit = {}
+) {
     LazyColumn {
         // hard coded songs
 
