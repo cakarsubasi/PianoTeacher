@@ -1,5 +1,6 @@
 package com.kocuni.pianoteacher.music
 
+import androidx.compose.ui.graphics.Color
 import be.tarsos.dsp.util.PitchConverter
 import com.kocuni.pianoteacher.music.data.MidiTable
 import com.kocuni.pianoteacher.music.data.TutorableSong
@@ -119,10 +120,10 @@ class SongTutor() {
         return MidiTable.table[chord.notes[0].name] ?: -1
     }
 
-    fun getNextNMeasures(n: Int) : Pair<Int, List<NoteBlock>> {
+    fun getNextNMeasures(n: Int) : Pair<Int, List<Block>> {
         val pos = stream.idx
         val point: Int = stream[pos].idx
-        val list: MutableList<NoteBlock> = mutableListOf()
+        val list: MutableList<Block> = mutableListOf()
 
         for (i in pos until pos + n) {
             if (i == stream.size) {
@@ -132,6 +133,7 @@ class SongTutor() {
             part.chords.forEach {
                 list.add(NoteBlock(it))
             }
+            list.add(MeasureBlock())
         }
         return Pair(point, list)
     }
@@ -159,21 +161,51 @@ class SongTutor() {
     }
 
     interface Block {
+        var name: String
+        var color: Color
 
+        object Colors {
+            val measure = Color(0xFF888888)
+            val C = Color(0xFF8080FF)
+            val D = Color(0xFFBF80FF)
+            val E = Color(0xFFFF80FF)
+            val F = Color(0xFFFF80BF)
+            val G = Color(0xFFFF8080)
+            val A = Color(0xFFFFBF80)
+            val B = Color(0xFFFFFF80)
+            val black = Color(0xFF000000)
+
+            fun getColor(name: String): Color {
+                return when (name[0].lowercase()) {
+                    "c" -> C
+                    "d" -> D
+                    "e" -> E
+                    "f" -> F
+                    "g" -> G
+                    "a" -> A
+                    "b" -> B
+                    else -> black
+                }
+            }
+        }
     }
 
     class NoteBlock() : Block {
         constructor(note: Stream.Chord) : this() {
             name = note.notes[0].name
+            this.color = Block.Colors.getColor(name)
         }
         constructor(name: String) : this() {
             this.name = name
+            this.color = Block.Colors.getColor(name)
         }
-        var name: String = "C0"
+        override var name: String = "Unknown"
+        override var color: Color = Block.Colors.black
     }
 
-    class MeasureBreak : Block {
-
+    class MeasureBlock : Block {
+        override var name: String = ""
+        override var color: Color = Block.Colors.measure
     }
 
 

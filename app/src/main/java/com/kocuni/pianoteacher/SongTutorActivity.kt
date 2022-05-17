@@ -54,12 +54,12 @@ import java.lang.NullPointerException
  */
 class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : ViewModel() {
 
-    val MAX_MEASURES: Int = 2
+    private val MAX_MEASURES: Int = 3
     val midi = MIDIPlayer()
 
     data class SongTutorUiState(
         val autoAdvance: Boolean = false,
-        val nextNotes: List<SongTutor.NoteBlock> = mutableListOf(),
+        val nextNotes: List<SongTutor.Block> = mutableListOf(),
         val currentNote: Int = 0, // index of the current note in nextNotes
         val playedNote: String = "C0",
         val expectedNote: String = "C0",
@@ -67,7 +67,6 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
 
         ) { }
 
-    // TODO
     val controls = LambdaTutorControls(
         playToggle = { tutor.autoAdvance = !tutor.autoAdvance},
         playSet = {tutor.autoAdvance = it},
@@ -90,7 +89,7 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
             viewModelScope.launch {
                 val frequency = analyzer.info.frequency
                 val tutorState = tutor.beginTutor(frequency)
-                val songDisplay = tutor.getNextNMeasures(2)
+                val songDisplay = tutor.getNextNMeasures(MAX_MEASURES)
                 val playedNote: String? = tutor.getNoteName(frequency)
 
                 val newState = SongTutorUiState(
@@ -222,7 +221,7 @@ fun Tutor(
         NoteList(uiState.nextNotes, currentPos = uiState.currentNote)
         // detected note
         Row {
-            Note(uiState.playedNote)
+            Note(SongTutor.NoteBlock(uiState.playedNote))
             Text( text = status )
         }
 
@@ -281,14 +280,14 @@ fun DefaultPreview3() {
 @Preview(showBackground = true)
 @Composable
 fun NoteList(
-    noteList: List<SongTutor.NoteBlock> = SongTutor(stream = SampleSongs.song1()).endToEnd,
+    noteList: List<SongTutor.Block> = SongTutor(stream = SampleSongs.song1()).endToEnd,
     currentPos: Int = 1,
 ) {
     LazyRow(
         contentPadding = PaddingValues(1.dp)
     ) {
         items(noteList.size) { index ->
-                Note(noteList[index].name, (index == currentPos))
+                Note(noteList[index], (index == currentPos))
         }
     }
 }
@@ -298,20 +297,20 @@ fun NoteList(
  */
 @Preview
 @Composable
-fun Note(str: String = "C4", current: Boolean = false) {
+fun Note(note: SongTutor.Block = SongTutor.NoteBlock(), current: Boolean = false) {
     Card(
         modifier = Modifier.size(40.dp).padding(all = 4.dp),
         elevation = 2.dp,
-        backgroundColor = Color.Blue
+        backgroundColor = if (current) Color.Green else note.color,
 
     ) {
         Surface(
             modifier = Modifier.padding(all = 4.dp),
             shape= MaterialTheme.shapes.small,
             elevation= 2.dp,
-            color = if (current) Color.Green else Color.Blue,) {
+            color = note.color,) {
             Text(
-                text = str,
+                text = note.name,
                 textAlign = TextAlign.Center
             )
         }
