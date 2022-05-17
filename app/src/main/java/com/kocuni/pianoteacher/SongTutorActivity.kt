@@ -3,6 +3,7 @@ package com.kocuni.pianoteacher
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,9 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -39,10 +38,7 @@ import com.kocuni.pianoteacher.ui.songselection.SongSelection
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 import com.kocuni.pianoteacher.utils.FileManager.Companion.getSongFromJSONStream
 import com.kocuni.pianoteacher.utils.JSONParser
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.json.JSONObject
 import java.io.InputStream
 import java.lang.NullPointerException
@@ -58,10 +54,13 @@ import java.util.concurrent.atomic.AtomicBoolean
  * * "More" information
  * * Improved layout
  */
-class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : ViewModel() {
+class SongTutorViewModel() : ViewModel() {
+
+    private var tutor: SongTutor = SongTutor()
+    private var analyzer: StreamAnalyzer = StreamAnalyzer(viewModelScope)
 
     private val MAX_MEASURES: Int = 3
-    val midi = MIDIPlayer()
+    private val midi = MIDIPlayer
 
     /**
      * These are only updated via StreamAnalyzer
@@ -98,11 +97,31 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
     var midiState by mutableStateOf(MidiState())
         private set
 
-    init {
-        viewModelScope.launch {
-            analyzer.startAnalyzing()
+    /**
+     * ViewModel Jobs
+     */
+    var analyzerJob: Job = viewModelScope.launch {
+        analyzer.startAnalyzing()
+    }
+    var midiJob: Job = viewModelScope.launch(Dispatchers.Default) {
+        midi.startDriver()
+        while (isActive) {
+            while (midiState.midiEnabled) {
+                val chord = tutor.getCurrentNote()
+                if (chord == null || !isActive) {
+                    break
+                } else {
+                    val code = MidiTable.table[chord.notes[0].name] ?: -1
+                    midi.testNote(code, 150L)
+                    tutor.next()
+                }
+                delay(100L)
+            }
         }
+        midi.stopDriver()
+    }
 
+    init {
         analyzer.listener = {
             viewModelScope.launch {
                 val frequency = analyzer.info.frequency
@@ -121,26 +140,6 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
                     amplitude = amplitude,
                 )
                 uiState = newState
-
-            }
-        }
-
-        /**
-         * TODO MidiPlayer
-         */
-        viewModelScope.launch(Dispatchers.Default) {
-            while (isActive) {
-                while (midiState.midiEnabled) {
-                    val chord = tutor.getCurrentNote()
-                    if (chord == null) {
-
-                    } else {
-                        val code = MidiTable.table[chord.notes[0].name] ?: -1
-                        midi.testNote(code, 150L)
-                        tutor.next()
-                    }
-                    delay(100L)
-                }
             }
         }
     }
@@ -156,37 +155,32 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
         tutor = SongTutor(song)
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        midi.stopDriver()
+    }
+
 }
 
 class SongTutorActivity : ComponentActivity() {
 
-    lateinit var analyzer: StreamAnalyzer
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        super.onResume()
 
         val f = resources.openRawResource(R.raw.bach_bw101_7)
 
         val stream2 = getSongFromJSONStream(f)
         val stream = SampleSongs.song1()
 
-        analyzer = StreamAnalyzer(lifecycleScope)
-        val tutor = SongTutor(stream2)
-        val viewModel = SongTutorViewModel(tutor = tutor, analyzer = analyzer)
+        val viewModel: SongTutorViewModel by viewModels()
 
+        viewModel.setSong(stream2)
         setContent {
             TutorApp(viewModel)
         }
     }
 
-    /**
-     * TODO: replace this with a viewmodel control to more robustly begin
-     * and end recordings.
-     */
-    override fun onPause() {
-        super.onPause()
-        analyzer.endAnalyzing()
-    }
 }
 
 

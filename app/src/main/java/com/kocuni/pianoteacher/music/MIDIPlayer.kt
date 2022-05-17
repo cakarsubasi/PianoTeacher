@@ -7,16 +7,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.billthefarmer.mididriver.MidiDriver
 
-class MIDIPlayer {
+object MIDIPlayer {
 
     private val TAG = "MidiPlayer"
 
     private val event = ByteArray(3)
 
+    private val midiDriver: MidiDriver = MidiDriver.getInstance()
 
-    val midiDriver = MidiDriver.getInstance()
-
-    init {
+    fun startDriver() {
         midiDriver.start()
 
         val config = midiDriver.config()
