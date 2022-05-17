@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Repositories/PianoTeacher/app/src/main/res/drawable/ic_piano42key.xml" value="0.18" />
+        <entry key="..\:/Repositories/PianoTeacher/app/src/main/res/drawable/ic_piano43key.xml" value="0.2675" />
         <entry key="..\:/Repositories/PianoTeacher/app/src/main/res/drawable/ic_piano88key.xml" value="0.2595" />
         <entry key="..\:/Repositories/PianoTeacher/app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/Repositories/PianoTeacher/app/src/main/res/layout/activity_pitch.xml" value="0.2630208333333333" />
