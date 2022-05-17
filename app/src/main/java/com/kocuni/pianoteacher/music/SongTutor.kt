@@ -87,7 +87,7 @@ class SongTutor() {
         val curr = stream.currChord()
         return if (curr != null) {
             val expected = getMidi(curr)
-            val played = PitchConverter.hertzToMidiKey(detected.toDouble()) - 12
+            val played = PitchConverter.hertzToMidiKey(detected.toDouble())
             (expected == played)
         } else {
             false
@@ -96,7 +96,7 @@ class SongTutor() {
 
     fun getNoteName(frequency: Float): String? {
         val midiKey =
-            PitchConverter.hertzToMidiKey(frequency.toDouble()) - 12 // bad solution to buggy library
+            PitchConverter.hertzToMidiKey(frequency.toDouble())
 
         return MidiTable.midiToKey[midiKey]
     }
