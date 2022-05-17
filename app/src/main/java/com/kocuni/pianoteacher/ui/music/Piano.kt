@@ -9,6 +9,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -29,15 +30,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.kocuni.pianoteacher.R
+import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 
 @Preview(showBackground = true)
 @Composable
 fun Piano() {
-    LocalContext.current.assets
 
     val vector = ImageVector.vectorResource(id = R.drawable.ic_piano43key)
     val painter = rememberVectorPainter(image = vector)
-    Canvas(modifier = Modifier.height(200.dp).fillMaxWidth()) {
+    Canvas(modifier = Modifier
+        .height(200.dp)
+        .fillMaxWidth()) {
         val canvasWidth = size.width
         val canvasHeight = size.height
         val size = Size(canvasWidth, canvasHeight)
@@ -60,21 +63,35 @@ fun Piano() {
                 center = Offset(x = canvasWidth*(i+0.5f) / 22, y = canvasHeight * 0.7f),
                 radius = size.minDimension / 30,
             )
+/*            drawRoundRect(
+                color = Color.Cyan,
+                topLeft = Offset(x = canvasWidth*(i+0.5f) / 22, y = canvasHeight * 0.7f),
+                size = Size(size.minDimension / 15, size.minDimension / 15),
+            )*/
             drawContext.canvas.nativeCanvas.drawText(
                 "C0",
                 canvasWidth*(i+0.5f) / 22,
-                canvasHeight*0.7f,
+                canvasHeight*0.72f,
                 paint
             )
         }
     }
 }
 
-@Composable
-fun PianoBase() {
-    Image(
-        painter = painterResource(id = R.drawable.ic_piano88key,),
-        contentDescription = null,
+object PianoKeyMaps {
+    val whites: Map<Int, String> = HashMap<Int,String>().also {
+        it[0] = "C3"
 
-    )
+    }
+
+}
+
+class Colors {
+    val C = Color(0xFF8080FF)
+    val D = Color(0xFFBF80FF)
+    val E = Color(0xFFFF80FF)
+    val F = Color(0xFFFF80BF)
+    val G = Color(0xFFFF8080)
+    val A = Color(0xFFFFBF80)
+    val B = Color(0xFFFFFF80)
 }

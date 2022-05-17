@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -178,14 +179,6 @@ fun TutorApp(viewModel: SongTutorViewModel) {
 }
 
 @Composable
-fun EmptyScreen() {
-    PianoTeacherTheme() {
-        Text("Navigated")
-    }
-}
-
-
-@Composable
 fun TutorNavHost(
     navController: NavHostController,
     viewModel: SongTutorViewModel,
@@ -234,7 +227,7 @@ fun Tutor(
         }
 
         // piano
-        Row (modifier = Modifier.requiredHeight(75.dp)) {
+        Card() {
             Piano()
         }
 
@@ -307,6 +300,7 @@ fun NoteList(
 @Composable
 fun Note(str: String = "C4", current: Boolean = false) {
     Card(
+        modifier = Modifier.size(40.dp).padding(all = 4.dp),
         elevation = 2.dp,
         backgroundColor = Color.Blue
 
@@ -318,6 +312,7 @@ fun Note(str: String = "C4", current: Boolean = false) {
             color = if (current) Color.Green else Color.Blue,) {
             Text(
                 text = str,
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -330,13 +325,6 @@ fun Status() {
         NoteList()
     }
 }
-
-@Composable
-fun ExpectedNote() {
-
-}
-
-
 
 data class LambdaTutorControls(
     val playToggle: () -> Unit = {},
