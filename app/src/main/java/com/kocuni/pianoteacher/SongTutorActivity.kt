@@ -34,6 +34,7 @@ import com.kocuni.pianoteacher.music.data.MidiTable
 import com.kocuni.pianoteacher.music.data.TutorableSong
 import com.kocuni.pianoteacher.music.data.Voices
 import com.kocuni.pianoteacher.ui.music.Piano
+import com.kocuni.pianoteacher.ui.music.Tutor
 import com.kocuni.pianoteacher.ui.songselection.SongSelection
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 import com.kocuni.pianoteacher.utils.FileManager.Companion.getSongFromJSONStream
@@ -63,7 +64,7 @@ class SongTutorViewModel() : ViewModel() {
     private val midi = MIDIPlayer
 
     /**
-     * These are only updated via StreamAnalyzer
+     * These are only updated via StreamAnalyzer callbacks
      */
     data class SongTutorUiState(
         val autoAdvance: Boolean = false,
@@ -171,7 +172,7 @@ class SongTutorActivity : ComponentActivity() {
         val f = resources.openRawResource(R.raw.bach_bw101_7)
 
         val stream2 = getSongFromJSONStream(f)
-        val stream = SampleSongs.song1()
+        //val stream = SampleSongs.song1()
 
         val viewModel: SongTutorViewModel by viewModels()
 
@@ -182,8 +183,6 @@ class SongTutorActivity : ComponentActivity() {
     }
 
 }
-
-
 
 @Composable
 fun TutorApp(viewModel: SongTutorViewModel) {
@@ -216,137 +215,7 @@ fun TutorNavHost(
 
 }
 
-@Composable
-fun Tutor(
-    viewModel: SongTutorViewModel,
-    song_select: () -> Unit = {},
-) {
-    var uiState = viewModel.uiState
-    LaunchedEffect(viewModel.uiState) {
-        uiState = viewModel.uiState
-    }
-    val status: String =
-    when (uiState.status) {
-        SongTutor.STATE.IDLE -> "idle"
-        SongTutor.STATE.FALSE -> "false"
-        else -> "true" }
-    Column() {
-        // top menu bar
-        TopAppBar() {
-            FloatingActionButton(onClick = song_select) {
 
-            }
-        }
-        Row {
-
-        }
-        // note stream
-        NoteList(uiState.nextNotes, currentPos = uiState.currentNote)
-        // detected note
-        Row {
-            Note(SongTutor.NoteBlock(uiState.playedNote))
-            Text( text = status )
-        }
-
-        // piano
-        Card() {
-            Piano()
-        }
-
-        // controls
-        Row () {
-            TutorControls(controls = viewModel.controls)
-        }
-
-    }
-}
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun DefaultPreview3() {
-    PianoTeacherTheme {
-        Greeting("Android")
-        Column {
-            Row() {
-                TopAppBar() {
-                    IconButton(
-                        onClick = { /*TODO*/ },
-
-                    ) {
-
-                    }
-                }
-            }
-            Card(
-                modifier = Modifier.padding(4.dp),
-                elevation = 10.dp,
-            ) {
-                NoteList()
-            }
-            Card {
-                Note()
-            }
-            Card {
-                Piano()
-            }
-            Card {
-                TutorControls()
-            }
-        }
-
-    }
-}
-
-/**
- * TODO: correct current note
- */
-@Preview(showBackground = true)
-@Composable
-fun NoteList(
-    noteList: List<SongTutor.Block> = SongTutor(stream = SampleSongs.song1()).endToEnd,
-    currentPos: Int = 1,
-) {
-    LazyRow(
-        contentPadding = PaddingValues(1.dp)
-    ) {
-        items(noteList.size) { index ->
-                Note(noteList[index], (index == currentPos))
-        }
-    }
-}
-
-/**
- * TODO: Adaptive coloring
- */
-@Preview
-@Composable
-fun Note(note: SongTutor.Block = SongTutor.NoteBlock(), current: Boolean = false) {
-    Card(
-        modifier = Modifier.size(40.dp).padding(all = 4.dp),
-        elevation = 2.dp,
-        backgroundColor = if (current) Color.Green else note.color,
-
-    ) {
-        Surface(
-            modifier = Modifier.padding(all = 4.dp),
-            shape= MaterialTheme.shapes.small,
-            elevation= 2.dp,
-            color = note.color,) {
-            Text(
-                text = note.name,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-fun Status() {
-    Column {
-        NoteList()
-    }
-}
 
 data class LambdaTutorControls(
     val playToggle: () -> Unit = {},
