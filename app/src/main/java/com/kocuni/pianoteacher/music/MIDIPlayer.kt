@@ -1,7 +1,10 @@
 package com.kocuni.pianoteacher.music
 
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.billthefarmer.mididriver.MidiDriver
 
 class MIDIPlayer {
@@ -29,27 +32,33 @@ class MIDIPlayer {
         midiDriver.stop()
     }
 
-    fun startNote() {
+    private fun startNote(midiCode: Int) {
         event[0] = (0x90 or 0x00).toByte()
-        event[1] = 0x3C
+        event[1] = midiCode.toByte()
         event[2] = 0x7F
 
         midiDriver.write(event)
 
     }
 
-    fun stopNote() {
+    private fun stopNote(midiCode: Int) {
         event[0] = (0x80 or 0x00).toByte()
-        event[1] = 0x3C
+        event[1] = midiCode.toByte()
         event[2] = 0x00
 
         midiDriver.write(event)
     }
 
-    suspend fun testNote() {
-        startNote()
-        delay(500L)
-        stopNote()
+    suspend fun testNote(midiCode: Int = 60, length: Long = 500L) {
+        startNote(midiCode)
+        delay(length)
+        stopNote(midiCode)
+    }
+
+    fun playNote(context: CoroutineScope) {
+        context.launch(Dispatchers.Default) {
+            testNote()
+        }
     }
 
 }

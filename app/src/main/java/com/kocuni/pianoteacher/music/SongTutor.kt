@@ -20,7 +20,6 @@ class SongTutor() {
         stream = song.SOPRANO()
     }
 
-
     enum class STATE {
         CORRECT,
         FALSE,
@@ -45,6 +44,10 @@ class SongTutor() {
             state = STATE.FALSE
         }
         return state
+    }
+
+    fun getCurrentNote() : Stream.Chord? {
+        return stream.currChord()
     }
 
     fun next() {
@@ -80,7 +83,7 @@ class SongTutor() {
      * Get the note for that frequency
      * compare to the current note
      */
-    fun matchNote(detected: Float): Boolean {
+    private fun matchNote(detected: Float): Boolean {
         val curr = stream.currChord()
         return if (curr != null) {
             val expected = getMidi(curr)
@@ -96,10 +99,6 @@ class SongTutor() {
             PitchConverter.hertzToMidiKey(frequency.toDouble()) - 12 // bad solution to buggy library
 
         return MidiTable.midiToKey[midiKey]
-    }
-
-    fun endSong() {
-
     }
 
     private fun blockify(streamOrPart: IStreamable) : List<NoteBlock> {

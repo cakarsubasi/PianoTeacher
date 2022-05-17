@@ -32,6 +32,13 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.kocuni.pianoteacher.R
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 
+
+/**
+ * TODO: Should take three resources
+ * 1. Next note to be played
+ * 2. Note to be played after that
+ * 3. Last note actually played
+ */
 @Preview(showBackground = true)
 @Composable
 fun Piano() {

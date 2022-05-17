@@ -11,7 +11,9 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -29,23 +31,27 @@ import com.kocuni.pianoteacher.music.MIDIPlayer
 import com.kocuni.pianoteacher.music.data.SampleSongs
 import com.kocuni.pianoteacher.music.SongTutor
 import com.kocuni.pianoteacher.music.Stream
+import com.kocuni.pianoteacher.music.data.MidiTable
 import com.kocuni.pianoteacher.music.data.TutorableSong
+import com.kocuni.pianoteacher.music.data.Voices
 import com.kocuni.pianoteacher.ui.music.Piano
 import com.kocuni.pianoteacher.ui.songselection.SongSelection
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 import com.kocuni.pianoteacher.utils.FileManager.Companion.getSongFromJSONStream
 import com.kocuni.pianoteacher.utils.JSONParser
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.InputStream
 import java.lang.NullPointerException
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Things TODO:
  * * Indicate end or beginning of the song?
  * * Less sensitive note detection (voice detection?)
- * * Adaptive colors for notes
  * * Song selection menu that performs a transaction with this activity
  *   so that a rudimentary song can be loaded
  * * Piano visuals
@@ -57,6 +63,9 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
     private val MAX_MEASURES: Int = 3
     val midi = MIDIPlayer()
 
+    /**
+     * These are only updated via StreamAnalyzer
+     */
     data class SongTutorUiState(
         val autoAdvance: Boolean = false,
         val nextNotes: List<SongTutor.Block> = mutableListOf(),
@@ -64,8 +73,14 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
         val playedNote: String = "C0",
         val expectedNote: String = "C0",
         val status: SongTutor.STATE = SongTutor.STATE.IDLE,
+        val amplitude: Float = 0f,
+        val selectedStream: Voices = Voices.SOPRANO, // TODO
 
         ) { }
+
+    data class MidiState(
+        val midiEnabled: Boolean = false
+    )
 
     val controls = LambdaTutorControls(
         playToggle = { tutor.autoAdvance = !tutor.autoAdvance},
@@ -75,9 +90,12 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
         nextChord = { tutor.next() },
         prevChord = { tutor.prev() },
         beginning = { tutor.beginning() },
+        midiSet = { midiState = MidiState(it) }
     )
 
     var uiState by mutableStateOf(SongTutorUiState())
+        private set
+    var midiState by mutableStateOf(MidiState())
         private set
 
     init {
@@ -88,6 +106,7 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
         analyzer.listener = {
             viewModelScope.launch {
                 val frequency = analyzer.info.frequency
+                val amplitude = analyzer.info.amplitude
                 val tutorState = tutor.beginTutor(frequency)
                 val songDisplay = tutor.getNextNMeasures(MAX_MEASURES)
                 val playedNote: String? = tutor.getNoteName(frequency)
@@ -98,18 +117,30 @@ class SongTutorViewModel(var tutor: SongTutor,var analyzer: StreamAnalyzer) : Vi
                     currentNote = songDisplay.first,
                     playedNote = playedNote ?: uiState.playedNote,
                     expectedNote = "C0",
-                    status = tutorState)
+                    status = tutorState,
+                    amplitude = amplitude,
+                )
                 uiState = newState
+
             }
         }
 
         /**
          * TODO MidiPlayer
          */
-        viewModelScope.launch {
-            while (true) {
-                // midi.testNote()
-                delay(1000L)
+        viewModelScope.launch(Dispatchers.Default) {
+            while (isActive) {
+                while (midiState.midiEnabled) {
+                    val chord = tutor.getCurrentNote()
+                    if (chord == null) {
+
+                    } else {
+                        val code = MidiTable.table[chord.notes[0].name] ?: -1
+                        midi.testNote(code, 150L)
+                        tutor.next()
+                    }
+                    delay(100L)
+                }
             }
         }
     }
@@ -170,9 +201,7 @@ fun TutorApp(viewModel: SongTutorViewModel) {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
         ) {
-            Column() {
-                TutorNavHost(navController = navController, viewModel = viewModel)
-            }
+            TutorNavHost(navController = navController, viewModel = viewModel)
         }
     }
 }
@@ -333,14 +362,18 @@ data class LambdaTutorControls(
     val nextMeasure: () -> Unit = {},
     val prevMeasure: () -> Unit = {},
     val beginning: () -> Unit = {},
+    val midiSet: (Boolean) -> Unit = {},
 )
 
 @Preview
 @Composable
 fun TutorControls(controls: LambdaTutorControls = LambdaTutorControls()) {
-    var pushed by remember { mutableStateOf(false)}
+    var tutorPushed by remember { mutableStateOf(false)}
+    var midiPushed by remember { mutableStateOf(false)}
     Column {
-        Row {
+        Row(
+            modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+        ) {
             Button(onClick = { controls.beginning() }) {
                 Text("Beginning")
             }
@@ -358,10 +391,10 @@ fun TutorControls(controls: LambdaTutorControls = LambdaTutorControls()) {
             ) {
                 IconToggleButton(
                     modifier = Modifier.background(color=Color.Green),
-                    checked = pushed,
-                    onCheckedChange = { pushed = it; controls.playSet(it) }) {
+                    checked = tutorPushed,
+                    onCheckedChange = { tutorPushed = it; controls.playSet(it) }) {
                     val tint by animateColorAsState(
-                        if (pushed) Color(0xFFEC407A) else Color(0xFFB0BEC5))
+                        if (tutorPushed) Color(0xFFEC407A) else Color(0xFFB0BEC5))
                     Icon(Icons.Filled.PlayArrow, contentDescription = "", tint = tint)
                 }
             }
@@ -370,6 +403,19 @@ fun TutorControls(controls: LambdaTutorControls = LambdaTutorControls()) {
             }
             Button(onClick = { controls.prevChord() }) {
                 Text("Prev Chord")
+            }
+            // Midi
+            Surface(
+                shape = MaterialTheme.shapes.small
+            ) {
+                IconToggleButton(
+                    modifier = Modifier.background(color=Color.Green),
+                    checked = midiPushed,
+                    onCheckedChange = { midiPushed = it; controls.midiSet(it) }) {
+                    val tint by animateColorAsState(
+                        if (midiPushed) Color(0xFFEC407A) else Color(0xFFB0BEC5))
+                    Icon(Icons.Filled.PlayArrow, contentDescription = "", tint = tint)
+                }
             }
         }
     }
