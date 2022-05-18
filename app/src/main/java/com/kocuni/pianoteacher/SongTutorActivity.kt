@@ -7,19 +7,14 @@ import androidx.activity.viewModels
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.*
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -27,23 +22,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.kocuni.pianoteacher.audio.StreamAnalyzer
 import com.kocuni.pianoteacher.music.MIDIPlayer
-import com.kocuni.pianoteacher.music.data.SampleSongs
 import com.kocuni.pianoteacher.music.SongTutor
 import com.kocuni.pianoteacher.music.Stream
 import com.kocuni.pianoteacher.music.data.MidiTable
 import com.kocuni.pianoteacher.music.data.TutorableSong
 import com.kocuni.pianoteacher.music.data.Voices
-import com.kocuni.pianoteacher.ui.music.Piano
 import com.kocuni.pianoteacher.ui.music.Tutor
 import com.kocuni.pianoteacher.ui.songselection.SongSelection
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 import com.kocuni.pianoteacher.utils.FileManager.Companion.getSongFromJSONStream
-import com.kocuni.pianoteacher.utils.JSONParser
 import kotlinx.coroutines.*
-import org.json.JSONObject
-import java.io.InputStream
-import java.lang.NullPointerException
-import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Things TODO:
@@ -127,7 +115,7 @@ class SongTutorViewModel() : ViewModel() {
             viewModelScope.launch {
                 val frequency = analyzer.info.frequency
                 val amplitude = analyzer.info.amplitude
-                val tutorState = tutor.beginTutor(frequency)
+                val tutorState = tutor.onUpdate(frequency)
                 val songDisplay = tutor.getNextNMeasures(MAX_MEASURES)
                 val playedNote: String? = tutor.getNoteName(frequency)
 

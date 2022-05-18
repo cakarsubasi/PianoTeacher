@@ -31,7 +31,15 @@ class SongTutor() {
     val callback: (() -> Unit)? = null
     var autoAdvance: Boolean = false
 
-    fun beginTutor(freq: Float) : STATE {
+    /**
+     * Called every frame
+     *
+     * @param freq: Frequency detected by the pitch detector, -1.0f if no frequency detected
+     * @return STATE of the tutor
+     *
+     * TODO: less invariance
+     */
+    fun onUpdate(freq: Float) : STATE {
         val state: STATE
         if (freq == -1.0F) {
             state = STATE.IDLE
