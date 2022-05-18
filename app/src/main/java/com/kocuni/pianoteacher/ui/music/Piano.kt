@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.kocuni.pianoteacher.R
+import com.kocuni.pianoteacher.music.data.MidiTable
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 
 
@@ -64,6 +65,7 @@ fun Piano() {
 
         }
 
+        // White key labels
         for (i in PianoKeyMaps.whites.keys) {
             drawCircle(
                 color = Color.Blue,
@@ -79,7 +81,9 @@ fun Piano() {
             )
         }
 
-        for (i in PianoKeyMaps.blacks.keys) {
+
+        // Black key labels
+        for (i in PianoKeyMaps.whites.keys) {
             drawCircle(
                 color = Color.Blue,
                 center = Offset(x = canvasWidth*(i+1f) / 22, y = canvasHeight * 0.5f),
@@ -93,6 +97,12 @@ fun Piano() {
                 paint
             )
         }
+
+        // played note
+
+        // note to be played
+
+        // note to be played after that
     }
 }
 
@@ -122,6 +132,11 @@ object PianoKeyMaps {
         it[21] = "C6"
     }
 
+    // inverting maps probably has better performance
+    val whitesPos = mutableMapOf<String, Int>().also {
+        whites.forEach { (k, v) -> it[v] = k }
+    }
+
     // use the keys here to skip drawing unnecessary parts
     val blacks: Map<Int, String> = HashMap<Int, String>().also {
         it[0] = "C3#"
@@ -145,6 +160,11 @@ object PianoKeyMaps {
         it[18] = "G5#"
         it[19] = "A5#"
 
+    }
+
+    // inverting maps probably has better performance
+    val blacksPos = mutableMapOf<String, Int>().also {
+        blacks.forEach { (k, v) -> it[v] = k }
     }
 
 }
