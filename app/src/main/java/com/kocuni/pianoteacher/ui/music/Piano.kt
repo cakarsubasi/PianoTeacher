@@ -64,21 +64,32 @@ fun Piano() {
 
         }
 
-        for (i in 0..22) {
+        for (i in PianoKeyMaps.whites.keys) {
             drawCircle(
                 color = Color.Blue,
                 center = Offset(x = canvasWidth*(i+0.5f) / 22, y = canvasHeight * 0.7f),
                 radius = size.minDimension / 30,
             )
-/*            drawRoundRect(
-                color = Color.Cyan,
-                topLeft = Offset(x = canvasWidth*(i+0.5f) / 22, y = canvasHeight * 0.7f),
-                size = Size(size.minDimension / 15, size.minDimension / 15),
-            )*/
+
             drawContext.canvas.nativeCanvas.drawText(
-                "C0",
+                PianoKeyMaps.whites[i] ?: "C0",
                 canvasWidth*(i+0.5f) / 22,
                 canvasHeight*0.72f,
+                paint
+            )
+        }
+
+        for (i in PianoKeyMaps.blacks.keys) {
+            drawCircle(
+                color = Color.Blue,
+                center = Offset(x = canvasWidth*(i+1f) / 22, y = canvasHeight * 0.5f),
+                radius = size.minDimension / 30,
+            )
+
+            drawContext.canvas.nativeCanvas.drawText(
+                PianoKeyMaps.blacks[i] ?: "C0",
+                canvasWidth*(i+1f) / 22,
+                canvasHeight*0.52f,
                 paint
             )
         }
@@ -88,6 +99,51 @@ fun Piano() {
 object PianoKeyMaps {
     val whites: Map<Int, String> = HashMap<Int,String>().also {
         it[0] = "C3"
+        it[1] = "D3"
+        it[2] = "E3"
+        it[3] = "F3"
+        it[4] = "G3"
+        it[5] = "A3"
+        it[6] = "B3"
+        it[7] = "C4"
+        it[8] = "D4"
+        it[9] = "E4"
+        it[10] = "F4"
+        it[11] = "G4"
+        it[12] = "A4"
+        it[13] = "B4"
+        it[14] = "C5"
+        it[15] = "D5"
+        it[16] = "E5"
+        it[17] = "F5"
+        it[18] = "G5"
+        it[19] = "A5"
+        it[20] = "B5"
+        it[21] = "C6"
+    }
+
+    // use the keys here to skip drawing unnecessary parts
+    val blacks: Map<Int, String> = HashMap<Int, String>().also {
+        it[0] = "C3#"
+        it[1] = "D3#"
+
+        it[3] = "F3#"
+        it[4] = "G3#"
+        it[5] = "A3#"
+
+        it[7] = "C4#"
+        it[8] = "D4#"
+
+        it[10] = "F4#"
+        it[11] = "G4#"
+        it[12] = "A4#"
+
+        it[14] = "C5#"
+        it[15] = "D5#"
+
+        it[17] = "F5#"
+        it[18] = "G5#"
+        it[19] = "A5#"
 
     }
 
