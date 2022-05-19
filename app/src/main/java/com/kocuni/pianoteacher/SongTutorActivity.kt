@@ -27,6 +27,7 @@ import com.kocuni.pianoteacher.music.Stream
 import com.kocuni.pianoteacher.music.data.MidiTable
 import com.kocuni.pianoteacher.music.data.TutorableSong
 import com.kocuni.pianoteacher.music.data.Voices
+import com.kocuni.pianoteacher.ui.music.Block
 import com.kocuni.pianoteacher.ui.music.Tutor
 import com.kocuni.pianoteacher.ui.songselection.SongSelection
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
@@ -56,7 +57,7 @@ class SongTutorViewModel() : ViewModel() {
      */
     data class SongTutorUiState(
         val autoAdvance: Boolean = false,
-        val nextNotes: List<SongTutor.Block> = mutableListOf(),
+        val nextNotes: List<Block> = mutableListOf(),
         val currentNote: Int = 0, // index of the current note in nextNotes
         val playedNote: String = "C0",
         val expectedNote: String = "C0",

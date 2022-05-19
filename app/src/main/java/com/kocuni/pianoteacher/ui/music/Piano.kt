@@ -83,17 +83,18 @@ fun Piano() {
 
 
         // Black key labels
-        for (i in PianoKeyMaps.whites.keys) {
+        for (i in PianoKeyMaps.blacks.keys) {
             drawCircle(
                 color = Color.Blue,
-                center = Offset(x = canvasWidth*(i+1f) / 22, y = canvasHeight * 0.5f),
+                center = Offset(x = canvasWidth*(i+1f) / 22,
+                    y = if (i % 2 == 0) canvasHeight*0.5f else canvasHeight*0.4f),
                 radius = size.minDimension / 30,
             )
 
             drawContext.canvas.nativeCanvas.drawText(
                 PianoKeyMaps.blacks[i] ?: "C0",
                 canvasWidth*(i+1f) / 22,
-                canvasHeight*0.52f,
+                if (i % 2 == 0) canvasHeight*0.52f else canvasHeight*0.42f,
                 paint
             )
         }

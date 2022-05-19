@@ -1,10 +1,12 @@
 package com.kocuni.pianoteacher.music
 
-import androidx.compose.ui.graphics.Color
 import be.tarsos.dsp.util.PitchConverter
 import com.kocuni.pianoteacher.music.data.MidiTable
 import com.kocuni.pianoteacher.music.data.TutorableSong
 import com.kocuni.pianoteacher.music.data.Voices
+import com.kocuni.pianoteacher.ui.music.Block
+import com.kocuni.pianoteacher.ui.music.MeasureBlock
+import com.kocuni.pianoteacher.ui.music.NoteBlock
 
 class SongTutor() {
     private lateinit var song: TutorableSong
@@ -165,54 +167,6 @@ class SongTutor() {
             stream.prevChord()
         }
         return list
-    }
-
-    interface Block {
-        var name: String
-        var color: Color
-
-        object Colors {
-            val measure = Color(0xFF888888)
-            val C = Color(0xFF8080FF)
-            val D = Color(0xFFBF80FF)
-            val E = Color(0xFFFF80FF)
-            val F = Color(0xFFFF80BF)
-            val G = Color(0xFFFF8080)
-            val A = Color(0xFFFFBF80)
-            val B = Color(0xFFFFFF80)
-            val black = Color(0xFF000000)
-
-            fun getColor(name: String): Color {
-                return when (name[0].lowercase()) {
-                    "c" -> C
-                    "d" -> D
-                    "e" -> E
-                    "f" -> F
-                    "g" -> G
-                    "a" -> A
-                    "b" -> B
-                    else -> black
-                }
-            }
-        }
-    }
-
-    class NoteBlock() : Block {
-        constructor(note: Stream.Chord) : this() {
-            name = note.notes[0].name
-            this.color = Block.Colors.getColor(name)
-        }
-        constructor(name: String) : this() {
-            this.name = name
-            this.color = Block.Colors.getColor(name)
-        }
-        override var name: String = "Unknown"
-        override var color: Color = Block.Colors.black
-    }
-
-    class MeasureBlock : Block {
-        override var name: String = ""
-        override var color: Color = Block.Colors.measure
     }
 
 

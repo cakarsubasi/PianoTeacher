@@ -82,7 +82,7 @@ fun Tutor(
         NoteList(uiState.nextNotes, currentPos = uiState.currentNote)
         // detected note
         Row {
-            Note(SongTutor.NoteBlock(uiState.playedNote))
+            Note(NoteBlock(uiState.playedNote))
             Text( text = status )
         }
 
@@ -102,7 +102,7 @@ fun Tutor(
 @Preview(showBackground = true)
 @Composable
 fun NoteList(
-    noteList: List<SongTutor.Block> = SongTutor(stream = SampleSongs.song1()).endToEnd,
+    noteList: List<Block> = SongTutor(stream = SampleSongs.song1()).endToEnd,
     currentPos: Int = 1,
 ) {
     LazyRow(
@@ -116,7 +116,7 @@ fun NoteList(
 
 @Preview
 @Composable
-fun Note(note: SongTutor.Block = SongTutor.NoteBlock(), current: Boolean = false) {
+fun Note(note: Block = NoteBlock(), current: Boolean = false) {
     Card(
         modifier = Modifier.size(40.dp).padding(all = 4.dp),
         elevation = 2.dp,
