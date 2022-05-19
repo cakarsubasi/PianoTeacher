@@ -71,8 +71,22 @@ fun Tutor(
     Column() {
         // top menu bar
         TopAppBar() {
-            FloatingActionButton(onClick = song_select) {
 
+            Text(
+                // TODO: get the actual name
+                text = "Example Song"
+            )
+            Button(
+                // TODO: formatting
+                onClick = song_select,
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color.Magenta
+                )
+
+            ) {
+                Text(
+                    text = "Change Song"
+                )
             }
         }
         Row {

@@ -42,7 +42,10 @@ import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
  */
 @Preview(showBackground = true)
 @Composable
-fun Piano() {
+fun Piano(
+    // TODO
+    blocks: List<Block>? = null
+) {
 
     val vector = ImageVector.vectorResource(id = R.drawable.ic_piano43key)
     val painter = rememberVectorPainter(image = vector)
