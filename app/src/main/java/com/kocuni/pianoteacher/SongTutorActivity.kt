@@ -53,6 +53,13 @@ class SongTutorViewModel() : ViewModel() {
     private val midi = MIDIPlayer
 
     /**
+     * Header text
+     */
+    data class SongName(
+        val name: String = "Sample Name"
+    ) { } // TODO
+
+    /**
      * These are only updated via StreamAnalyzer callbacks
      */
     data class SongTutorUiState(
@@ -82,6 +89,8 @@ class SongTutorViewModel() : ViewModel() {
         midiSet = { midiState = MidiState(it) }
     )
 
+    var songNameState by mutableStateOf(SongName())
+        private set
     var uiState by mutableStateOf(SongTutorUiState())
         private set
     var midiState by mutableStateOf(MidiState())

@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -25,12 +26,21 @@ fun DefaultPreview3() {
         Column {
             Row() {
                 TopAppBar() {
-                    IconButton(
-                        onClick = { },
-
-                        ) {
+                    Row (
+                        modifier = Modifier.align(Alignment.CenterVertically).fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                            ) {
+                        Text(text = "Sample Song",
+                        modifier = Modifier.align(Alignment.CenterVertically))
+                        Button( onClick = {},
+                            ) {
+                            Text("Change Song")
+                        }
 
                     }
+
+
+
                 }
             }
             Card(
@@ -70,11 +80,13 @@ fun Tutor(
             else -> "true" }
     Column() {
         // top menu bar
-        TopAppBar() {
+        TopAppBar(
+
+        ) {
 
             Text(
                 // TODO: get the actual name
-                text = "Example Song"
+                text = viewModel.songNameState.name
             )
             Button(
                 // TODO: formatting

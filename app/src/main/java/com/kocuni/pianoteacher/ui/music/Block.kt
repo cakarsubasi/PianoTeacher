@@ -17,6 +17,10 @@ interface Block {
         val B = Color(0xFFFFFF80)
         val black = Color(0xFF000000)
 
+        val Played = Color(0xFF000000)
+        val Next = Color(0xFF000000)
+        val NextNext = Color(0xFF000000)
+
         fun getColor(name: String): Color {
             return when (name[0].lowercase()) {
                 "c" -> C

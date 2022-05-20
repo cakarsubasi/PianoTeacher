@@ -22,6 +22,8 @@ import com.kocuni.pianoteacher.R
 import com.kocuni.pianoteacher.ui.music.PianoKeyMaps.blacks
 import com.kocuni.pianoteacher.ui.music.PianoKeyMaps.whites
 import com.kocuni.pianoteacher.ui.music.PianoKeyMaps.whitesPos
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 
 /**
@@ -34,7 +36,7 @@ import com.kocuni.pianoteacher.ui.music.PianoKeyMaps.whitesPos
 @Composable
 fun Piano(
     // TODO
-    blocks: List<Block> = listOf(NoteBlock("C4"), NoteBlock("D4"), NoteBlock("E4"))
+    blocks: List<Block> = listOf(NoteBlock("C4"), NoteBlock("D4#"), NoteBlock("E4"))
 ) {
 
     val vector = ImageVector.vectorResource(id = R.drawable.ic_piano43key)
@@ -70,7 +72,7 @@ fun Piano(
         }
 
         // Black key labels
-        for (i in PianoKeyMaps.blacks.keys) {
+        for (i in blacks.keys) {
             val note = NoteBlock(blacks[i] ?: "C0")
             drawNote(this, paint,
                 xOffset = 1f,
@@ -87,7 +89,8 @@ fun Piano(
         val next = blocks[2]
 
         // played note
-
+        val sharp = Regex("#")
+        val n1isBlack = sharp.containsMatchIn(played.name)
         // note to be played
 
         // note to be played after that
