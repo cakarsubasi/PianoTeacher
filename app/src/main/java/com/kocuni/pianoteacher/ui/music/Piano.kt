@@ -1,39 +1,27 @@
 package com.kocuni.pianoteacher.ui.music
 
-import android.graphics.Bitmap
 import android.graphics.Paint
 import android.graphics.Typeface
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.ShapeDrawable
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.drawscope.DrawScope
 
 import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.kocuni.pianoteacher.R
-import com.kocuni.pianoteacher.music.data.MidiTable
+import com.kocuni.pianoteacher.ui.music.PianoKeyMaps.blacks
+import com.kocuni.pianoteacher.ui.music.PianoKeyMaps.whites
 import com.kocuni.pianoteacher.ui.music.PianoKeyMaps.whitesPos
-import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 
 
 /**
@@ -60,7 +48,7 @@ fun Piano(
         val paint = Paint().apply {
             textAlign = Paint.Align.CENTER
             textSize = 30f
-            color = Color.Red.toArgb()
+            color = Color.Black.toArgb()
             typeface = Typeface.MONOSPACE
         }
 
@@ -71,37 +59,26 @@ fun Piano(
         }
 
         // White key labels
-        for (i in PianoKeyMaps.whites.keys) {
-            drawCircle(
-                color = Color.Blue,
-                center = Offset(x = canvasWidth*(i+0.5f) / 22, y = canvasHeight * 0.7f),
-                radius = size.minDimension / 30,
-            )
 
-            drawContext.canvas.nativeCanvas.drawText(
-                PianoKeyMaps.whites[i] ?: "C0",
-                canvasWidth*(i+0.5f) / 22,
-                canvasHeight*0.72f,
-                paint
+        for (i in whites.keys) {
+            val note = NoteBlock(whites[i] ?: "C0")
+            drawNote(this, paint,
+                notePos = i,
+                note = note,
+                backgroundSize = 1.2f
             )
         }
 
-
         // Black key labels
         for (i in PianoKeyMaps.blacks.keys) {
-            drawCircle(
-                color = Color.Blue,
-                center = Offset(x = canvasWidth*(i+1f) / 22,
-                    y = if (i % 2 == 0) canvasHeight*0.5f else canvasHeight*0.4f),
-                radius = size.minDimension / 30,
-            )
-
-            drawContext.canvas.nativeCanvas.drawText(
-                PianoKeyMaps.blacks[i] ?: "C0",
-                canvasWidth*(i+1f) / 22,
-                if (i % 2 == 0) canvasHeight*0.52f else canvasHeight*0.42f,
-                paint
-            )
+            val note = NoteBlock(blacks[i] ?: "C0")
+            drawNote(this, paint,
+                xOffset = 1f,
+                yOffset = 0.45f,
+                parityOffset = 0.05f,
+                notePos = i,
+                note = note,
+                backgroundSize = 1.5f)
         }
 
         val played = blocks[0]
@@ -110,20 +87,7 @@ fun Piano(
         val next = blocks[2]
 
         // played note
-        drawCircle(
-            color = played.color,
-            center = Offset(x = canvasWidth*((whitesPos[played.name] ?: -1) +0.5f) / 22, y = canvasHeight * 0.8f),
-            radius = size.minDimension / 30,
-        )
 
-        drawContext.canvas.nativeCanvas.drawText(
-            blocks[0].name ?: "C0",
-            canvasWidth*((whitesPos[played.name] ?: -1)+0.5f) / 22,
-            canvasHeight*0.82f,
-            paint
-        )
-
-        DrawNote(this, paint, canvasWidth, canvasHeight, expected as NoteBlock)
         // note to be played
 
         // note to be played after that
@@ -131,22 +95,33 @@ fun Piano(
 }
 
 // TODO refactor this into the function to save a lot of space
-fun DrawNote(scope: DrawScope,
+fun drawNote(scope: DrawScope,
              paint: Paint,
-             canvasWidth: Float,
-             canvasHeight: Float,
-             note: NoteBlock) {
+             yOffset: Float = 0.7f,
+             xOffset: Float = 0.5f,
+             parityOffset: Float = 0f,
+             notePos: Int = 0,
+             note: Block,
+             backgroundSize: Float = 1f) {
     with(scope) {
+        val canvasWidth = this.size.width
+        val canvasHeight = this.size.height
         drawCircle(
             color = note.color,
-            center = Offset(x = canvasWidth*((whitesPos[note.name] ?: -1) +0.5f) / 22, y = canvasHeight * 0.8f),
-            radius = size.minDimension / 30,
+            center = Offset(
+                x = canvasWidth*((notePos) + xOffset) / 22,
+                y = canvasHeight *
+                        if (notePos % 2 == 0) (yOffset+parityOffset)
+                        else (yOffset - parityOffset)),
+            radius = size.minDimension * backgroundSize / 30,
         )
 
         drawContext.canvas.nativeCanvas.drawText(
-            note.name ?: "C0",
-            canvasWidth*((whitesPos[note.name] ?: -1)+0.5f) / 22,
-            canvasHeight*0.82f,
+            note.name,
+            canvasWidth*((notePos) + xOffset) / 22,
+            canvasHeight *
+                    if (notePos % 2 == 0) (yOffset+0.02f + parityOffset)
+                    else (yOffset+0.02f - parityOffset),
             paint
         )
     }
