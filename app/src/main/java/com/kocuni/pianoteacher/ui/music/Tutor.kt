@@ -1,10 +1,10 @@
 package com.kocuni.pianoteacher.ui.music
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -68,8 +68,8 @@ fun SongMenuBar(
         }
         Row (
             modifier = Modifier
-            .align(Alignment.CenterVertically)
-            .fillMaxWidth(1f)
+                .align(Alignment.CenterVertically)
+                .fillMaxWidth(1f)
                 .wrapContentWidth(Alignment.End),
             horizontalArrangement = Arrangement.End
         ) {
@@ -86,6 +86,37 @@ fun SongMenuBar(
     }
 }
 
+@Preview
+@Composable
+fun StreamDropdown() {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedIndex by remember { mutableStateOf(0) }
+    val items = listOf("SOPRANO", "TENOR")
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentWidth(Alignment.End),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = items[selectedIndex],
+        modifier = Modifier.clickable { expanded = true })
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            items.forEachIndexed { index, s ->
+                DropdownMenuItem(
+                    onClick = {
+                              expanded = false
+                        selectedIndex = index
+                    },
+                ) {
+                    Text( text = s)
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun Tutor(
@@ -113,6 +144,8 @@ fun Tutor(
         Row {
             Note(NoteBlock(uiState.playedNote))
             Text( text = status )
+
+            StreamDropdown()
         }
 
         // piano
