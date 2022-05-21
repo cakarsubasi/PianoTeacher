@@ -23,7 +23,7 @@ class FileManager() {
 
 
     val TAG = "FileManager"
-    val songs: MutableList<SongFile> = mutableListOf()
+    val songs: MutableSet<SongFile> = mutableSetOf()
     lateinit var context: Context
     private lateinit var filesDir: File
     private var initialized: Boolean = false

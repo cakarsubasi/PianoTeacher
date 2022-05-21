@@ -39,8 +39,8 @@ fun SongSelection(
     }
     LazyColumn {
         // TODO
-        items(songs.size) {
-            songs.forEach {
+        songs.forEach {
+            item {
                 SongRow(
                     SongHolder(it.name)
                 ) { setSong(it) }
