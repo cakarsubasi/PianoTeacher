@@ -6,15 +6,17 @@ import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.Path
 
-class SongFile {
+class SongFile(var name: String, var path: Path) {
 
-    var name: String = ""
-    var path: Path = Path("")
 
     fun getTutorable(): TutorableSong {
 
         val file: File = path.toFile()
 
         return getSongFromJSONStream(file.inputStream())
+    }
+
+    override fun toString(): String {
+        return "Song: $name in $path"
     }
 }

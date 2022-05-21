@@ -1,14 +1,80 @@
 package com.kocuni.pianoteacher.utils
 
+import android.content.Context
 import android.os.Environment
+import android.util.Log
+import com.kocuni.pianoteacher.R
 import com.kocuni.pianoteacher.music.data.TutorableSong
+import com.kocuni.pianoteacher.utils.data.SongFile
 import org.json.JSONObject
 import java.io.File
 import java.io.InputStream
 import java.lang.NullPointerException
+import java.nio.file.Files
+import kotlin.io.path.name
 
 
-class FileManager {
+class FileManager(val context: Context) {
+
+    val TAG = "FileManager"
+    val songs: MutableList<SongFile> = mutableListOf()
+    val songsHardcoded: List<SongFile> = mutableListOf()
+
+    private val filesDir = context.filesDir
+
+    fun readAllFiles () {
+        val st = Files.walk(filesDir.toPath())
+        st.filter {
+            it.name.contains(Regex.fromLiteral(".json"))
+        }.forEach {
+            if (it != null) {
+                songs.add(SongFile(it.name, it))
+            }
+        }
+    }
+
+    init {
+        copyRawFiles()
+        readAllFiles()
+        Log.d(TAG, this.toString())
+    }
+
+    fun CreateFile() {
+
+    }
+
+    fun DeleteFile() {
+
+    }
+
+    private fun copyRawFiles() {
+        val name1 = "muscima_45"
+        val name2 = "muscima_46"
+        val m1 = context.resources.openRawResource(R.raw.muscima_45)
+        val m2 = context.resources.openRawResource(R.raw.muscima_46)
+
+        val copy1 = File(filesDir, "$name1.json")
+        val copy2 = File(filesDir, "$name2.json")
+
+        if (!copy1.exists()) {
+            copy1.createNewFile()
+            val str1 = m1.bufferedReader().readLine()
+            copy1.writeText(str1)
+        }
+        if (!copy2.exists()) {
+            copy2.createNewFile()
+            val str2 = m2.bufferedReader().readLine()
+            copy2.writeText(str2)
+        }
+    }
+
+    override fun toString(): String {
+        var str = ""
+        songs.forEach {
+            str = str + it + "\n"
+        }
+        return str
+    }
 
 
     companion object {

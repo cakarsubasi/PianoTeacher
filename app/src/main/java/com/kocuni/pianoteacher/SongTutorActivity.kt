@@ -1,6 +1,8 @@
 package com.kocuni.pianoteacher
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -163,6 +165,8 @@ class SongTutorViewModel() : ViewModel() {
 
 class SongTutorActivity : ComponentActivity() {
 
+    private val TAG = "SongTutorActivity"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         super.onResume()
@@ -178,6 +182,10 @@ class SongTutorActivity : ComponentActivity() {
         setContent {
             TutorApp(viewModel)
         }
+    }
+
+    fun getAppContext(): Context? {
+        return this.applicationContext
     }
 
 }
