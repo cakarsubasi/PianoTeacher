@@ -103,7 +103,7 @@ class FileManager() {
 
     companion object {
         fun isOnlyWhiteSpace(str: String): Boolean {
-            return str.contains(Regex.fromLiteral("[A-Za-z0-9]"))
+            return !str.contains(Regex.fromLiteral("[A-Za-z0-9]"))
         }
 
         fun saveJSON() {

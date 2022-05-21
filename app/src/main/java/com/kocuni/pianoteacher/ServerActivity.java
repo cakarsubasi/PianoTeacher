@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -248,8 +249,9 @@ public class ServerActivity extends AppCompatActivity {
                     String newFileName = newFileText.getText().toString();
 
 
-                    if(!FileManager.Companion.isOnlyWhiteSpace(newFileName)){
-
+                    if(FileManager.Companion.isOnlyWhiteSpace(newFileName)){
+                        String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new java.util.Date());
+                        newFileName=timeStamp;
                     }
 
                     try {
@@ -257,9 +259,8 @@ public class ServerActivity extends AppCompatActivity {
                         String serverResponse= response.body().string();
 
                         responseText.setText( "{response.body().string()");
-                        fileManager.createFile(newFileName, serverResponse);
-                        MyJSON.saveData(serverResponse);
-                        System.out.println(MyJSON.getData());
+                        fileManager.createFile(newFileName+".json", serverResponse);
+                        Log.d(TAG, "Wrote " + newFileName);
                     } catch (IOException  e) {
                         e.printStackTrace();
                     } catch (Exception e) {
