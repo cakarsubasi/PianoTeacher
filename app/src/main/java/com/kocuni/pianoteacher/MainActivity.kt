@@ -76,9 +76,6 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // TODO remove this
-        val fileManager = FileManager(this.applicationContext)
-
     }
 
 }

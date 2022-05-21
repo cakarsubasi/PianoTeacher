@@ -14,13 +14,29 @@ import java.nio.file.Files
 import kotlin.io.path.name
 
 
-class FileManager(val context: Context) {
+class FileManager() {
+
+    constructor(context: Context?) : this() {
+        if (context != null)
+            this.context = context
+    }
+
 
     val TAG = "FileManager"
     val songs: MutableList<SongFile> = mutableListOf()
-    val songsHardcoded: List<SongFile> = mutableListOf()
+    lateinit var context: Context
+    private lateinit var filesDir: File
+    private var initialized: Boolean = false
 
-    private val filesDir = context.filesDir
+
+    fun initialize() {
+        if (!initialized) {
+            filesDir = context.filesDir
+            copyRawFiles()
+            readAllFiles()
+            Log.d(TAG, this.toString())
+        }
+    }
 
     fun readAllFiles () {
         val st = Files.walk(filesDir.toPath())
@@ -31,12 +47,6 @@ class FileManager(val context: Context) {
                 songs.add(SongFile(it.name, it))
             }
         }
-    }
-
-    init {
-        copyRawFiles()
-        readAllFiles()
-        Log.d(TAG, this.toString())
     }
 
     fun CreateFile() {

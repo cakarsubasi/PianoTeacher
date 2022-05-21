@@ -33,6 +33,7 @@ import com.kocuni.pianoteacher.ui.music.Block
 import com.kocuni.pianoteacher.ui.music.Tutor
 import com.kocuni.pianoteacher.ui.songselection.SongSelection
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
+import com.kocuni.pianoteacher.utils.FileManager
 import com.kocuni.pianoteacher.utils.FileManager.Companion.getSongFromJSONStream
 import kotlinx.coroutines.*
 
@@ -50,6 +51,7 @@ class SongTutorViewModel() : ViewModel() {
 
     private var tutor: SongTutor = SongTutor()
     private var analyzer: StreamAnalyzer = StreamAnalyzer(viewModelScope)
+    lateinit var fileManager: FileManager
 
     private val MAX_MEASURES: Int = 3
     private val midi = MIDIPlayer
@@ -156,6 +158,7 @@ class SongTutorViewModel() : ViewModel() {
         tutor = SongTutor(song)
     }
 
+
     override fun onCleared() {
         super.onCleared()
         midi.stopDriver()
@@ -177,15 +180,17 @@ class SongTutorActivity : ComponentActivity() {
         //val stream = SampleSongs.song1()
 
         val viewModel: SongTutorViewModel by viewModels()
-
+        viewModel.fileManager = FileManager(getAppContext())
+        viewModel.fileManager.initialize()
         viewModel.setSong(stream2)
+
         setContent {
             TutorApp(viewModel)
         }
     }
 
-    fun getAppContext(): Context? {
-        return this.applicationContext
+    val getAppContext: () -> Context? = {
+        this.applicationContext
     }
 
 }
