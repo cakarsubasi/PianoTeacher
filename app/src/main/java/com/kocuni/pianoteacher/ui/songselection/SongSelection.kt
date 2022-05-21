@@ -32,14 +32,15 @@ fun SongSelection(
     viewModel: SongTutorViewModel,
     returnToTutor: () -> Unit = {},
 ) {
-    val songs = viewModel.fileManager.songs
+    val fileManager = viewModel.fileManager
+    fileManager.readAllFiles()
     val setSong : (SongFile) -> Unit = {
         viewModel.setSong(it.getTutorable())
         returnToTutor()
     }
     LazyColumn {
         // TODO
-        songs.forEach {
+        fileManager.songs.forEach {
             item {
                 SongRow(
                     SongHolder(it.name)

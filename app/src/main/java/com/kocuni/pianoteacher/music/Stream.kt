@@ -507,14 +507,16 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
                             // infer pitch
                             val pos = relativePos(glyph.y, bottom, gap)
                             val noteName: String? = clefmap[pos]
-                            val note: Note = if (noteName != null) {
-                                Note(glyph, noteName)
+                            val note: Note
+                            if (noteName != null) {
+                                // this is a dirty hack to avoid creating invalid notes
+                                note = Note(glyph, noteName)
+                                val chord = Chord(note)
+                                chords.add(chord)
                             } else {
                                 Log.d(TAG, "Note out of bounds at $pos")
-                                Note(glyph, "Unknown")
+                                //Note(glyph, "Unknown")
                             }
-                            val chord = Chord(note)
-                            chords.add(chord)
                         }
                     }
                     // TODO: Merge chords

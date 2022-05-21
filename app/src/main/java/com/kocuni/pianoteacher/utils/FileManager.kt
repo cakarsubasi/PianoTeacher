@@ -34,6 +34,7 @@ class FileManager() {
             copyRawFiles()
             readAllFiles()
             Log.d(TAG, this.toString())
+            initialized = true
         }
     }
 

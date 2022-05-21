@@ -31,6 +31,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.kocuni.pianoteacher.ui.Permissions;
+import com.kocuni.pianoteacher.utils.FileManager;
 import com.kocuni.pianoteacher.utils.MyJSON;
 
 import java.io.ByteArrayOutputStream;
@@ -56,6 +57,8 @@ import okhttp3.Response;
 public class ServerActivity extends AppCompatActivity {
 
     private final String TAG = "ServerActivity";
+    private FileManager fileManager = new FileManager();
+
     String selectedImagePath;
     private static final Pattern IP_ADDRESS
             = Pattern.compile(
@@ -119,6 +122,9 @@ public class ServerActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server);
+
+        fileManager.context = getApplicationContext();
+        fileManager.initialize();
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
@@ -233,11 +239,14 @@ public class ServerActivity extends AppCompatActivity {
 
                         String serverResponse= response.body().string();
 
-                        responseText.setText( "response.body().string()");
+                        responseText.setText( "{response.body().string()");
+                        fileManager.createFile("test.json", serverResponse);
                         MyJSON.saveData(serverResponse);
                         System.out.println(MyJSON.getData());
                     } catch (IOException  e) {
                         e.printStackTrace();
+                    } catch (Exception e) {
+                        Log.e(TAG, e.getMessage());
                     }
                 });
                 gfgThread.start();

@@ -30,7 +30,6 @@ class SongTutor() {
 
     val endToEnd = blockify(stream)
 
-    val callback: (() -> Unit)? = null
     var autoAdvance: Boolean = false
 
     /**
