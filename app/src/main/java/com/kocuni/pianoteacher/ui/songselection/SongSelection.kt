@@ -38,19 +38,14 @@ fun SongSelection(
         returnToTutor()
     }
     LazyColumn {
-        // hard coded songs
+        // TODO
         items(songs.size) {
             songs.forEach {
                 SongRow(
-                    SongHolder(it.name),
-                    {setSong(it)}
-                )
+                    SongHolder(it.name)
+                ) { setSong(it) }
             }
         }
-        // raw resource songs
-
-        // downloaded songs
-
     }
 }
 
