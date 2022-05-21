@@ -36,6 +36,7 @@ fun SongSelection(
     fileManager.readAllFiles()
     val setSong : (SongFile) -> Unit = {
         viewModel.setSong(it.getTutorable())
+        viewModel.setName(it.name)
         returnToTutor()
     }
     LazyColumn {

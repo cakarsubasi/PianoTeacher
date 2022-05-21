@@ -158,6 +158,11 @@ class SongTutorViewModel() : ViewModel() {
         tutor = SongTutor(song)
     }
 
+    val setName = { name: String ->
+        val newName = SongName(name)
+        songNameState = newName
+    }
+
 
     override fun onCleared() {
         super.onCleared()
