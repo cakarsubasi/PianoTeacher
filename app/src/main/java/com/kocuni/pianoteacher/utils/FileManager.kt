@@ -50,6 +50,8 @@ class FileManager() {
         }
     }
 
+
+
     fun createFile(filename: String, contents: String) {
         val file = File(filesDir, filename)
         if (!file.exists()) {
@@ -100,6 +102,10 @@ class FileManager() {
 
 
     companion object {
+        fun isOnlyWhiteSpace(str: String): Boolean {
+            return str.contains(Regex.fromLiteral("[A-Za-z0-9]"))
+        }
+
         fun saveJSON() {
 
 
