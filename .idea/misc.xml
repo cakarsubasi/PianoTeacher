@@ -3,17 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Repositories/PianoTeacher/app/src/main/res/drawable/ic_piano42key.xml" value="0.18" />
-        <entry key="..\:/Repositories/PianoTeacher/app/src/main/res/drawable/ic_piano43key.xml" value="0.2675" />
-        <entry key="..\:/Repositories/PianoTeacher/app/src/main/res/drawable/ic_piano88key.xml" value="0.2595" />
-        <entry key="..\:/Repositories/PianoTeacher/app/src/main/res/layout/activity_main.xml" value="0.33" />
+        <entry key="..\:/Repositories/PianoTeacher/app/src/main/res/layout/activity_main.xml" value="0.5" />
         <entry key="..\:/Repositories/PianoTeacher/app/src/main/res/layout/activity_pitch.xml" value="0.2630208333333333" />
         <entry key="..\:/Repositories/PianoTeacher/app/src/main/res/layout/activity_song.xml" value="0.25" />
         <entry key="..\:/Repositories/PianoTeacher/app/src/main/res/layout/fragment_item_list.xml" value="0.2171875" />
         <entry key="..\:/Repositories/PianoTeacher/app/src/main/res/layout/fragment_song_tutor_controls.xml" value="0.25" />
         <entry key="..\:/Users/explo/StudioProjects/PianoTeacher/app/src/main/res/layout/fragment_song_tutor_controls.xml" value="0.20471014492753623" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.30570652173913043" />
-        <entry key="app/src/main/res/layout/activity_server.xml" value="0.3229166666666667" />
+        <entry key="app/src/main/res/layout/activity_server.xml" value="0.34240417480468743" />
         <entry key="app/src/main/res/layout/activity_song.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_song_tutor_controls.xml" value="0.3" />
       </map>

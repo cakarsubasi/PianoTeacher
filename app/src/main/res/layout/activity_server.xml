@@ -51,6 +51,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
         <TextView
             android:layout_weight="1"
             android:layout_width="wrap_content"
@@ -58,6 +59,7 @@
             android:text="Port Number"
             android:textStyle="bold"
             android:textColor="#988734"/>
+
         <EditText
             android:layout_weight="4"
             android:layout_width="wrap_content"
@@ -67,6 +69,33 @@
             android:inputType="number"
             android:singleLine="true"
             android:textStyle="bold"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="New File Name"
+            android:textColor="#988734"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/fileNameText"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            android:inputType="text"
+            android:singleLine="true"
+            android:text="test.json"
+            android:textStyle="bold" />
+
     </LinearLayout>
 
     <Button

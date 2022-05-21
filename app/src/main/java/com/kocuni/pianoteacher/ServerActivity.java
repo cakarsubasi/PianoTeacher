@@ -17,6 +17,8 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -111,7 +113,10 @@ public class ServerActivity extends AppCompatActivity {
                         }
 
                     }
-                    Toast.makeText(getApplicationContext(), selectedImagesPaths.size() + " Image(s) Selected.", Toast.LENGTH_LONG).show();
+                    if(selectedImagesPaths != null){
+                        Toast.makeText(getApplicationContext(), selectedImagesPaths.size() + " Image(s) Selected.", Toast.LENGTH_LONG).show();
+                    }
+
 
                 }
             });
@@ -235,12 +240,30 @@ public class ServerActivity extends AppCompatActivity {
                 Thread gfgThread = new Thread(() -> {
 
                     TextView responseText = findViewById(R.id.responseText);
+                    EditText newFileText = findViewById(R.id.fileNameText);
+                    newFileText.setFilters(new InputFilter[] {
+                            new InputFilter() {
+                                @Override
+                                public CharSequence filter(CharSequence cs, int start,
+                                                           int end, Spanned spanned, int dStart, int dEnd) {
+                                    // TODO Auto-generated method stub
+                                    if(cs.equals("")){ // for backspace
+                                        return cs;
+                                    }
+                                    if(cs.toString().matches("[a-zA-Z]+")){ // here no space character
+                                        return cs;
+                                    }
+                                    return "";
+                                }
+                            }
+                    });
+                    String newFileName = newFileText.getText().toString();
                     try {
 
                         String serverResponse= response.body().string();
 
                         responseText.setText( "{response.body().string()");
-                        fileManager.createFile("test.json", serverResponse);
+                        fileManager.createFile(newFileName, serverResponse);
                         MyJSON.saveData(serverResponse);
                         System.out.println(MyJSON.getData());
                     } catch (IOException  e) {
