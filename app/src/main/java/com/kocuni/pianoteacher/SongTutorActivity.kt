@@ -2,7 +2,6 @@ package com.kocuni.pianoteacher
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -41,8 +40,6 @@ import kotlinx.coroutines.*
  * Things TODO:
  * * Indicate end or beginning of the song?
  * * Less sensitive note detection (voice detection?)
- * * Song selection menu that performs a transaction with this activity
- *   so that a rudimentary song can be loaded
  * * Piano visuals
  * * "More" information
  * * Improved layout
@@ -59,7 +56,7 @@ class SongTutorViewModel() : ViewModel() {
     /**
      * Header text
      */
-    data class SongName(
+    data class SongUiState(
         val name: String = "Sample Name"
     ) { } // TODO
 
@@ -93,7 +90,7 @@ class SongTutorViewModel() : ViewModel() {
         midiSet = { midiState = MidiState(it) }
     )
 
-    var songNameState by mutableStateOf(SongName())
+    var songState by mutableStateOf(SongUiState())
         private set
     var uiState by mutableStateOf(SongTutorUiState())
         private set
@@ -159,8 +156,8 @@ class SongTutorViewModel() : ViewModel() {
     }
 
     val setName = { name: String ->
-        val newName = SongName(name)
-        songNameState = newName
+        val newName = SongUiState(name)
+        songState = newName
     }
 
 

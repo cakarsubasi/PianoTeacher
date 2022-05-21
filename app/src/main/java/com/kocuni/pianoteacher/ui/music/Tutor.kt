@@ -24,24 +24,8 @@ fun DefaultPreview3() {
     PianoTeacherTheme {
         Greeting("Android")
         Column {
-            Row() {
-                TopAppBar() {
-                    Row (
-                        modifier = Modifier.align(Alignment.CenterVertically).fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                            ) {
-                        Text(text = "Sample Song",
-                        modifier = Modifier.align(Alignment.CenterVertically))
-                        Button( onClick = {},
-                            ) {
-                            Text("Change Song")
-                        }
-
-                    }
-
-
-
-                }
+            Row {
+                SongMenuBar()
             }
             Card(
                 modifier = Modifier.padding(4.dp),
@@ -63,6 +47,45 @@ fun DefaultPreview3() {
     }
 }
 
+@Preview
+@Composable
+fun SongMenuBar(
+    songName: String = "Sample Name",
+    song_select: () -> Unit = {},
+) {
+    TopAppBar() {
+        Row(
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .fillMaxWidth(0.5f),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = songName,
+                modifier = Modifier.align(Alignment.CenterVertically),
+                textAlign = TextAlign.Left
+            )
+        }
+        Row (
+            modifier = Modifier
+            .align(Alignment.CenterVertically)
+            .fillMaxWidth(1f)
+                .wrapContentWidth(Alignment.End),
+            horizontalArrangement = Arrangement.End
+        ) {
+            Button(
+                onClick = song_select,
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Magenta)
+
+            ) {
+                Text(
+                    text = "Change Song"
+                )
+            }
+        }
+    }
+}
+
 
 @Composable
 fun Tutor(
@@ -78,32 +101,12 @@ fun Tutor(
             SongTutor.STATE.IDLE -> "idle"
             SongTutor.STATE.FALSE -> "false"
             else -> "true" }
-    Column() {
+    Column {
         // top menu bar
-        TopAppBar(
-
-        ) {
-
-            Text(
-                // TODO: get the actual name
-                text = viewModel.songNameState.name
-            )
-            Button(
-                // TODO: formatting
-                onClick = song_select,
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = Color.Magenta
-                )
-
-            ) {
-                Text(
-                    text = "Change Song"
-                )
-            }
-        }
-        Row {
-
-        }
+        SongMenuBar(
+            songName = viewModel.songState.name,
+            song_select = song_select,
+        )
         // note stream
         NoteList(uiState.nextNotes, currentPos = uiState.currentNote)
         // detected note
@@ -144,7 +147,9 @@ fun NoteList(
 @Composable
 fun Note(note: Block = NoteBlock(), current: Boolean = false) {
     Card(
-        modifier = Modifier.size(40.dp).padding(all = 4.dp),
+        modifier = Modifier
+            .size(40.dp)
+            .padding(all = 4.dp),
         elevation = 2.dp,
         backgroundColor = if (current) Color.Green else note.color,
 
