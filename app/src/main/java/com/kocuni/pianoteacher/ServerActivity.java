@@ -29,12 +29,15 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.kocuni.pianoteacher.ui.Permissions;
 import com.kocuni.pianoteacher.utils.FileManager;
 import com.kocuni.pianoteacher.utils.MyJSON;
+import com.kocuni.pianoteacher.utils.PathUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -60,6 +63,7 @@ public class ServerActivity extends AppCompatActivity {
 
     private final String TAG = "ServerActivity";
     private FileManager fileManager = new FileManager();
+    private PathUtils pathUtils;
 
     String selectedImagePath;
     private static final Pattern IP_ADDRESS
@@ -86,7 +90,7 @@ public class ServerActivity extends AppCompatActivity {
                         TextView numSelectedImages = findViewById(R.id.numSelectedImages);
                         if (data.getData() != null) {
                             Uri uri = data.getData();
-                            currentImagePath = getPath(getApplicationContext(), uri);
+                            currentImagePath = PathUtils.INSTANCE.getPath(getApplicationContext(), uri);
                             Log.d("ImageDetails", "Single Image URI : " + uri);
                             Log.d("ImageDetails", "Single Image Path : " + currentImagePath);
                             selectedImagesPaths.add(currentImagePath);
@@ -102,7 +106,7 @@ public class ServerActivity extends AppCompatActivity {
                                     ClipData.Item item = clipData.getItemAt(i);
                                     Uri uri = item.getUri();
 
-                                    currentImagePath = getPath(getApplicationContext(), uri);
+                                    currentImagePath = PathUtils.INSTANCE.getPath(getApplicationContext(), uri);
                                     selectedImagesPaths.add(currentImagePath);
                                     Log.d("ImageDetails", "Image URI " + i + " = " + uri);
                                     Log.d("ImageDetails", "Image Path " + i + " = " + currentImagePath);
@@ -241,23 +245,13 @@ public class ServerActivity extends AppCompatActivity {
 
                     TextView responseText = findViewById(R.id.responseText);
                     EditText newFileText = findViewById(R.id.fileNameText);
-                    newFileText.setFilters(new InputFilter[] {
-                            new InputFilter() {
-                                @Override
-                                public CharSequence filter(CharSequence cs, int start,
-                                                           int end, Spanned spanned, int dStart, int dEnd) {
-                                    // TODO Auto-generated method stub
-                                    if(cs.equals("")){ // for backspace
-                                        return cs;
-                                    }
-                                    if(cs.toString().matches("[a-zA-Z]+")){ // here no space character
-                                        return cs;
-                                    }
-                                    return "";
-                                }
-                            }
-                    });
                     String newFileName = newFileText.getText().toString();
+
+
+                    if(!FileManager.Companion.isOnlyWhiteSpace(newFileName)){
+
+                    }
+
                     try {
 
                         String serverResponse= response.body().string();
@@ -285,110 +279,5 @@ public class ServerActivity extends AppCompatActivity {
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
         photoPickerIntent.setType("image/*");
         someActivityResultLauncher.launch(photoPickerIntent);
-    }
-
-
-
-    // Implementation of the getPath() method and all its requirements is taken from the StackOverflow Paul Burke's answer: https://stackoverflow.com/a/20559175/5426539
-    public static String getPath(final Context context, final Uri uri) {
-
-        final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
-
-        // DocumentProvider
-        if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
-            // ExternalStorageProvider
-            if (isExternalStorageDocument(uri)) {
-                final String docId = DocumentsContract.getDocumentId(uri);
-                final String[] split = docId.split(":");
-                final String type = split[0];
-
-                if ("primary".equalsIgnoreCase(type)) {
-                    return Environment.getExternalStorageDirectory() + "/" + split[1];
-                }
-
-                // TODO handle non-primary volumes
-            }
-            // DownloadsProvider
-            else if (isDownloadsDocument(uri)) {
-
-                final String id = DocumentsContract.getDocumentId(uri);
-                final Uri contentUri = ContentUris.withAppendedId(
-                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-
-                return getDataColumn(context, contentUri, null, null);
-            }
-            // MediaProvider
-            else if (isMediaDocument(uri)) {
-                final String docId = DocumentsContract.getDocumentId(uri);
-                final String[] split = docId.split(":");
-                final String type = split[0];
-
-                Uri contentUri = null;
-                if ("image".equals(type)) {
-                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                } else if ("video".equals(type)) {
-                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-                } else if ("audio".equals(type)) {
-                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-                }
-
-                final String selection = "_id=?";
-                final String[] selectionArgs = new String[] {
-                        split[1]
-                };
-
-                return getDataColumn(context, contentUri, selection, selectionArgs);
-            }
-        }
-        // MediaStore (and general)
-        else if ("content".equalsIgnoreCase(uri.getScheme())) {
-            return getDataColumn(context, uri, null, null);
-        }
-        // File
-        else if ("file".equalsIgnoreCase(uri.getScheme())) {
-            return uri.getPath();
-        }
-
-        return null;
-    }
-
-    public static String getDataColumn(Context context, Uri uri, String selection,
-                                       String[] selectionArgs) {
-
-        Cursor cursor = null;
-        final String column = "_data";
-        final String[] projection = {
-                column
-        };
-
-        try {
-            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
-                    null);
-            if (cursor != null && cursor.moveToFirst()) {
-                final int column_index = cursor.getColumnIndexOrThrow(column);
-                return cursor.getString(column_index);
-            }
-        } finally {
-            if (cursor != null)
-                cursor.close();
-        }
-        return null;
-    }
-
-    public static boolean isExternalStorageDocument(Uri uri) {
-        return "com.android.externalstorage.documents".equals(uri.getAuthority());
-    }
-
-    public static boolean isDownloadsDocument(Uri uri) {
-        return "com.android.providers.downloads.documents".equals(uri.getAuthority());
-    }
-
-    public static boolean isMediaDocument(Uri uri) {
-        return "com.android.providers.media.documents".equals(uri.getAuthority());
-    }
-
-    private boolean isFileReadPermissionGranted() {
-        return ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
 }
