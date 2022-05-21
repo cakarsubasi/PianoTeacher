@@ -38,11 +38,13 @@ import kotlinx.coroutines.*
 
 /**
  * Things TODO:
- * * Indicate end or beginning of the song?
+ * * Stream switch logic
+ * * Piano played note and next notes
+ * * Improved file select layout
  * * Less sensitive note detection (voice detection?)
- * * Piano visuals
- * * "More" information
- * * Improved layout
+ * * Overall layout improvements
+ * * Indicate end or beginning of the song?
+ * * Fix the midi stop bug
  */
 class SongTutorViewModel() : ViewModel() {
 
@@ -57,8 +59,12 @@ class SongTutorViewModel() : ViewModel() {
      * Header text
      */
     data class SongUiState(
-        val name: String = "Sample Name"
-    ) { } // TODO
+        val name: String = "Sample Name",
+    ) { }
+
+    data class SongVoiceState(
+        val voice: String = "SOPRANO",
+    ) // TODO
 
     /**
      * These are only updated via StreamAnalyzer callbacks

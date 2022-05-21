@@ -88,10 +88,13 @@ fun SongMenuBar(
 
 @Preview
 @Composable
-fun StreamDropdown() {
+fun StreamDropdown(
+    items: List<String> = listOf("SOPRANO", "TENOR"),
+    stream_select: (String) -> Unit = {}
+) {
     var expanded by remember { mutableStateOf(false) }
     var selectedIndex by remember { mutableStateOf(0) }
-    val items = listOf("SOPRANO", "TENOR")
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
