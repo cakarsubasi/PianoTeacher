@@ -21,7 +21,6 @@ class FileManager() {
             this.context = context
     }
 
-
     val TAG = "FileManager"
     val songs: MutableSet<SongFile> = mutableSetOf()
     lateinit var context: Context
@@ -38,7 +37,8 @@ class FileManager() {
         }
     }
 
-    fun readAllFiles () {
+    fun readAllFiles() {
+        songs.clear()
         val st = Files.walk(filesDir.toPath())
         st.filter {
             it.name.contains(Regex.fromLiteral(".json"))
@@ -49,14 +49,25 @@ class FileManager() {
         }
     }
 
-    fun CreateFile() {
-
+    fun createFile(filename: String, contents: String) {
+        val file = File(filesDir, filename)
+        if (!file.exists()) {
+            file.createNewFile()
+        }
+        file.writeText(contents)
     }
 
-    fun DeleteFile() {
-
+    fun deleteFile(song: SongFile) : Boolean {
+        if (songs.remove(song)) {
+            val file = song.path.toFile()
+            return (file.delete())
+        }
+        return false
     }
 
+    /**
+     * Test method to copy some built in raw files
+     */
     private fun copyRawFiles() {
         val name1 = "muscima_45"
         val name2 = "muscima_46"
