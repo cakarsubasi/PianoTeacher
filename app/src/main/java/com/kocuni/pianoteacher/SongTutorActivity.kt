@@ -217,10 +217,10 @@ fun TutorNavHost(
 ) {
     NavHost(navController = navController, startDestination = "SongTutor") {
         composable("SongTutor") {
-            Tutor(viewModel, song_select = {navController.navigate("SongSelection")})
+            Tutor(viewModel = viewModel, song_select = {navController.navigate("SongSelection")})
         }
         composable("SongSelection") {
-            SongSelection(returnToTutor = {navController.navigate("SongTutor")})
+            SongSelection(viewModel = viewModel, returnToTutor = {navController.navigate("SongTutor")})
         }
     }
 

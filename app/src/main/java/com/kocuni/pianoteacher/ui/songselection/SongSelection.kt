@@ -19,17 +19,34 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import com.kocuni.pianoteacher.SongTutorViewModel
+import com.kocuni.pianoteacher.music.data.TutorableSong
+import com.kocuni.pianoteacher.utils.data.SongFile
 
 
 // TODO
-@Preview
+
 @Composable
 fun SongSelection(
-    returnToTutor: () -> Unit = {}
+    viewModel: SongTutorViewModel,
+    returnToTutor: () -> Unit = {},
 ) {
+    val songs = viewModel.fileManager.songs
+    val setSong : (SongFile) -> Unit = {
+        viewModel.setSong(it.getTutorable())
+        returnToTutor()
+    }
     LazyColumn {
         // hard coded songs
-
+        items(songs.size) {
+            songs.forEach {
+                SongRow(
+                    SongHolder(it.name),
+                    {setSong(it)}
+                )
+            }
+        }
         // raw resource songs
 
         // downloaded songs
@@ -41,7 +58,8 @@ fun SongSelection(
 @Composable
 fun SongList(
     title: String = "Song List",
-    songs: List<SongHolder> = listOf(SongHolder()),) {
+    songs: List<SongHolder> = listOf(SongHolder()),
+) {
     Column() {
         Text(text = title)
         Column() {
