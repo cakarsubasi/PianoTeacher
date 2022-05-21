@@ -8,47 +8,54 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.AudioRecord
+import android.os.Environment
+import android.util.Log
 import android.view.MotionEvent
 import androidx.core.app.ActivityCompat
 import com.kocuni.pianoteacher.audio.StreamAnalyzer
 import com.kocuni.pianoteacher.databinding.ActivityMainBinding
+import com.kocuni.pianoteacher.ui.Permissions
+import com.kocuni.pianoteacher.utils.FileManager
 import kotlinx.coroutines.MainScope
+import java.io.File
+import java.nio.file.Files
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.io.path.name
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    lateinit var recorder: AudioRecord
-    private val micRequest = 0;
-    val minBuffSize = 480000;
+    private val permissions = 0
+    private val TAG = "MainActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (!isRecordPermissionGranted()) {
-            requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO),
-                micRequest
+        // get permissions
+        if (!Permissions.isRecordPermissionGranted(this) ||
+                !Permissions.isReadExternalStoragePermissionGranted(this)) {
+            requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.READ_EXTERNAL_STORAGE),
+                permissions
             )
         }
-
-        //val streamAnalyzer = StreamAnalyzer(MainScope())
 
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val songButton: Button = findViewById(R.id.songButton);
+        val songButton: Button = findViewById(R.id.songButton)
         songButton.setOnClickListener { _ ->
-            val intent = Intent(this, SongActivity::class.java).apply {  }
+            val intent = Intent(this, SongTutorActivity::class.java).apply {  }
             startActivity(intent)
         }
 
-        val pitchButton: Button = findViewById(R.id.pitchButton);
+        val pitchButton: Button = findViewById(R.id.pitchButton)
         pitchButton.setOnClickListener { _ ->
             val intent = Intent(this, PitchActivity::class.java).apply {  }
             startActivity(intent)
         }
-        val serverButton: Button = findViewById(R.id.serverButton);
+        val serverButton: Button = findViewById(R.id.serverButton)
         serverButton.setOnClickListener { _ ->
             val intent = Intent(this, ServerActivity::class.java).apply {  }
             startActivity(intent)
@@ -68,45 +75,7 @@ class MainActivity : AppCompatActivity() {
             // for ActivityCompat#requestPermissions for more details.
             return
         }
-        val executor: ExecutorService = Executors.newFixedThreadPool(10)
 
-        /*
-        val recordArea: View = findViewById(R.id.recordArea)
-        recordArea.setOnTouchListener { _, motionEvent ->
-            when(motionEvent.action) {
-                MotionEvent.ACTION_DOWN -> {binding.sampleText.text = "Recording"; streamAnalyzer.startAnalyzing()}
-                MotionEvent.ACTION_UP -> {binding.sampleText.text = "Idle"; streamAnalyzer.endAnalyzing()}
-            }
-            true
-        }
-
-        val playArea: View = findViewById(R.id.playArea)
-        playArea.setOnTouchListener { _, motionEvent ->
-            when(motionEvent.action) {
-                MotionEvent.ACTION_DOWN -> {binding.sampleText.text = "Playing";
-
-                }
-                MotionEvent.ACTION_UP -> {binding.sampleText.text = "Idle"; }
-            }
-            true;
-        }
-        */
-
-
-        /*
-        val streamSwitch: Switch = findViewById(R.id.streamSwitch)
-        streamSwitch.setOnCheckedChangeListener { _, checked ->
-            when(checked) {
-                true -> JNIBridge.startEngine()
-                false -> JNIBridge.stopEngine() }
-        }
-         */
-    }
-
-
-    private fun isRecordPermissionGranted(): Boolean {
-        return ActivityCompat.checkSelfPermission(this,
-        Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
     }
 
 }

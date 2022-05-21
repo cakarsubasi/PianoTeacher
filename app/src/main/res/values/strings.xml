@@ -4,4 +4,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_compose">ComposeActivity</string>
     <string name="title_activity_pitch">PitchActivity</string>
+    <string name="title_activity_song_tutor">Song Tutor</string>
+    <string name="title_activity_server">Upload Image</string>
 </resources>

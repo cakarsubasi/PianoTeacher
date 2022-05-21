@@ -4,25 +4,22 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
+import be.tarsos.dsp.util.PitchConverter
 import com.kocuni.pianoteacher.audio.StreamAnalyzer
+import com.kocuni.pianoteacher.music.data.MidiTable
+import com.kocuni.pianoteacher.music.data.SampleSongs
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class PitchViewModel: ViewModel() {
+class PitchViewModel(val analyzer: StreamAnalyzer): ViewModel() {
     private val TAG = "PitchViewModel"
 
     data class PitchUiState(
@@ -35,27 +32,30 @@ class PitchViewModel: ViewModel() {
 
     var uiState by mutableStateOf(PitchUiState())
         private set
-    val analyzer: StreamAnalyzer = StreamAnalyzer(viewModelScope)
+    //val analyzer: StreamAnalyzer = StreamAnalyzer(viewModelScope)
 
     init {
         Log.d(TAG, "pitch view model")
         analyzer.startAnalyzing()
         analyzer.listener = {
             viewModelScope.launch {
-                Log.d(TAG, "callback")
                 val info = analyzer.info
                 val newState = PitchUiState(true, info.amplitude, info.frequency, info.confidence, "")
                 uiState = newState
             }
         }
     }
+
+
 }
 
 class PitchActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val viewModel = PitchViewModel()
+        val analyzer = StreamAnalyzer(lifecycleScope)
+        val viewModel = PitchViewModel(analyzer)
+
 
         setContent {
             PianoTeacherTheme {
@@ -70,6 +70,17 @@ class PitchActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+    }
+
+
 }
 
 @Composable
@@ -80,32 +91,36 @@ fun PitchPanel(
     LaunchedEffect(viewModel.uiState) {
         uiState = viewModel.uiState
     }
-    PitchInfo(uiState)
-}
-
-@Composable
-fun Greeting2(name: String, uiState: PitchViewModel.PitchUiState) {
     Column {
-        Text(text = "Hello $name!")
         PitchInfo(uiState)
+        TutorControls()
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview2() {
+    val st = SampleSongs.song1()
+
     PianoTeacherTheme {
-        Greeting2("Android", uiState = PitchViewModel.PitchUiState())
+        PitchInfo(pitchState = PitchViewModel.PitchUiState())
     }
 }
 
 @Composable
 fun PitchInfo(pitchState: PitchViewModel.PitchUiState) {
     Column {
+        val midi = PitchConverter.hertzToMidiKey(pitchState.pitch.toDouble()) - 12
+        val note = MidiTable.midiToKey[midi]
         Text(text = "Recording? : ${pitchState.isRecording}")
         Text(text = "Avg  : ${pitchState.amplitude}")
         Text(text = "Peak : ")
         Text(text = "Pitch: ${pitchState.pitch}")
         Text(text = "Prob : ${pitchState.confidence}")
+        Text(text = "MIDI : $midi")
+        Text(text = "Note : $note")
     }
 }
+
+
+

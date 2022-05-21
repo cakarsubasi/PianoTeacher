@@ -1,5 +1,6 @@
 package com.kocuni.pianoteacher.music
 
+import com.kocuni.pianoteacher.music.data.SampleSongs
 import org.junit.Assert.*
 
 import org.junit.Test
@@ -149,7 +150,7 @@ class StreamTest {
     }
 
     @Test
-    fun nextPart() {
+    fun nextPartChord() {
         val note1 = Stream.Chord(Stream.Note("C4"))
         val note2 = Stream.Chord(Stream.Note("D4"))
         val note3 = Stream.Chord(Stream.Note("E4"))
@@ -161,23 +162,23 @@ class StreamTest {
         val stream2 = Stream(listOf(part1, part2)) // e n1
         val stream3 = Stream(listOf(part2, part1)) // n1 e
 
-        assertNull(stream1.nextPart())
-        assertNull(stream3.nextPart())
-        assertEquals(stream2.nextPart(), note1)
-        assertNull(stream2.nextPart())
+        assertNull(stream1.nextPartChord())
+        assertNull(stream3.nextPartChord())
+        assertEquals(stream2.nextPartChord(), note1)
+        assertNull(stream2.nextPartChord())
 
         val part3 = Stream.Part(listOf(note2))
         val part4 = Stream.Part(listOf(note3))
 
         val stream4 = Stream(listOf(part2, part3, part4))
         val stream5 = Stream(listOf(stream4, stream1, stream4)) // n1 n2 n3 e n1 n2 n3
-        assertEquals(stream5.nextPart(), note2)
-        assertEquals(stream5.nextPart(), note3)
-        assertEquals(stream5.nextPart(), note1)
-        assertEquals(stream5.nextPart(), note2)
-        assertEquals(stream5.nextPart(), note3)
-        assertNull(stream5.nextPart())
-        assertEquals(stream5.prevPart(), note3)
+        assertEquals(stream5.nextPartChord(), note2)
+        assertEquals(stream5.nextPartChord(), note3)
+        assertEquals(stream5.nextPartChord(), note1)
+        assertEquals(stream5.nextPartChord(), note2)
+        assertEquals(stream5.nextPartChord(), note3)
+        assertNull(stream5.nextPartChord())
+        assertEquals(stream5.prevPartChord(), note3)
     }
 
     @Test
@@ -225,7 +226,7 @@ class StreamTest {
     }
 
     @Test
-    fun prevPart() {
+    fun prevPartChord() {
         val note1 = Stream.Chord(Stream.Note("C4"))
         val note2 = Stream.Chord(Stream.Note("D4"))
         val note3 = Stream.Chord(Stream.Note("E4"))
@@ -237,11 +238,11 @@ class StreamTest {
         val stream2 = Stream(listOf(part1, part2)) // e n1
         val stream3 = Stream(listOf(part2, part1)) // n1 e
 
-        assertNull(stream1.prevPart())
+        assertNull(stream1.prevPartChord())
         stream3.last()
-        assertNull(stream3.prevPart())
+        assertNull(stream3.prevPartChord())
         stream2.last()
-        assertNull(stream2.prevPart())
+        assertNull(stream2.prevPartChord())
 
         val part3 = Stream.Part(listOf(note2))
         val part4 = Stream.Part(listOf(note3))
@@ -249,27 +250,27 @@ class StreamTest {
         val stream4 = Stream(listOf(part2, part3, part4))
         val stream5 = Stream(listOf(stream4, stream1, stream4)) // n1 n2 n3 e n1 n2 n3
         stream5.last()
-        assertEquals(stream5.prevPart(), note2)
-        assertEquals(stream5.prevPart(), note1)
-        assertEquals(stream5.prevPart(), note3)
-        assertEquals(stream5.prevPart(), note2)
-        assertEquals(stream5.prevPart(), note1)
-        assertNull(stream5.prevPart())
-        assertEquals(stream5.nextPart(), note1)
+        assertEquals(stream5.prevPartChord(), note2)
+        assertEquals(stream5.prevPartChord(), note1)
+        assertEquals(stream5.prevPartChord(), note3)
+        assertEquals(stream5.prevPartChord(), note2)
+        assertEquals(stream5.prevPartChord(), note1)
+        assertNull(stream5.prevPartChord())
+        assertEquals(stream5.nextPartChord(), note1)
 
         val part5 = Stream.Part(listOf(note1, note2, note3))
         val stream6 = Stream(listOf(part5))
-        assertNull(stream6.nextPart())
-        assertEquals(stream6.prevPart(), note1)
+        assertNull(stream6.nextPartChord())
+        assertEquals(stream6.prevPartChord(), note1)
         val stream7 = Stream(listOf(stream6, part5, stream6)) // {{n1, n2, n3}}, {n1, n2, n3}, {{n1, n2, n3}}
-        assertNull(stream7.prevPart())
-        assertEquals(stream7.nextPart(), note1)
-        assertEquals(stream7.nextPart(), note1)
-        assertEquals(stream7.nextPart(), note1)
-        assertNull(stream7.nextPart())
-        assertEquals(stream7.prevPart(), note1)
-        assertEquals(stream7.prevPart(), note1)
-        assertEquals(stream7.prevPart(), note1)
+        assertNull(stream7.prevPartChord())
+        assertEquals(stream7.nextPartChord(), note1)
+        assertEquals(stream7.nextPartChord(), note1)
+        assertEquals(stream7.nextPartChord(), note1)
+        assertNull(stream7.nextPartChord())
+        assertEquals(stream7.prevPartChord(), note1)
+        assertEquals(stream7.prevPartChord(), note1)
+        assertEquals(stream7.prevPartChord(), note1)
     }
 
     @Test
@@ -312,7 +313,7 @@ class StreamTest {
     }
 
     @Test
-    fun currPart() {
+    fun currPartChord() {
         val note1 = Stream.Chord(Stream.Note("C4"))
         val note2 = Stream.Chord(Stream.Note("D4"))
         val note3 = Stream.Chord(Stream.Note("E4"))
@@ -326,35 +327,35 @@ class StreamTest {
         val stream1 = Stream(listOf())
         val stream2 = Stream(listOf(part1))
 
-        assertNull(stream1.currPart())
-        assertNull(stream2.currPart())
-        stream1.nextPart()
-        assertNull(stream1.currPart())
-        stream2.nextPart()
-        assertNull(stream2.currPart())
+        assertNull(stream1.currPartChord())
+        assertNull(stream2.currPartChord())
+        stream1.nextPartChord()
+        assertNull(stream1.currPartChord())
+        stream2.nextPartChord()
+        assertNull(stream2.currPartChord())
 
         val stream3 = Stream(listOf(part1, part2)) // e, n1
-        assertNull(stream3.currPart())
+        assertNull(stream3.currPartChord())
         stream3.last()
-        assertEquals(stream3.currPart(), note1)
-        stream3.nextPart()
-        assertNull(stream3.currPart())
-        stream3.prevPart()
-        assertEquals(stream3.currPart(), note1)
+        assertEquals(stream3.currPartChord(), note1)
+        stream3.nextPartChord()
+        assertNull(stream3.currPartChord())
+        stream3.prevPartChord()
+        assertEquals(stream3.currPartChord(), note1)
 
         val stream4 = Stream(listOf(part3, part4, part5))
-        assertEquals(stream4.currPart(), note1)
-        stream4.nextPart()
-        assertEquals(stream4.currPart(), note2)
-        stream4.nextPart()
-        assertEquals(stream4.currPart(), note3)
+        assertEquals(stream4.currPartChord(), note1)
+        stream4.nextPartChord()
+        assertEquals(stream4.currPartChord(), note2)
+        stream4.nextPartChord()
+        assertEquals(stream4.currPartChord(), note3)
 
         val stream5 = Stream(listOf(stream3, part1, stream3)) // e, n1, e, e, n1
-        assertEquals(stream5.currPart(), note1) // empty parts that are wrapped are inaccessible
-        stream5.nextPart()
-        assertEquals(stream5.currPart(), note1) // nextPart() skips empty parts
-        stream5.nextPart()
-        assertNull(stream5.currPart())
+        assertEquals(stream5.currPartChord(), note1) // empty parts that are wrapped are inaccessible
+        stream5.nextPartChord()
+        assertEquals(stream5.currPartChord(), note1) // nextPart() skips empty parts
+        stream5.nextPartChord()
+        assertNull(stream5.currPartChord())
     }
 
     @Test
@@ -419,20 +420,63 @@ class StreamTest {
     fun combinedTest() {
         val chordify = {str: String -> Stream.Chord(Stream.Note(str))}
 
-        var str = "C4 D4 E4"
-        val list: List<Stream.Chord> = listOf()
-        var strseq = str.splitToSequence(" ")
-        strseq.forEach {
-            println(chordify(it))
+        val str = "C4 D4 E4"
+
+        val generatePart = { str: String ->
+            val list: MutableList<Stream.Chord> = mutableListOf()
+            str.splitToSequence(" ").forEach {
+                list.add(chordify(it))
+            }
+            Stream.Part(list)
         }
 
-        val sequence = sequence {
-            val start = 0
+        val stream = Stream(listOf(generatePart(str)))
 
-            yield(start)
-        }
+        println(stream)
 
 
     }
 
+    @Test
+    fun get() {
+        val note1 = Stream.Chord(Stream.Note("C4"))
+        val note2 = Stream.Chord(Stream.Note("D4"))
+        val note3 = Stream.Chord(Stream.Note("E4"))
+
+        val part1 = Stream.Part(listOf())
+        val part2 = Stream.Part(listOf(note1))
+        val part3 = Stream.Part(listOf(note1, note2, note3))
+        val part4 = Stream.Part(listOf(note2, note3, note1))
+        val part5 = Stream.Part(listOf(note3, note2, note1))
+
+        assertEquals(part1.size, 0)
+        assertEquals(part2.size, 1)
+        assertEquals(part3.size, 3)
+
+        assertEquals(part3[0], note1)
+        assertEquals(part3[1], note2)
+        assertEquals(part3[2], note3)
+
+    }
+
+    @Test
+    fun currPart() {
+
+    }
+
+    /**
+     * Not real tests but probably good enough
+     */
+    @Test
+    fun flattenStream() {
+        val stream1 = SampleSongs.song1()
+        val stream2 = Stream.Builder.flattenStream(stream1)
+
+        assertEquals(stream1.toString(), stream2.toString())
+
+        val stream3 = Stream(listOf(stream1, stream2))
+        val stream4 = Stream.Builder.flattenStream(stream3)
+        assertNotEquals(stream3.toString(), stream4.toString())
+
+    }
 }

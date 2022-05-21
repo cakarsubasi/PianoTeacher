@@ -1,6 +1,10 @@
 package com.kocuni.pianoteacher.music
 
 import android.util.Log
+import com.kocuni.pianoteacher.music.data.ClefMaps
+import com.kocuni.pianoteacher.music.data.MidiTable
+import com.kocuni.pianoteacher.music.data.TutorableSong
+import com.kocuni.pianoteacher.music.data.Voices
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -13,6 +17,7 @@ import kotlin.math.roundToInt
  */
 class Stream(var stream: List<IStreamable>) : IStreamable {
     override var idx = 0
+    var size = stream.size
     /**
      * Traverse each measure in the song, generate chords and measures
      *
@@ -26,6 +31,10 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
         for (s in stream) {
             s.first()
         }
+    }
+
+    operator fun get(i: Int) : IStreamable {
+        return stream[i]
     }
 
     /**
@@ -54,10 +63,40 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
     }
 
     /**
-     * Return the part which holds the current chord
+     * Return the strean which holds the current chord
      */
     fun getCurrentPart() : IStreamable {
         return stream[idx]
+    }
+
+    fun currPart() : Part? {
+        val part: IStreamable = stream[idx]
+        if (part is Part) {
+            return part
+        } else if (part is Stream){
+            return part.currPart()
+        }
+        return null
+    }
+
+    /**
+     * Lazy abomination of an implementation
+     */
+    fun nextPart() : Part? {
+        nextPartChord()
+        val ret = currPart()
+        prevPartChord()
+        return ret
+    }
+
+    /**
+     * Lazy abomination of an implementation
+     */
+    fun prevPart() : Part? {
+        prevPartChord()
+        val ret = currPart()
+        nextPartChord()
+        return ret
     }
 
     /**
@@ -114,7 +153,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
      * Move the pointer to the first chord in the next
      * nonempty measure
      */
-    fun nextPart() : Chord? {
+    fun nextPartChord() : Chord? {
         return if (stream.isEmpty()) {
             null
         } else {
@@ -123,7 +162,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
             }
             when (val st = stream[idx]) {
                 is Part -> {st.last(); return nextChord()}
-                is Stream -> return st.nextPart() ?: nextChord()
+                is Stream -> return st.nextPartChord() ?: nextChord()
                 else -> return null
             }
         }
@@ -152,13 +191,13 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
      * pointing at the first measure. If the pointer is out of
      * bounds due to nextPart() calls, the first chord in the last measure
      */
-    fun prevPart() : Chord? {
+    fun prevPartChord() : Chord? {
         return if (stream.isEmpty()) {
             null
         } else {
             if (idx >= stream.size) {
                 last()
-                return currPart()
+                return currPartChord()
             }
             if (idx < 0) {
                 return null
@@ -166,16 +205,16 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
             when (val st = stream[idx]) {
                 is Part -> {
                     if (prevChord() != null) {
-                        return currPart()
+                        return currPartChord()
                     } else {
                         return null
                     }
                 }
                 is Stream -> {
-                    val st2 = st.prevPart()
+                    val st2 = st.prevPartChord()
                     if (st2 == null) {
                         prevChord()
-                        return currPart()
+                        return currPartChord()
                     } else {
                         return st2
                     }
@@ -205,7 +244,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
      * @return the first chord in the current measure.
      * null if current part is out of bounds. null if pointing at an empty measure under select circumstances.
      */
-    fun currPart() : Chord? {
+    fun currPartChord() : Chord? {
         return if (stream.isEmpty()) {
             null
         } else {
@@ -216,7 +255,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
             }
             when (val st = stream[idx]) {
                 is Part -> st.first()
-                is Stream -> st.currPart() ?: nextChord()
+                is Stream -> st.currPartChord() ?: nextChord()
                 else -> null
             }
 
@@ -267,6 +306,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
     class Part(var chords: List<Chord>) : IStreamable {
 
         override var idx: Int = 0
+        var size = chords.size
 
         override fun currChord(): Chord? {
             return if (chords.isEmpty()) {
@@ -321,6 +361,11 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
             }
             return str
         }
+
+        operator fun get(i: Int) : Chord {
+            return chords[i]
+        }
+
     }
 
     /**
@@ -410,14 +455,26 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
     object Builder {
         private const val TAG = "StreamBuilder"
 
+        /**
+         * Use this to construct songs for the Song Tutor from inference results.
+         */
+        fun buildTutorable(abstractSong: AbstractSong) : TutorableSong {
+            val voices = mutableListOf<Voices>(Voices.SOPRANO)
+            if (!abstractSong.isOneHanded) {
+                voices.add(Voices.TENOR)
+            }
+            val rawStream = build(abstractSong = abstractSong)
+            return TutorableSong(rawStream, voices)
+        }
+
         fun build(abstractSong: AbstractSong) : Stream {
             return if (abstractSong.isOneHanded) { // one handed
-                val clef: String = "gClef"
+                val clef = "gClef"
                 val stream = buildSingleStream(abstractSong.staffs, clef)
                 stream
             } else { // two handed
-                val clef1: String = "gClef"
-                val clef2: String = "fClef"
+                val clef1 = "gClef"
+                val clef2 = "fClef"
                 // split staffs
                 val staffsR = abstractSong.staffs.filterIndexed { index, _ ->
                     index % 2 == 0
@@ -437,7 +494,9 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
 
             val staffs = LinkedList<IStreamable>()
             for (abstractStaff in abstractStaffs) {
-                val gap = (abstractStaff.ymax - abstractStaff.ymin) * 0.25
+                val bottom = abstractStaff.staffs[0].bottom
+                val top = abstractStaff.staffs[0].top
+                val gap = (bottom - top) * 0.25
 
                 val measures = LinkedList<IStreamable>()
                 for (abstractMeasure in abstractStaff.measures) {
@@ -446,16 +505,18 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
                     for (glyph in abstractMeasure.glyphs) {
                         if (glyph is GlyphNote) {
                             // infer pitch
-                            val pos = relativePos(glyph.y, abstractStaff.ymax, gap)
+                            val pos = relativePos(glyph.y, bottom, gap)
                             val noteName: String? = clefmap[pos]
-                            val note: Note = if (noteName != null) {
-                                Note(glyph, noteName)
+                            val note: Note
+                            if (noteName != null) {
+                                // this is a dirty hack to avoid creating invalid notes
+                                note = Note(glyph, noteName)
+                                val chord = Chord(note)
+                                chords.add(chord)
                             } else {
                                 Log.d(TAG, "Note out of bounds at $pos")
-                                Note(glyph, "Unknown")
+                                //Note(glyph, "Unknown")
                             }
-                            val chord: Chord = Chord(note)
-                            chords.add(chord)
                         }
                     }
                     // TODO: Merge chords
@@ -469,19 +530,25 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
             return Stream(staffs)
         }
 
-        val relativePos = { notehead:    Double,
+        private val relativePos = { notehead:    Double,
                             staffbottom: Double,
                             staffgap:    Double ->
             (2.0*(staffbottom - notehead)/staffgap).roundToInt()
         }
 
-        val getNote = {}
-
-
-        fun getPitch(name: String) : Double {
-            // TODO, either add a LUT or a formula to calculate pitch
-            return 0.0
+        fun flattenStream(stream: Stream) : Stream {
+            val list: MutableList<Part> = mutableListOf()
+            stream.first()
+            stream.prevPartChord()
+            while (stream.nextPartChord() != null) {
+                val part = stream.currPart()
+                if (part != null) {
+                    list.add(part)
+                }
+            }
+            return Stream(list)
         }
+
     }
 
 }

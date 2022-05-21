@@ -12,7 +12,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * Manage and analyze an incoming audio stream
  */
-class StreamAnalyzer(scope: CoroutineScope, val bufferSize: Int = 1024) {
+class StreamAnalyzer(scope: CoroutineScope,
+                     val bufferSize: Int = 1024) {
 
     data class BufferInfo(
         val amplitude: Float = 0.0F,
@@ -21,59 +22,42 @@ class StreamAnalyzer(scope: CoroutineScope, val bufferSize: Int = 1024) {
         val confidence: Float = 0.0F,
     )
 
-    val TAG = "StreamAnalyzer"
+    private val TAG = "StreamAnalyzer"
+    private val manager: RecordingManager = RecordingManager()
 
-    // user double buffering
-    val bufferBack = FloatArray(bufferSize)
-    var bufferFront = FloatArray(bufferSize)
     // Yin from tarsos DSP
-    val detector = FastYin(44100F, bufferSize)
+    val detector = FastYin(manager.SAMPLE_RATE.toFloat(), bufferSize)
     var info = BufferInfo()
     var listener: (()->Unit)? = null
-
-    var isRecording: Boolean = false
-    val analysisDelay: Long = 500L
 
     private val streamScope = scope
     private lateinit var recordJob: Job
     private lateinit var analyzeJob: Job
 
-    val manager: RecordingManager = RecordingManager()
-
     /**
      * Start threads that record and analyze
-     * TODO: no wait analysis
      */
     fun startAnalyzing() {
-        var i = 0
-        val channel = Channel<FloatArray>()
-        var ready: AtomicBoolean = AtomicBoolean(false)
+
         recordJob = streamScope.launch(Dispatchers.Default) {
-
-            while (isActive) {
-                /*
-                The delay is mainly for debug,
-                ideally there should not be any
-                delay during regular operation
-                 */
-                delay(analysisDelay)
-                i++
-                Log.d(TAG, "record job $i")
-                manager.read()
-                // copy
-                bufferFront = manager.buffer.clone()
-                channel.send(bufferFront)
-
-                ready.set(true)
-            }
+            Log.d(TAG, "launched record job")
+            manager.startStreaming()
+            // this part is blocked
         }
 
+
         analyzeJob = streamScope.launch(Dispatchers.Default) {
-            delay(500L)
+            Log.d(TAG, "launched analyze job")
             while (isActive) {
-                val buffer = channel.receive()
+                val buffer = manager.channel.receive()
+
+                val floatArray = FloatArray(buffer.size)
+                for (i in floatArray.indices) {
+                    floatArray[i] = buffer[i]/32767.0F
+                }
+
                 Log.d(TAG, "analyze job")
-                analyzeBuffer(buffer)
+                analyzeBuffer(floatArray)
                 listener?.invoke()
 
             }
@@ -85,16 +69,17 @@ class StreamAnalyzer(scope: CoroutineScope, val bufferSize: Int = 1024) {
      * Stop the threads
      */
     fun endAnalyzing() = runBlocking {
+        manager.stopStreaming()
         recordJob.cancelAndJoin()
         analyzeJob.cancelAndJoin()
     }
 
-    fun analyzeBuffer(buffer: FloatArray) {
+    private fun analyzeBuffer(buffer: FloatArray) {
         var peak_amp = 0.0F
         var avg_amp = 0.0F
 
         for (i in buffer.indices) {
-            var elem = buffer[i]*buffer[i]
+            val elem = buffer[i]*buffer[i]
             if (elem > peak_amp) peak_amp = elem
             avg_amp += elem
         }
@@ -108,9 +93,4 @@ class StreamAnalyzer(scope: CoroutineScope, val bufferSize: Int = 1024) {
         Log.d(TAG, "Pitch: ${pitch.pitch}, Prob: ${pitch.probability}")
     }
 
-    /*
-    fun amplitudes(): Flow<Float> {
-
-    }
-    */
 }
