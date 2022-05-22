@@ -158,10 +158,10 @@ fun Tutor(
                 song_select = song_select,
             )
             // note stream
-            NoteList(uiState.nextNotes, currentPos = uiState.currentNote)
+            NoteList(uiState.nextNotesWithMeasures, currentPos = uiState.currentNoteIndex)
             // detected note
             Row {
-                Note(NoteBlock(uiState.playedNote))
+                Note(uiState.playedNote)
                 Text( text = status )
 
                 StreamDropdown(
@@ -171,7 +171,9 @@ fun Tutor(
             }
             // piano
             Card() {
-                Piano()
+                Piano(
+                    viewModel.uiState.nextNotesWithoutMeasures
+                )
             }
         }
         Column(

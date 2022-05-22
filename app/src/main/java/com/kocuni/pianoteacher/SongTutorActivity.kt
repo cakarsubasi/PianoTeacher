@@ -24,11 +24,11 @@ import androidx.navigation.compose.rememberNavController
 import com.kocuni.pianoteacher.audio.StreamAnalyzer
 import com.kocuni.pianoteacher.music.MIDIPlayer
 import com.kocuni.pianoteacher.music.SongTutor
-import com.kocuni.pianoteacher.music.Stream
 import com.kocuni.pianoteacher.music.data.MidiTable
 import com.kocuni.pianoteacher.music.data.TutorableSong
 import com.kocuni.pianoteacher.music.data.Voices
 import com.kocuni.pianoteacher.ui.music.Block
+import com.kocuni.pianoteacher.ui.music.NoteBlock
 import com.kocuni.pianoteacher.ui.music.Tutor
 import com.kocuni.pianoteacher.ui.songselection.SongSelection
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
@@ -46,7 +46,7 @@ import kotlinx.coroutines.*
  * * Indicate end or beginning of the song?
  * * Fix the midi stop bug
  */
-class SongTutorViewModel() : ViewModel() {
+class SongTutorViewModel : ViewModel() {
 
     var tutor: SongTutor = SongTutor()
     private var analyzer: StreamAnalyzer = StreamAnalyzer(viewModelScope)
@@ -72,14 +72,13 @@ class SongTutorViewModel() : ViewModel() {
      */
     data class SongTutorUiState(
         val autoAdvance: Boolean = false,
-        val nextNotes: List<Block> = mutableListOf(),
-        val currentNote: Int = 0, // index of the current note in nextNotes
-        val playedNote: String = "C0",
-        val expectedNote: String = "C0",
+        val nextNotesWithMeasures: List<Block> = mutableListOf(),
+        val nextNotesWithoutMeasures: List<NoteBlock> = mutableListOf(),
+        val currentNoteIndex: Int = 0,
+        val playedNote: Block = NoteBlock("C0"),
         val status: SongTutor.STATE = SongTutor.STATE.IDLE,
         val amplitude: Float = 0f,
         val selectedStream: Voices = Voices.SOPRANO, // TODO
-
         )
 
     data class MidiState(
@@ -136,17 +135,20 @@ class SongTutorViewModel() : ViewModel() {
                 val frequency = analyzer.info.frequency
                 val amplitude = analyzer.info.amplitude
                 val tutorState = tutor.onUpdate(frequency)
-                val songDisplay = tutor.getNextNMeasures(MAX_MEASURES)
-                val playedNote: String? = tutor.getNoteName(frequency)
+                val nextNotesWithMeasures = tutor.getNextNMeasures(MAX_MEASURES)
+                val playedNote = NoteBlock(tutor.getNoteName(frequency) ?: "Unknown")
 
-                val nextNBlocks = tutor.getNextNBlocks(3)
+                val nextNBlocks: MutableList<NoteBlock> = mutableListOf(playedNote).also {
+                    it.addAll(tutor.getNextNBlocks(2))
+                }
+
 
                 val newState = SongTutorUiState(
                     autoAdvance = tutor.autoAdvance,
-                    nextNotes = songDisplay.second,
-                    currentNote = songDisplay.first,
-                    playedNote = playedNote ?: uiState.playedNote,
-                    expectedNote = "C0",
+                    nextNotesWithMeasures = nextNotesWithMeasures.second,
+                    nextNotesWithoutMeasures = nextNBlocks,
+                    currentNoteIndex = nextNotesWithMeasures.first,
+                    playedNote = playedNote,
                     status = tutorState,
                     amplitude = amplitude,
                 )
