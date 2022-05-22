@@ -20,10 +20,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kocuni.pianoteacher.R
 import com.kocuni.pianoteacher.ui.music.PianoKeyMaps.blacks
+import com.kocuni.pianoteacher.ui.music.PianoKeyMaps.blacksPos
 import com.kocuni.pianoteacher.ui.music.PianoKeyMaps.whites
 import com.kocuni.pianoteacher.ui.music.PianoKeyMaps.whitesPos
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 
 /**
@@ -61,6 +60,9 @@ fun Piano(
         for (i in whites.keys) {
             val note = NoteBlock(whites[i] ?: "C0")
             drawNote(this, paint,
+                xOffset = 0.5f,
+                yOffset = 0.75f,
+                parityOffset = 0.03f,
                 notePos = i,
                 note = note,
                 backgroundSize = 1.2f
@@ -72,31 +74,53 @@ fun Piano(
             val note = NoteBlock(blacks[i] ?: "C0")
             drawNote(this, paint,
                 xOffset = 1f,
-                yOffset = 0.45f,
+                yOffset = 0.10f,
                 parityOffset = 0.05f,
                 notePos = i,
                 note = note,
                 backgroundSize = 1.5f)
         }
 
-        /*
-        val played = blocks[0]
-        val playedPos: Int = (whitesPos[played.name] ?: -1)
-        val expected = blocks[1]
-        val next = blocks[2]
+
 
         // played note
-        val sharp = Regex("#")
-        val n1isBlack = sharp.containsMatchIn(played.name)
+        val isBlack = { block: Block ->
+            (block.name.contains("#"))
+        }
         // note to be played
 
-         */
+
         val whitePos = { block: Block ->
             whitesPos[block.name] ?: -1
         }
 
+        val blackPos = { block: Block ->
+            blacksPos[block.name] ?: -1
+        }
+
         if (blocks.isNotEmpty()) {
-            drawBar(this, whitePos(blocks[0]))
+            val pos: Int
+            val xOffset: Float
+            val yOffset: Float
+            if (isBlack(blocks[0])) {
+                pos = blackPos(blocks[0])
+                xOffset = 0.5f
+                yOffset = 0.3f
+            } else {
+                pos = whitePos(blocks[0])
+                xOffset = 0.0f
+                yOffset = 0.8f
+            }
+            drawBar(scope = this,
+                paint = paint,
+                notePos = pos,
+                xOffset = xOffset,
+                yOffset = yOffset,
+                rectColor = Block.Colors.Played
+            )
+        }
+        if (blocks.size >= 2) {
+            drawBar(scope = this, paint = paint, notePos = 1 )
         }
 
         // note to be played after that
@@ -107,17 +131,28 @@ fun Piano(
  * Draws bars for played, and upcoming notes
  */
 fun drawBar(scope: DrawScope,
-            playedPos: Int) {
+            paint: Paint,
+            yOffset: Float = 0.8f,
+            xOffset: Float = 0.0f,
+            notePos: Int,
+            rectColor: Color = Block.Colors.Played) {
     with(scope) {
         val canvasWidth = this.size.width
         val canvasHeight = this.size.height
         drawRect(
-            color = Block.Colors.Played,
+            color = rectColor,
             topLeft = Offset(
-                x = (canvasWidth *playedPos) /22,
-                y = 0.8f * canvasHeight,
+                x = (canvasWidth * (notePos + xOffset)) / 22,
+                y = yOffset * canvasHeight,
             ),
-            size = Size(canvasWidth / 22f, canvasHeight / 2),
+            size = Size(canvasWidth / (22f + 0.5f), canvasHeight / 2),
+        )
+
+        drawContext.canvas.nativeCanvas.drawText(
+            "P",
+            canvasWidth*((notePos + xOffset) + 0.5f) / 22,
+            canvasHeight * (yOffset + 0.1f),
+            paint
         )
     }
 }
