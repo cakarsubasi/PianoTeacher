@@ -490,7 +490,7 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
 
         private fun buildSingleStream(abstractStaffs: List<SystemStaff>, clef: String) : Stream {
             // determine which mapping will be used
-            val clefmap: HashMap<Int, String> = ClefMaps.clefs[clef] ?: ClefMaps.gclefmap
+            val clefmap: HashMap<Int, String> = ClefMaps.clefs(clef) ?: ClefMaps.gclefmap
 
             val staffs = LinkedList<IStreamable>()
             for (abstractStaff in abstractStaffs) {

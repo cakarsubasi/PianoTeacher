@@ -2,10 +2,13 @@ package com.kocuni.pianoteacher.music.data
 
 object ClefMaps {
 
-    val clefs = HashMap<String, HashMap<Int, String>>().also {
-        it["gClef"] = gclefmap
-        it["fClef"] = fclefmap
-        it["cClef"] = cclefmap
+    val clefs = { name: String ->
+        when (name) {
+            "gClef" -> gclefmap
+            "fClef" -> fclefmap
+            "cClef" -> cclefmap
+            else -> null
+        }
     }
 
     val gclefmap = HashMap<Int, String>().also {
