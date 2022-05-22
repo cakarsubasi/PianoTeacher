@@ -78,11 +78,22 @@ class SongTutorViewModel : ViewModel() {
         val playedNote: Block = NoteBlock("C0"),
         val status: SongTutor.STATE = SongTutor.STATE.IDLE,
         val amplitude: Float = 0f,
-        val selectedStream: Voices = Voices.SOPRANO, // TODO
+        val selectedStream: Voices = Voices.SOPRANO,
         )
 
     data class MidiState(
         val midiEnabled: Boolean = false
+    )
+
+    data class LambdaTutorControls(
+        val playToggle: () -> Unit = {},
+        val playSet: (Boolean) -> Unit = {},
+        val nextChord: () -> Unit = {},
+        val prevChord: () -> Unit = {},
+        val nextMeasure: () -> Unit = {},
+        val prevMeasure: () -> Unit = {},
+        val beginning: () -> Unit = {},
+        val midiSet: (Boolean) -> Unit = {},
     )
 
     val controls = LambdaTutorControls(
@@ -251,73 +262,3 @@ fun TutorNavHost(
 
 }
 
-
-
-data class LambdaTutorControls(
-    val playToggle: () -> Unit = {},
-    val playSet: (Boolean) -> Unit = {},
-    val nextChord: () -> Unit = {},
-    val prevChord: () -> Unit = {},
-    val nextMeasure: () -> Unit = {},
-    val prevMeasure: () -> Unit = {},
-    val beginning: () -> Unit = {},
-    val midiSet: (Boolean) -> Unit = {},
-)
-
-@Preview
-@Composable
-fun TutorControls(
-    controls: LambdaTutorControls = LambdaTutorControls(),
-    midiState: Boolean = false,
-) {
-    var tutorPushed by remember { mutableStateOf(false)}
-    Column {
-        Row(
-            modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
-        ) {
-            Button(onClick = { controls.beginning() }) {
-                Text("Beginning")
-            }
-            Button(onClick = { controls.nextMeasure() }) {
-                Text("Next Measure")
-            }
-            Button(onClick = { controls.prevMeasure() }) {
-                Text("Prev Measure")
-            }
-
-        }
-        Row {
-            Surface(
-                shape = MaterialTheme.shapes.small
-            ) {
-                IconToggleButton(
-                    modifier = Modifier.background(color=Color.Green),
-                    checked = tutorPushed,
-                    onCheckedChange = { tutorPushed = it; controls.playSet(it) }) {
-                    val tint by animateColorAsState(
-                        if (tutorPushed) Color(0xFFEC407A) else Color(0xFFB0BEC5))
-                    Icon(Icons.Filled.PlayArrow, contentDescription = "", tint = tint)
-                }
-            }
-            Button(onClick = { controls.nextChord() }) {
-                Text("Next Chord")
-            }
-            Button(onClick = { controls.prevChord() }) {
-                Text("Prev Chord")
-            }
-            // Midi
-            Surface(
-                shape = MaterialTheme.shapes.small
-            ) {
-                IconToggleButton(
-                    modifier = Modifier.background(color=Color.Green),
-                    checked = midiState,
-                    onCheckedChange = { controls.midiSet(it) }) {
-                    val tint by animateColorAsState(
-                        if (midiState) Color(0xFFEC407A) else Color(0xFFB0BEC5))
-                    Icon(Icons.Filled.PlayArrow, contentDescription = "", tint = tint)
-                }
-            }
-        }
-    }
-}

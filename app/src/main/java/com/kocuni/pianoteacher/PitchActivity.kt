@@ -16,6 +16,7 @@ import be.tarsos.dsp.util.PitchConverter
 import com.kocuni.pianoteacher.audio.StreamAnalyzer
 import com.kocuni.pianoteacher.music.data.MidiTable
 import com.kocuni.pianoteacher.music.data.SampleSongs
+import com.kocuni.pianoteacher.ui.music.TutorControls
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 import kotlinx.coroutines.launch
 
@@ -100,7 +101,6 @@ fun PitchPanel(
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview2() {
-    val st = SampleSongs.song1()
 
     PianoTeacherTheme {
         PitchInfo(pitchState = PitchViewModel.PitchUiState())
