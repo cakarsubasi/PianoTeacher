@@ -81,51 +81,66 @@ fun Piano(
                 backgroundSize = 1.5f)
         }
 
-
-
-        // played note
-        val isBlack = { block: Block ->
-            (block.name.contains("#"))
-        }
-        // note to be played
-
-
-        val whitePos = { block: Block ->
-            whitesPos[block.name] ?: -1
-        }
-
-        val blackPos = { block: Block ->
-            blacksPos[block.name] ?: -1
-        }
-
-        if (blocks.isNotEmpty()) {
-            val pos: Int
-            val xOffset: Float
-            val yOffset: Float
-            if (isBlack(blocks[0])) {
-                pos = blackPos(blocks[0])
-                xOffset = 0.5f
-                yOffset = 0.3f
-            } else {
-                pos = whitePos(blocks[0])
-                xOffset = 0.0f
-                yOffset = 0.8f
+        for (i in blocks.indices) {
+            val color = when (i) {
+                0 -> Block.Colors.Played
+                1 -> Block.Colors.First
+                else -> Block.Colors.Second
             }
-            drawBar(scope = this,
+            val text = when (i) {
+                0 -> "P"
+                else -> i.toString()
+            }
+            drawBarHelper(
+                scope = this,
                 paint = paint,
-                notePos = pos,
-                xOffset = xOffset,
-                yOffset = yOffset,
-                rectColor = Block.Colors.Played
-            )
-        }
-        if (blocks.size >= 2) {
-            drawBar(scope = this, paint = paint, notePos = 1 )
+                noteBlock = blocks[i],
+                color = color,
+                text = text)
         }
 
-        // note to be played after that
     }
 }
+
+private fun drawBarHelper(scope: DrawScope,
+                          paint: Paint,
+                          noteBlock: Block,
+                          color: Color,
+                          text: String) {
+    val isBlack = { block: Block ->
+        (block.name.contains("#"))
+    }
+
+    val whitePos = { block: Block ->
+        whitesPos[block.name] ?: -1
+    }
+
+    val blackPos = { block: Block ->
+        blacksPos[block.name] ?: -1
+    }
+    val pos: Int
+    val xOffset: Float
+    val yOffset: Float
+    if (isBlack(noteBlock)) {
+        pos = blackPos(noteBlock)
+        xOffset = 0.5f
+        yOffset = 0.3f
+    } else {
+        pos = whitePos(noteBlock)
+        xOffset = 0.0f
+        yOffset = 0.8f
+    }
+    drawBar(scope = scope,
+        paint = paint,
+        notePos = pos,
+        xOffset = xOffset,
+        yOffset = yOffset,
+        rectColor = color,
+        text = text
+    )
+}
+
+
 
 /**
  * Draws bars for played, and upcoming notes
@@ -135,7 +150,9 @@ fun drawBar(scope: DrawScope,
             yOffset: Float = 0.8f,
             xOffset: Float = 0.0f,
             notePos: Int,
-            rectColor: Color = Block.Colors.Played) {
+            rectColor: Color = Block.Colors.Played,
+            text: String = "P"
+) {
     with(scope) {
         val canvasWidth = this.size.width
         val canvasHeight = this.size.height
@@ -149,7 +166,7 @@ fun drawBar(scope: DrawScope,
         )
 
         drawContext.canvas.nativeCanvas.drawText(
-            "P",
+            text,
             canvasWidth*((notePos + xOffset) + 0.5f) / 22,
             canvasHeight * (yOffset + 0.1f),
             paint
