@@ -139,6 +139,8 @@ class SongTutorViewModel() : ViewModel() {
                 val songDisplay = tutor.getNextNMeasures(MAX_MEASURES)
                 val playedNote: String? = tutor.getNoteName(frequency)
 
+                val nextNBlocks = tutor.getNextNBlocks(3)
+
                 val newState = SongTutorUiState(
                     autoAdvance = tutor.autoAdvance,
                     nextNotes = songDisplay.second,

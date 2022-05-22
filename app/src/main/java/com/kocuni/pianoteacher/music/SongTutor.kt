@@ -167,25 +167,27 @@ class SongTutor() {
     }
 
     fun getNextNBlocks(n: Int) : List<NoteBlock> {
-        val list : MutableList<NoteBlock> = mutableListOf()
-        var chord = stream.currChord()
-        if (chord == null) {
-            return list
-        } else {
-            list.add(NoteBlock(chord))
-        }
-        for (i in 0 until n-1) {
-            chord = stream.nextChord()
-            if (chord != null) {
-                list.add(NoteBlock(chord))
-            } else {
+        val pos = stream.idx
+        var point: Int = stream[pos].idx
+        val list: MutableList<NoteBlock> = mutableListOf()
+
+        for (i in pos until stream.size) {
+            val part = stream[i] as Stream.Part
+
+            part.chords.forEachIndexed { index, chord ->
+                if (index >= point)
+                    list.add(NoteBlock(chord))
+            }
+            if (list.size >= n) {
                 break
             }
+            point = 0
         }
-        for (i in 0 until list.size-1) {
-            stream.prevChord()
+        return try {
+            list.subList(0, n)
+        } catch (e: Exception) {
+            list
         }
-        return list
     }
 
 
