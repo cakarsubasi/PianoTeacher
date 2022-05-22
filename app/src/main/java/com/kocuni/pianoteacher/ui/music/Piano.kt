@@ -6,6 +6,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -61,8 +62,8 @@ fun Piano(
             val note = NoteBlock(whites[i] ?: "C0")
             drawNote(this, paint,
                 xOffset = 0.5f,
-                yOffset = 0.75f,
-                parityOffset = 0.03f,
+                yOffset = 0.73f,
+                parityOffset = 0.015f,
                 notePos = i,
                 note = note,
                 backgroundSize = 1.2f
@@ -81,11 +82,12 @@ fun Piano(
                 backgroundSize = 1.5f)
         }
 
-        for (i in blocks.indices) {
+        for (i in blocks.size-1 downTo 0) {
             val color = when (i) {
                 0 -> Block.Colors.Played
                 1 -> Block.Colors.First
-                else -> Block.Colors.Second
+                2 -> Block.Colors.Second
+                else -> Block.Colors.Third
             }
             val text = when (i) {
                 0 -> "P"
@@ -130,7 +132,8 @@ private fun drawBarHelper(scope: DrawScope,
         xOffset = 0.0f
         yOffset = 0.8f
     }
-    drawBar(scope = scope,
+    drawBar(
+        scope = scope,
         paint = paint,
         notePos = pos,
         xOffset = xOffset,
@@ -139,7 +142,6 @@ private fun drawBarHelper(scope: DrawScope,
         text = text
     )
 }
-
 
 
 /**
@@ -156,13 +158,14 @@ fun drawBar(scope: DrawScope,
     with(scope) {
         val canvasWidth = this.size.width
         val canvasHeight = this.size.height
-        drawRect(
+        drawRoundRect(
             color = rectColor,
             topLeft = Offset(
                 x = (canvasWidth * (notePos + xOffset)) / 22,
                 y = yOffset * canvasHeight,
             ),
-            size = Size(canvasWidth / (22f + 0.5f), canvasHeight / 2),
+            cornerRadius = CornerRadius(30f, 30f),
+            size = Size(canvasWidth / (22f + 0.5f), canvasHeight / 3),
         )
 
         drawContext.canvas.nativeCanvas.drawText(
@@ -196,7 +199,7 @@ fun drawNote(scope: DrawScope,
                 y = canvasHeight *
                         if (notePos % 2 == 0) (yOffset+parityOffset)
                         else (yOffset - parityOffset)),
-            radius = size.minDimension * backgroundSize / 30,
+            radius = canvasHeight * backgroundSize / 30,
         )
 
         drawContext.canvas.nativeCanvas.drawText(
