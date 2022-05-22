@@ -103,10 +103,13 @@ class SongTutor() {
         return stream.currChord()
     }
 
-    fun next() {
+    fun next(): Boolean {
         val chord = stream.nextChord()
-        if (chord == null)
+        if (chord == null) {
             stream.last()
+            return false
+        }
+        return true
     }
 
     fun prev() {

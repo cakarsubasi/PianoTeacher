@@ -48,16 +48,10 @@ object MIDIPlayer {
         midiDriver.write(event)
     }
 
-    suspend fun testNote(midiCode: Int = 60, length: Long = 500L) {
+    suspend fun playNote(midiCode: Int = 60, length: Long = 500L) {
         startNote(midiCode)
         delay(length)
         stopNote(midiCode)
-    }
-
-    fun playNote(context: CoroutineScope) {
-        context.launch(Dispatchers.Default) {
-            testNote()
-        }
     }
 
 }

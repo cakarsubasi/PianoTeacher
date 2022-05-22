@@ -120,8 +120,10 @@ class SongTutorViewModel : ViewModel() {
                     break
                 } else {
                     val code = MidiTable.table[chord.notes[0].name] ?: -1
-                    midi.testNote(code, 150L)
-                    tutor.next()
+                    midi.playNote(code, 250L)
+                    if(!tutor.next()) {
+                        midiState = MidiState(false)
+                    }
                 }
                 delay(100L)
             }
@@ -264,9 +266,12 @@ data class LambdaTutorControls(
 
 @Preview
 @Composable
-fun TutorControls(controls: LambdaTutorControls = LambdaTutorControls()) {
+fun TutorControls(
+    controls: LambdaTutorControls = LambdaTutorControls(),
+    midiState: Boolean = false,
+    midiStateChange: (Boolean) -> Unit = { }
+) {
     var tutorPushed by remember { mutableStateOf(false)}
-    var midiPushed by remember { mutableStateOf(false)}
     Column {
         Row(
             modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
@@ -307,10 +312,10 @@ fun TutorControls(controls: LambdaTutorControls = LambdaTutorControls()) {
             ) {
                 IconToggleButton(
                     modifier = Modifier.background(color=Color.Green),
-                    checked = midiPushed,
-                    onCheckedChange = { midiPushed = it; controls.midiSet(it) }) {
+                    checked = midiState,
+                    onCheckedChange = { midiStateChange(it) ; controls.midiSet(it) }) {
                     val tint by animateColorAsState(
-                        if (midiPushed) Color(0xFFEC407A) else Color(0xFFB0BEC5))
+                        if (midiState) Color(0xFFEC407A) else Color(0xFFB0BEC5))
                     Icon(Icons.Filled.PlayArrow, contentDescription = "", tint = tint)
                 }
             }
