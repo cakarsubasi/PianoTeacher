@@ -136,7 +136,7 @@ class SongTutorViewModel : ViewModel() {
                 val amplitude = analyzer.info.amplitude
                 val tutorState = tutor.onUpdate(frequency)
                 val nextNotesWithMeasures = tutor.getNextNMeasures(MAX_MEASURES)
-                val playedNote = NoteBlock(tutor.getNoteName(frequency) ?: "Unknown")
+                val playedNote = NoteBlock(tutorState.first)
 
                 val nextNBlocks: MutableList<NoteBlock> = mutableListOf(playedNote).also {
                     it.addAll(tutor.getNextNBlocks(2))
@@ -149,7 +149,7 @@ class SongTutorViewModel : ViewModel() {
                     nextNotesWithoutMeasures = nextNBlocks,
                     currentNoteIndex = nextNotesWithMeasures.first,
                     playedNote = playedNote,
-                    status = tutorState,
+                    status = tutorState.second,
                     amplitude = amplitude,
                 )
                 uiState = newState

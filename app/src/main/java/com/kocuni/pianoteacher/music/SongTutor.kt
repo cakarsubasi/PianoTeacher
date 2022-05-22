@@ -10,6 +10,13 @@ import com.kocuni.pianoteacher.ui.music.NoteBlock
 
 class SongTutor() {
     private lateinit var song: TutorableSong
+    private val MIN_HOLD_COUNT = 3
+
+    // game variables
+    private var trueBuffer: Int = 0
+    private var falseBuffer: Int = 0
+    private var lastNote: String = "Unknown"
+
     var stream: Stream = Stream(listOf())
 
     constructor(stream: Stream) : this() {
@@ -56,23 +63,40 @@ class SongTutor() {
      * Called every frame
      *
      * @param freq: Frequency detected by the pitch detector, -1.0f if no frequency detected
-     * @return STATE of the tutor
+     * @return Pair: Last played note, STATE of the tutor
      *
-     * TODO: less invariance
      */
-    fun onUpdate(freq: Float) : STATE {
+    fun onUpdate(freq: Float) : Pair<String, STATE> {
         val state: STATE
+        // clear the buffer if no detections
         if (freq == -1.0F) {
+            trueBuffer = 0
+            falseBuffer = 0
             state = STATE.IDLE
         } else if (matchNote(freq)) {
-            state = STATE.CORRECT
-            if (autoAdvance) {
-                stream.nextChord()
+            ++trueBuffer
+            if (trueBuffer >= MIN_HOLD_COUNT) {
+                trueBuffer = 0
+                falseBuffer = 0
+                state = STATE.CORRECT
+                lastNote = getNoteName(freq) ?: "Unknown"
+                if (autoAdvance) {
+                    stream.nextChord()
+                }
+            } else {
+                state = STATE.IDLE
             }
         } else {
-            state = STATE.FALSE
+            ++falseBuffer
+            trueBuffer = 0
+            state = if (falseBuffer >= MIN_HOLD_COUNT) {
+                lastNote = getNoteName(freq) ?: "Unknown"
+                STATE.FALSE
+            } else {
+                STATE.IDLE
+            }
         }
-        return state
+        return Pair(lastNote, state)
     }
 
     fun getCurrentNote() : Stream.Chord? {
