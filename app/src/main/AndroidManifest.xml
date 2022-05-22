@@ -37,9 +37,6 @@
             android:label="@string/title_activity_compose"
             android:theme="@style/Theme.PianoTeacher" />
         <activity
-            android:name=".SongActivity"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
