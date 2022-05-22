@@ -53,12 +53,8 @@ fun Piano(
             color = Color.Black.toArgb()
             typeface = Typeface.MONOSPACE
         }
-
-        with(painter) {
-            draw( size = size,
-            )
-
-        }
+        // draw the Piano
+        with(painter) { draw( size = size) }
 
         // White key labels
 
@@ -83,6 +79,7 @@ fun Piano(
                 backgroundSize = 1.5f)
         }
 
+        /*
         val played = blocks[0]
         val playedPos: Int = (whitesPos[played.name] ?: -1)
         val expected = blocks[1]
@@ -93,11 +90,42 @@ fun Piano(
         val n1isBlack = sharp.containsMatchIn(played.name)
         // note to be played
 
+         */
+        val whitePos = { block: Block ->
+            whitesPos[block.name] ?: -1
+        }
+
+        if (blocks.isNotEmpty()) {
+            drawBar(this, whitePos(blocks[0]))
+        }
+
         // note to be played after that
     }
 }
 
-// TODO refactor this into the function to save a lot of space
+/**
+ * Draws bars for played, and upcoming notes
+ */
+fun drawBar(scope: DrawScope,
+            playedPos: Int) {
+    with(scope) {
+        val canvasWidth = this.size.width
+        val canvasHeight = this.size.height
+        drawRect(
+            color = Block.Colors.Played,
+            topLeft = Offset(
+                x = (canvasWidth *playedPos) /22,
+                y = 0.8f * canvasHeight,
+            ),
+            size = Size(canvasWidth / 22f, canvasHeight / 2),
+        )
+    }
+}
+
+
+/**
+ * Draws note labels on the piano
+ */
 fun drawNote(scope: DrawScope,
              paint: Paint,
              yOffset: Float = 0.7f,
@@ -127,8 +155,11 @@ fun drawNote(scope: DrawScope,
                     else (yOffset+0.02f - parityOffset),
             paint
         )
+
     }
 }
+
+
 
 
 object PianoKeyMaps {
@@ -191,15 +222,4 @@ object PianoKeyMaps {
     val blacksPos = mutableMapOf<String, Int>().also {
         blacks.forEach { (k, v) -> it[v] = k }
     }
-
-}
-
-class Colors {
-    val C = Color(0xFF8080FF)
-    val D = Color(0xFFBF80FF)
-    val E = Color(0xFFFF80FF)
-    val F = Color(0xFFFF80BF)
-    val G = Color(0xFFFF8080)
-    val A = Color(0xFFFFBF80)
-    val B = Color(0xFFFFFF80)
 }

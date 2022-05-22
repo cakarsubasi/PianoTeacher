@@ -17,9 +17,10 @@ interface Block {
         val B = Color(0xFFFFFF80)
         val black = Color(0xFF000000)
 
-        val Played = Color(0xFF000000)
-        val Next = Color(0xFF000000)
-        val NextNext = Color(0xFF000000)
+        val Played = Color(0xFFB882AE)
+        val First = Color(0xFF1ED61E)
+        val Second = Color(0xFFF6F31B)
+        val Third = Color(0xFFD6AB22)
 
         fun getColor(name: String): Color {
             return when (name[0].lowercase()) {

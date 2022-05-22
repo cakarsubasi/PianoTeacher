@@ -211,7 +211,7 @@ fun NoteList(
 fun Note(note: Block = NoteBlock(), current: Boolean = false) {
     Card(
         modifier = Modifier
-            .size(40.dp)
+            .size(60.dp)
             .padding(all = 4.dp),
         elevation = 2.dp,
         backgroundColor = if (current) Color.Green else note.color,
