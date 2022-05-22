@@ -144,36 +144,49 @@ fun Tutor(
             SongTutor.STATE.IDLE -> "idle"
             SongTutor.STATE.FALSE -> "false"
             else -> "true" }
-    Column {
-        // top menu bar
-        SongMenuBar(
-            songName = viewModel.songState.name,
-            song_select = song_select,
-        )
-        // note stream
-        NoteList(uiState.nextNotes, currentPos = uiState.currentNote)
-        // detected note
-        Row {
-            Note(NoteBlock(uiState.playedNote))
-            Text( text = status )
+    Column(
+        modifier = Modifier.fillMaxHeight(),
+        verticalArrangement = Arrangement.SpaceBetween
 
-            StreamDropdown(
-                items = viewModel.getVoices(),
-                voice_select = viewModel.setVoice
+    ) {
+        Column(
+
+        ) {
+            // top menu bar
+            SongMenuBar(
+                songName = viewModel.songState.name,
+                song_select = song_select,
             )
-        }
+            // note stream
+            NoteList(uiState.nextNotes, currentPos = uiState.currentNote)
+            // detected note
+            Row {
+                Note(NoteBlock(uiState.playedNote))
+                Text( text = status )
 
-        // piano
-        Card() {
-            Piano()
+                StreamDropdown(
+                    items = viewModel.getVoices(),
+                    voice_select = viewModel.setVoice
+                )
+            }
+            // piano
+            Card() {
+                Piano()
+            }
         }
-
-        // controls
-        Row () {
-            TutorControls(controls = viewModel.controls)
+        Column(
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            Row (
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                TutorControls(controls = viewModel.controls)
+            }
         }
-
     }
+
+
+
 }
 
 @Preview(showBackground = true)
