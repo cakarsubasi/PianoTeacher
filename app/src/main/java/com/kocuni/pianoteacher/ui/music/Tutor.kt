@@ -4,6 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -90,7 +92,7 @@ fun SongMenuBar(
 @Composable
 fun StreamDropdown(
     items: List<String> = listOf("SOPRANO", "TENOR"),
-    stream_select: (String) -> Unit = {}
+    voice_select: (String) -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selectedIndex by remember { mutableStateOf(0) }
@@ -98,7 +100,8 @@ fun StreamDropdown(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentWidth(Alignment.End),
+            .wrapContentWidth(Alignment.End)
+            .padding(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = items[selectedIndex],
@@ -112,8 +115,14 @@ fun StreamDropdown(
                     onClick = {
                               expanded = false
                         selectedIndex = index
+                        voice_select(s)
                     },
                 ) {
+                    Card {
+                        if (index == selectedIndex) {
+                            Icon(Icons.Rounded.Check, contentDescription = null)
+                        }
+                    }
                     Text( text = s)
                 }
             }
@@ -148,7 +157,10 @@ fun Tutor(
             Note(NoteBlock(uiState.playedNote))
             Text( text = status )
 
-            StreamDropdown()
+            StreamDropdown(
+                items = viewModel.getVoices(),
+                voice_select = viewModel.setVoice
+            )
         }
 
         // piano

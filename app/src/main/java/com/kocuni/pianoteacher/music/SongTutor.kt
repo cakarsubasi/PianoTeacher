@@ -32,6 +32,26 @@ class SongTutor() {
 
     var autoAdvance: Boolean = false
 
+    fun getVoices() : List<String> {
+        val voices: MutableList<String> = mutableListOf()
+        for (voice in song.voices) {
+            when (voice) {
+                Voices.SOPRANO -> voices.add("SOPRANO")
+                Voices.ALTO -> voices.add("ALTO")
+                Voices.TENOR -> voices.add("TENOR")
+                Voices.BASS -> voices.add("BASS")
+            }
+        }
+        return voices
+    }
+
+    fun setVoice(voice: String) {
+        when (voice) {
+            "SOPRANO" -> stream = song.SOPRANO()
+            "TENOR" -> stream = song.TENOR()
+        }
+    }
+
     /**
      * Called every frame
      *

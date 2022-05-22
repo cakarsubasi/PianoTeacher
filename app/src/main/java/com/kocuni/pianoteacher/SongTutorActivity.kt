@@ -48,7 +48,7 @@ import kotlinx.coroutines.*
  */
 class SongTutorViewModel() : ViewModel() {
 
-    private var tutor: SongTutor = SongTutor()
+    var tutor: SongTutor = SongTutor()
     private var analyzer: StreamAnalyzer = StreamAnalyzer(viewModelScope)
     lateinit var fileManager: FileManager
 
@@ -60,11 +60,12 @@ class SongTutorViewModel() : ViewModel() {
      */
     data class SongUiState(
         val name: String = "Sample Name",
-    ) { }
+    )
 
     data class SongVoiceState(
+        val allVoices: List<String> = listOf("SOPRANO"),
         val voice: String = "SOPRANO",
-    ) // TODO
+    )
 
     /**
      * These are only updated via StreamAnalyzer callbacks
@@ -79,7 +80,7 @@ class SongTutorViewModel() : ViewModel() {
         val amplitude: Float = 0f,
         val selectedStream: Voices = Voices.SOPRANO, // TODO
 
-        ) { }
+        )
 
     data class MidiState(
         val midiEnabled: Boolean = false
@@ -101,6 +102,8 @@ class SongTutorViewModel() : ViewModel() {
     var uiState by mutableStateOf(SongTutorUiState())
         private set
     var midiState by mutableStateOf(MidiState())
+        private set
+    var voiceState by mutableStateOf(SongVoiceState())
         private set
 
     /**
@@ -153,9 +156,6 @@ class SongTutorViewModel() : ViewModel() {
     /**
      * Use callbacks to these to change the played song
      */
-    val setStream = { stream: Stream ->
-        tutor = SongTutor(stream)
-    }
 
     val setSong = { song: TutorableSong ->
         tutor = SongTutor(song)
@@ -166,6 +166,13 @@ class SongTutorViewModel() : ViewModel() {
         songState = newName
     }
 
+    val getVoices = { ->
+        tutor.getVoices()
+    }
+
+    val setVoice = { voice: String ->
+        tutor.setVoice(voice)
+    }
 
     override fun onCleared() {
         super.onCleared()
