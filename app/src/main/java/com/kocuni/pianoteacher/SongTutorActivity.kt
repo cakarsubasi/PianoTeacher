@@ -125,7 +125,7 @@ class SongTutorViewModel : ViewModel() {
                         midiState = MidiState(false)
                     }
                 }
-                delay(100L)
+                delay(50L)
             }
         }
         midi.stopDriver()
@@ -269,7 +269,6 @@ data class LambdaTutorControls(
 fun TutorControls(
     controls: LambdaTutorControls = LambdaTutorControls(),
     midiState: Boolean = false,
-    midiStateChange: (Boolean) -> Unit = { }
 ) {
     var tutorPushed by remember { mutableStateOf(false)}
     Column {
@@ -313,7 +312,7 @@ fun TutorControls(
                 IconToggleButton(
                     modifier = Modifier.background(color=Color.Green),
                     checked = midiState,
-                    onCheckedChange = { midiStateChange(it) ; controls.midiSet(it) }) {
+                    onCheckedChange = { controls.midiSet(it) }) {
                     val tint by animateColorAsState(
                         if (midiState) Color(0xFFEC407A) else Color(0xFFB0BEC5))
                     Icon(Icons.Filled.PlayArrow, contentDescription = "", tint = tint)

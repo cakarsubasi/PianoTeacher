@@ -182,7 +182,8 @@ fun Tutor(
             Row (
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                TutorControls(controls = viewModel.controls)
+                TutorControls(controls = viewModel.controls,
+                midiState = viewModel.midiState.midiEnabled)
             }
         }
     }
