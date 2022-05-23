@@ -4,6 +4,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
@@ -21,7 +22,10 @@ fun TutorControls(
     midiState: Boolean = false,
 ) {
     var tutorPushed by remember { mutableStateOf(false) }
-    Column {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Row(
             modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
         ) {
@@ -40,14 +44,13 @@ fun TutorControls(
             Surface(
                 shape = MaterialTheme.shapes.small
             ) {
+                val tint by animateColorAsState(
+                    if (tutorPushed) Block.Colors.First else MaterialTheme.colors.primary)
                 IconToggleButton(
-                    modifier = Modifier.background(color= Color.Green),
+                    modifier = Modifier.background(color= tint),
                     checked = tutorPushed,
                     onCheckedChange = { tutorPushed = it; controls.playSet(it) }) {
-                    val tint by animateColorAsState(
-                        if (tutorPushed) Color(0xFFEC407A) else Color(0xFFB0BEC5)
-                    )
-                    Icon(Icons.Filled.PlayArrow, contentDescription = "", tint = tint)
+                    //Icon(Icons.Filled.PlayArrow, contentDescription = "", tint = tint)
                     Text("Auto Advance")
                 }
             }
