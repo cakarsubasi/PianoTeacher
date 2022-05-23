@@ -116,11 +116,11 @@ private fun drawBarHelper(scope: DrawScope,
     }
 
     val whitePos = { block: Block ->
-        whitesPos[block.name] ?: -1
+        whitesPos[block.name] ?: -2
     }
 
     val blackPos = { block: Block ->
-        blacksPos[block.name] ?: -1
+        blacksPos[block.name] ?: -2
     }
     val pos: Int
     val xOffset: Float

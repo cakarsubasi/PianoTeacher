@@ -2,6 +2,7 @@ package com.kocuni.pianoteacher.ui.music
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -44,6 +45,73 @@ fun DefaultPreview3() {
             }
             Card {
                 TutorControls()
+            }
+        }
+
+    }
+}
+
+@Composable
+fun Tutor(
+    viewModel: SongTutorViewModel,
+    song_select: () -> Unit = {},
+) {
+    var uiState = viewModel.uiState
+    LaunchedEffect(viewModel.uiState) {
+        uiState = viewModel.uiState
+    }
+    val status: String =
+        when (uiState.status) {
+            SongTutor.STATE.IDLE -> "idle"
+            SongTutor.STATE.FALSE -> "false"
+            else -> "true" }
+    LazyColumn(
+        modifier = Modifier.fillMaxHeight(),
+        verticalArrangement = Arrangement.SpaceBetween
+
+    ) {
+        item() {
+            Column(
+
+            ) {
+                // top menu bar
+                SongMenuBar(
+                    songName = viewModel.songState.name,
+                    song_select = song_select,
+                )
+                // note stream
+                NoteList(uiState.nextNotesWithMeasures, currentPos = uiState.currentNoteIndex)
+                // detected note
+                Row {
+                    Note(uiState.playedNote)
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        text = status
+                    )
+
+                    StreamDropdown(
+                        items = viewModel.getVoices(),
+                        voice_select = viewModel.setVoice
+                    )
+                }
+                // piano
+                Card() {
+                    Piano(
+                        viewModel.uiState.nextNotesWithoutMeasures
+                    )
+                }
+            }
+        }
+        item {
+            Column(
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                Row (
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                ) {
+                    TutorControls(controls = viewModel.controls,
+                        midiState = viewModel.midiState.midiEnabled)
+                }
             }
         }
 
@@ -131,67 +199,7 @@ fun StreamDropdown(
     }
 }
 
-@Composable
-fun Tutor(
-    viewModel: SongTutorViewModel,
-    song_select: () -> Unit = {},
-) {
-    var uiState = viewModel.uiState
-    LaunchedEffect(viewModel.uiState) {
-        uiState = viewModel.uiState
-    }
-    val status: String =
-        when (uiState.status) {
-            SongTutor.STATE.IDLE -> "idle"
-            SongTutor.STATE.FALSE -> "false"
-            else -> "true" }
-    Column(
-        modifier = Modifier.fillMaxHeight(),
-        verticalArrangement = Arrangement.SpaceBetween
 
-    ) {
-        Column(
-
-        ) {
-            // top menu bar
-            SongMenuBar(
-                songName = viewModel.songState.name,
-                song_select = song_select,
-            )
-            // note stream
-            NoteList(uiState.nextNotesWithMeasures, currentPos = uiState.currentNoteIndex)
-            // detected note
-            Row {
-                Note(uiState.playedNote)
-                Text( text = status )
-
-                StreamDropdown(
-                    items = viewModel.getVoices(),
-                    voice_select = viewModel.setVoice
-                )
-            }
-            // piano
-            Card() {
-                Piano(
-                    viewModel.uiState.nextNotesWithoutMeasures
-                )
-            }
-        }
-        Column(
-            verticalArrangement = Arrangement.Bottom
-        ) {
-            Row (
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                TutorControls(controls = viewModel.controls,
-                midiState = viewModel.midiState.midiEnabled)
-            }
-        }
-    }
-
-
-
-}
 
 @Preview(showBackground = true)
 @Composable
@@ -213,7 +221,7 @@ fun NoteList(
 fun Note(note: Block = NoteBlock(), current: Boolean = false) {
     Card(
         modifier = Modifier
-            .size(60.dp)
+            .size(width = 60.dp, height = 60.dp)
             .padding(all = 4.dp),
         elevation = 2.dp,
         backgroundColor = if (current) Color.Green else note.color,
@@ -225,8 +233,9 @@ fun Note(note: Block = NoteBlock(), current: Boolean = false) {
             elevation= 2.dp,
             color = note.color,) {
             Text(
+                modifier = Modifier.fillMaxHeight(),
                 text = note.name,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
         }
     }

@@ -31,13 +31,8 @@ import kotlinx.coroutines.*
 
 /**
  * Things TODO:
- * * Stream switch logic
- * * Piano played note and next notes
- * * Improved file select layout
  * * Less sensitive note detection (voice detection?)
- * * Overall layout improvements
  * * Indicate end or beginning of the song?
- * * Fix the midi stop bug
  */
 class SongTutorViewModel : ViewModel() {
 
