@@ -24,6 +24,8 @@ import com.kocuni.pianoteacher.ui.music.PianoKeyMaps.blacks
 import com.kocuni.pianoteacher.ui.music.PianoKeyMaps.blacksPos
 import com.kocuni.pianoteacher.ui.music.PianoKeyMaps.whites
 import com.kocuni.pianoteacher.ui.music.PianoKeyMaps.whitesPos
+import com.kocuni.pianoteacher.ui.music.data.Block
+import com.kocuni.pianoteacher.ui.music.data.NoteBlock
 
 
 /**

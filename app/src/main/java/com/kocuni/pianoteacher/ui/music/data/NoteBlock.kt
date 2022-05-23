@@ -1,7 +1,8 @@
-package com.kocuni.pianoteacher.ui.music
+package com.kocuni.pianoteacher.ui.music.data
 
 import androidx.compose.ui.graphics.Color
 import com.kocuni.pianoteacher.music.Stream
+import com.kocuni.pianoteacher.ui.music.data.Block
 
 class NoteBlock() : Block {
     constructor(note: Stream.Chord) : this() {

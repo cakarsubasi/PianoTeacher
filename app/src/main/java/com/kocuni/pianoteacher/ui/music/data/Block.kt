@@ -1,4 +1,4 @@
-package com.kocuni.pianoteacher.ui.music
+package com.kocuni.pianoteacher.ui.music.data
 
 import androidx.compose.ui.graphics.Color
 
@@ -31,7 +31,7 @@ interface Block {
                 "g" -> G
                 "a" -> A
                 "b" -> B
-                else -> black
+                else -> measure
             }
         }
     }

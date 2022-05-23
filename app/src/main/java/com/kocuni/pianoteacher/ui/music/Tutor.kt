@@ -17,6 +17,8 @@ import com.kocuni.pianoteacher.Greeting
 import com.kocuni.pianoteacher.SongTutorViewModel
 import com.kocuni.pianoteacher.music.SongTutor
 import com.kocuni.pianoteacher.music.data.SampleSongs
+import com.kocuni.pianoteacher.ui.music.data.Block
+import com.kocuni.pianoteacher.ui.music.data.NoteBlock
 import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 
 @Preview(showSystemUi = true, showBackground = true)

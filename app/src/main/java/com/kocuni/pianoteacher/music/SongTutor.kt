@@ -4,9 +4,9 @@ import be.tarsos.dsp.util.PitchConverter
 import com.kocuni.pianoteacher.music.data.MidiTable
 import com.kocuni.pianoteacher.music.data.TutorableSong
 import com.kocuni.pianoteacher.music.data.Voices
-import com.kocuni.pianoteacher.ui.music.Block
-import com.kocuni.pianoteacher.ui.music.MeasureBlock
-import com.kocuni.pianoteacher.ui.music.NoteBlock
+import com.kocuni.pianoteacher.ui.music.data.Block
+import com.kocuni.pianoteacher.ui.music.data.MeasureBlock
+import com.kocuni.pianoteacher.ui.music.data.NoteBlock
 
 class SongTutor() {
     private lateinit var song: TutorableSong
