@@ -2,6 +2,7 @@ package com.kocuni.pianoteacher
 
 import android.content.Context
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.*
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -67,7 +69,7 @@ class SongTutorViewModel : ViewModel() {
         val playedNote: Block = NoteBlock("C0"),
         val status: SongTutor.STATE = SongTutor.STATE.IDLE,
         val amplitude: Float = 0f,
-        val selectedStream: Voices = Voices.SOPRANO,
+        val correctCount: Int = 0,
         )
 
     data class MidiState(
@@ -153,6 +155,7 @@ class SongTutorViewModel : ViewModel() {
                     playedNote = playedNote,
                     status = tutorState.second,
                     amplitude = amplitude,
+                    correctCount = tutor.correctCount
                 )
                 uiState = newState
             }
@@ -237,6 +240,7 @@ fun TutorNavHost(
     viewModel: SongTutorViewModel,
 ) {
 
+
     NavHost(navController = navController, startDestination = "SongTutor") {
         composable("SongTutor") {
             Tutor(viewModel = viewModel, song_select = {
@@ -250,4 +254,3 @@ fun TutorNavHost(
     }
 
 }
-

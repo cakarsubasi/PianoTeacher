@@ -1,5 +1,7 @@
 package com.kocuni.pianoteacher.ui.music
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,20 +54,37 @@ fun DefaultPreview3() {
     }
 }
 
+fun makeToast(context: Context,
+              message: String = "Sample Text") {
+    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+}
+
+
 @Composable
 fun Tutor(
     viewModel: SongTutorViewModel,
     song_select: () -> Unit = {},
 ) {
+    val mContext = LocalContext.current
+
     var uiState = viewModel.uiState
     LaunchedEffect(viewModel.uiState) {
         uiState = viewModel.uiState
+
     }
+
     val status: String =
         when (uiState.status) {
             SongTutor.STATE.IDLE -> "idle"
             SongTutor.STATE.FALSE -> "false"
             else -> "true" }
+
+    if (uiState.status == SongTutor.STATE.CORRECT &&
+            uiState.correctCount % 5 == 0 &&
+            uiState.autoAdvance) {
+        makeToast(mContext, "${uiState.correctCount} Correct!")
+    }
+
     LazyColumn(
         modifier = Modifier.fillMaxHeight(),
         verticalArrangement = Arrangement.SpaceBetween
@@ -97,7 +117,7 @@ fun Tutor(
                 // piano
                 Card() {
                     Piano(
-                        viewModel.uiState.nextNotesWithoutMeasures
+                        uiState.nextNotesWithoutMeasures
                     )
                 }
             }

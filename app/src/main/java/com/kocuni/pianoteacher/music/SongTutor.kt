@@ -18,6 +18,8 @@ class SongTutor() {
     private var falseCount: Int = 0
     private var falseBuffer: Int = 0
     private var lastNote: String = "Unknown"
+    var correctCount: Int = 0
+        private set
 
     var stream: Stream = Stream(listOf())
 
@@ -86,6 +88,8 @@ class SongTutor() {
                 lastNote = getNoteName(freq) ?: "Unknown"
                 if (autoAdvance) {
                     stream.nextChord()
+                    // for Toast
+                    correctCount++
                 }
             } else {
                 state = STATE.IDLE
