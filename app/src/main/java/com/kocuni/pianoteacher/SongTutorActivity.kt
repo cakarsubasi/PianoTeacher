@@ -53,6 +53,7 @@ class SongTutorViewModel : ViewModel() {
     lateinit var fileManager: FileManager
 
     private val MAX_MEASURES: Int = 3
+    private val MAX_BLOCKS: Int = 3
     private val midi = MIDIPlayer
 
     /**
@@ -152,7 +153,7 @@ class SongTutorViewModel : ViewModel() {
                 val playedNote = NoteBlock(tutorState.first)
 
                 val nextNBlocks: MutableList<NoteBlock> = mutableListOf(playedNote).also {
-                    it.addAll(tutor.getNextNBlocks(2))
+                    it.addAll(tutor.getNextNBlocks(MAX_BLOCKS))
                 }
 
 

@@ -50,11 +50,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        val pitchButton: Button = findViewById(R.id.pitchButton)
-        pitchButton.setOnClickListener { _ ->
-            val intent = Intent(this, PitchActivity::class.java).apply {  }
-            startActivity(intent)
-        }
         val serverButton: Button = findViewById(R.id.serverButton)
         serverButton.setOnClickListener { _ ->
             val intent = Intent(this, ServerActivity::class.java).apply {  }

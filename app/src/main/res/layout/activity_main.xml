@@ -6,34 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="410dp"
-        android:layout_height="126dp"
-        android:layout_marginTop="65dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        tools:visibility="visible">
-
-        <Button
-            android:id="@+id/pitchButton"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/title_activity_pitch" />
-    </LinearLayout>
-
     <Button
         android:id="@+id/songButton"
         style="@style/Widget.AppCompat.Button"
         android:layout_width="300dp"
         android:layout_height="81dp"
-        android:layout_marginBottom="222dp"
         android:text="@string/title_activity_song_tutor"
         android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/serverButton"
@@ -48,8 +25,9 @@
         android:layout_width="300dp"
         android:layout_height="80dp"
         android:text="@string/title_activity_server"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/songButton" />
 
