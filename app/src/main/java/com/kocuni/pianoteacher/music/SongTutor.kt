@@ -10,10 +10,12 @@ import com.kocuni.pianoteacher.ui.music.data.NoteBlock
 
 class SongTutor() {
     private lateinit var song: TutorableSong
-    private val MIN_HOLD_COUNT = 3
+    private val MIN_CORRECT_COUNT = 3
+    private val MIN_ERROR_COUNT = 5
 
     // game variables
-    private var trueBuffer: Int = 0
+    private var trueCount: Int = 0
+    private var falseCount: Int = 0
     private var falseBuffer: Int = 0
     private var lastNote: String = "Unknown"
 
@@ -69,15 +71,17 @@ class SongTutor() {
     fun onUpdate(freq: Float) : Pair<String, STATE> {
         val state: STATE
         // clear the buffer if no detections
+        val detectedKey = PitchConverter.hertzToMidiKey(freq.toDouble())
+
         if (freq == -1.0F) {
-            trueBuffer = 0
-            falseBuffer = 0
+            trueCount = 0
+            falseCount = 0
             state = STATE.IDLE
         } else if (matchNote(freq)) {
-            ++trueBuffer
-            if (trueBuffer >= MIN_HOLD_COUNT) {
-                trueBuffer = 0
-                falseBuffer = 0
+            ++trueCount
+            if (trueCount >= MIN_CORRECT_COUNT) {
+                trueCount = 0
+                falseCount = 0
                 state = STATE.CORRECT
                 lastNote = getNoteName(freq) ?: "Unknown"
                 if (autoAdvance) {
@@ -87,9 +91,14 @@ class SongTutor() {
                 state = STATE.IDLE
             }
         } else {
-            ++falseBuffer
-            trueBuffer = 0
-            state = if (falseBuffer >= MIN_HOLD_COUNT) {
+            trueCount = 0
+            if (detectedKey == falseBuffer) {
+                ++falseCount
+            } else {
+                falseCount = 0
+                falseBuffer = detectedKey
+            }
+            state = if (falseCount >= MIN_ERROR_COUNT) {
                 lastNote = getNoteName(freq) ?: "Unknown"
                 STATE.FALSE
             } else {
