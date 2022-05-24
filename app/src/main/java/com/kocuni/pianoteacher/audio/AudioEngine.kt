@@ -56,8 +56,8 @@ class RecordingManager(val bufferSize: Int = 1024) {
             while (isRecording.get()) {
 
                 val readSize = recorder.read(buffer, 0, bufferSize)
-                Log.d(TAG, "Read $readSize frames.")
-                Log.d(TAG, "avg: ${buffer.average()}")
+                //Log.d(TAG, "Read $readSize frames.")
+                //Log.d(TAG, "avg: ${buffer.average()}")
 
                 val shortBuffer = ShortArray(bufferSize)
                 for (i in shortBuffer.indices) {

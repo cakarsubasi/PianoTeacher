@@ -85,7 +85,8 @@ class SongTutor() {
                 state = STATE.CORRECT
                 lastNote = getNoteName(freq) ?: "Unknown"
                 if (autoAdvance) {
-                    stream.nextChord()
+                    if(stream.nextChord() == null)
+                        stream.last()
                     // for Toast
                     correctCount++
                 }
@@ -188,8 +189,13 @@ class SongTutor() {
 
     fun getNextNMeasures(n: Int) : Pair<Int, List<Block>> {
         val pos = stream.idx
-        val point: Int = stream[pos].idx
+        val point: Int
         val list: MutableList<Block> = mutableListOf()
+        try {
+            point = stream[pos].idx
+        } catch (e: Exception) {
+            return Pair(0, list)
+        }
 
         for (i in pos until pos + n) {
             if (i == stream.size) {
@@ -206,9 +212,13 @@ class SongTutor() {
 
     fun getNextNBlocks(n: Int) : List<NoteBlock> {
         val pos = stream.idx
-        var point: Int = stream[pos].idx
+        var point: Int
         val list: MutableList<NoteBlock> = mutableListOf()
-
+        try {
+            point = stream[pos].idx
+        } catch (e: Exception) {
+            return list
+        }
         for (i in pos until stream.size) {
             val part = stream[i] as Stream.Part
 

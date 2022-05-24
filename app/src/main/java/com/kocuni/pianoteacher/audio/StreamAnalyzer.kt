@@ -56,7 +56,6 @@ class StreamAnalyzer(scope: CoroutineScope,
                     floatArray[i] = buffer[i]/32767.0F
                 }
 
-                Log.d(TAG, "analyze job")
                 analyzeBuffer(floatArray)
                 listener?.invoke()
 
@@ -89,8 +88,8 @@ class StreamAnalyzer(scope: CoroutineScope,
 
         info = BufferInfo(avg_amp, peak_amp, pitch.pitch, pitch.probability)
 
-        Log.d(TAG, "Peak: $peak_amp, Avg:  $avg_amp")
-        Log.d(TAG, "Pitch: ${pitch.pitch}, Prob: ${pitch.probability}")
+        //Log.d(TAG, "Peak: $peak_amp, Avg:  $avg_amp")
+        //Log.d(TAG, "Pitch: ${pitch.pitch}, Prob: ${pitch.probability}")
     }
 
 }
