@@ -3,8 +3,6 @@ package com.kocuni.pianoteacher.music
 import android.util.Log
 import com.kocuni.pianoteacher.music.data.ClefMaps
 import com.kocuni.pianoteacher.music.data.MidiTable
-import com.kocuni.pianoteacher.music.data.TutorableSong
-import com.kocuni.pianoteacher.music.data.Voices
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap

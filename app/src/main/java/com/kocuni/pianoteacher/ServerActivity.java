@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 
 import android.os.Bundle;
@@ -165,13 +167,17 @@ public class ServerActivity extends AppCompatActivity {
          MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
 
          for (int i = 0; i < selectedImagesPaths.size(); i++) {
+
              BitmapFactory.Options options = new BitmapFactory.Options();
              options.inPreferredConfig = Bitmap.Config.RGB_565;
 
              ByteArrayOutputStream stream = new ByteArrayOutputStream();
              try {
                  // Read BitMap by file path.
-                 Bitmap bitmap = BitmapFactory.decodeFile(selectedImagesPaths.get(i), options);
+
+                 //Bitmap bitmap = BitmapFactory.decodeFile(selectedImagesPaths.get(i), options);
+                 Bitmap bitmap = readImageWithCorrectOrientation(selectedImagesPaths.get(i));
+
                  bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
              }catch(Exception e){
                  Log.e(TAG, e.toString());
@@ -262,5 +268,32 @@ public class ServerActivity extends AppCompatActivity {
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
         photoPickerIntent.setType("image/*");
         someActivityResultLauncher.launch(photoPickerIntent);
+    }
+
+    private Bitmap readImageWithCorrectOrientation(String path) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+
+        try {
+            // Read BitMap by file path.
+            Matrix matrix = new Matrix();
+            ExifInterface exif = new ExifInterface(path);
+            Bitmap bitmap = BitmapFactory.decodeFile(path, options);
+            Bitmap rotated;
+            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
+                matrix.setRotate(90);
+            } else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
+                matrix.setRotate(270);
+            } else {
+                matrix.setRotate(0);
+            }
+            rotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            return rotated;
+        }catch(Exception e){
+            Log.e(TAG, e.toString());
+            return null;
+        }
+
     }
 }

@@ -1,21 +1,14 @@
 package com.kocuni.pianoteacher.ui.songselection
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import com.kocuni.pianoteacher.SongTutorViewModel
-import com.kocuni.pianoteacher.music.data.TutorableSong
 import com.kocuni.pianoteacher.utils.data.SongFile
 
 

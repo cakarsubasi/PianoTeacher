@@ -1,7 +1,4 @@
-package com.kocuni.pianoteacher.music.data
-
-import com.kocuni.pianoteacher.music.AbstractSong
-import com.kocuni.pianoteacher.music.Stream
+package com.kocuni.pianoteacher.music
 
 /**
  * I'm really running out of clever names here

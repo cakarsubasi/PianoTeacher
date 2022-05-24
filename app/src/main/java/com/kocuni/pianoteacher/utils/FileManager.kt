@@ -1,10 +1,9 @@
 package com.kocuni.pianoteacher.utils
 
 import android.content.Context
-import android.os.Environment
 import android.util.Log
 import com.kocuni.pianoteacher.R
-import com.kocuni.pianoteacher.music.data.TutorableSong
+import com.kocuni.pianoteacher.music.TutorableSong
 import com.kocuni.pianoteacher.utils.data.SongFile
 import org.json.JSONObject
 import java.io.File
