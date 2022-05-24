@@ -17,7 +17,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.kocuni.pianoteacher.Greeting
 import com.kocuni.pianoteacher.SongTutorViewModel
 import com.kocuni.pianoteacher.music.SongTutor
 import com.kocuni.pianoteacher.music.data.SampleSongs
@@ -29,7 +28,7 @@ import com.kocuni.pianoteacher.ui.theme.PianoTeacherTheme
 @Composable
 fun DefaultPreview3() {
     PianoTeacherTheme {
-        Greeting("Android")
+
         Column {
             Row {
                 SongMenuBar()
