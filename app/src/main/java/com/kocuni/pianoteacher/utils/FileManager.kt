@@ -10,6 +10,7 @@ import java.io.File
 import java.io.InputStream
 import java.lang.NullPointerException
 import java.nio.file.Files
+import java.util.*
 import kotlin.io.path.name
 
 
@@ -21,7 +22,7 @@ class FileManager() {
     }
 
     val TAG = "FileManager"
-    val songs: MutableSet<SongFile> = mutableSetOf()
+    val songs: SortedSet<SongFile> = sortedSetOf()
     lateinit var context: Context
     private lateinit var filesDir: File
     private var initialized: Boolean = false
