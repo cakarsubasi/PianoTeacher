@@ -280,11 +280,15 @@ public class ServerActivity extends AppCompatActivity {
             ExifInterface exif = new ExifInterface(path);
             Bitmap bitmap = BitmapFactory.decodeFile(path, options);
             Bitmap rotated;
+
+            // for complete robustness, this would also have to cover mirrors, but that level of robustness is stupid.
             int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
             if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
                 matrix.setRotate(90);
             } else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
                 matrix.setRotate(270);
+            } else if (orientation == ExifInterface.ORIENTATION_ROTATE_180) {
+                matrix.setRotate(180);
             } else {
                 matrix.setRotate(0);
             }
