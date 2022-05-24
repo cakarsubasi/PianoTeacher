@@ -253,7 +253,7 @@ public class ServerActivity extends AppCompatActivity {
                     String newFileName = newFileText.getText().toString();
 
 
-                    if(FileManager.Companion.isOnlyWhiteSpace(newFileName)){
+                    if(newFileName.length()==0){
                         String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new java.util.Date());
                         newFileName=timeStamp;
                     }
