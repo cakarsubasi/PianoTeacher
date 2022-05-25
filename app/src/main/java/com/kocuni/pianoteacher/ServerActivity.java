@@ -51,6 +51,20 @@ public class ServerActivity extends AppCompatActivity {
     private PathUtils pathUtils;
 
     String selectedImagePath;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        requestPermissions(new String[]{Manifest.permission.INTERNET}, 2);
+        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_server);
+
+        fileManager.context = getApplicationContext();
+        fileManager.initialize();
+    }
+
     private static final Pattern IP_ADDRESS
             = Pattern.compile(
             "((25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9])\\.(25[0-5]|2[0-4]"
@@ -109,17 +123,7 @@ public class ServerActivity extends AppCompatActivity {
 
                 }
             });
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        requestPermissions(new String[]{Manifest.permission.INTERNET}, 2);
-        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_server);
-
-        fileManager.context = getApplicationContext();
-        fileManager.initialize();
-    }
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -237,7 +241,7 @@ public class ServerActivity extends AppCompatActivity {
                     String newFileName = newFileText.getText().toString();
 
 
-                    if(FileManager.Companion.isOnlyWhiteSpace(newFileName)){
+                    if(newFileName.length()==0){
                         String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new java.util.Date());
                         newFileName=timeStamp;
                     }
@@ -246,7 +250,7 @@ public class ServerActivity extends AppCompatActivity {
 
                         String serverResponse= response.body().string();
 
-                        responseText.setText( "{response.body().string()");
+                        responseText.setText("Successfully retrieved song.");
                         fileManager.createFile(newFileName+".json", serverResponse);
                         Log.d(TAG, "Wrote " + newFileName);
                     } catch (IOException  e) {
