@@ -22,7 +22,7 @@ class SongTutor() {
     var stream: Stream = Stream(listOf())
 
     constructor(stream: Stream) : this() {
-        this.song = TutorableSong(stream, listOf(Voices.SOPRANO))
+        this.song = TutorableSong(soprano = stream)
         this.stream = song.SOPRANO()
     }
 
@@ -58,6 +58,8 @@ class SongTutor() {
         when (voice) {
             "SOPRANO" -> stream = song.SOPRANO()
             "TENOR" -> stream = song.TENOR()
+            "ALTO" -> stream = song.ALTO()
+            "BASS" -> stream = song.BASS()
         }
     }
 

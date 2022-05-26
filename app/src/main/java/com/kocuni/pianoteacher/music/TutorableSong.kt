@@ -5,20 +5,40 @@ package com.kocuni.pianoteacher.music
  *
  * This
  */
-class TutorableSong(rawStream: Stream, var voices: List<Voices> = listOf(Voices.SOPRANO)) {
+class TutorableSong() {
 
     val streams = mutableListOf<Stream>()
+    private var streams2 = Streams()
+
+    private data class Streams(
+        val soprano: Stream? = null,
+        val alto: Stream? = null,
+        val tenor: Stream? = null,
+        val bass: Stream? = null,
+    ) {
+
+    }
+
+    var voices: List<Voices> = listOf()
 
     val SOPRANO: () -> Stream = {
-        streams[0]
+        streams2.soprano ?: Stream(mutableListOf())
+    }
+
+    val ALTO: () -> Stream = {
+        streams2.alto ?: Stream(mutableListOf())
     }
 
     val TENOR: () -> Stream = {
-        streams[1]
+        streams2.tenor ?: Stream(mutableListOf())
     }
 
-    // TODO construct more intelligently
-    init {
+    val BASS: () -> Stream = {
+        streams2.bass ?: Stream(mutableListOf())
+    }
+
+
+    constructor(rawStream: Stream, voices: List<Voices> = listOf(Voices.SOPRANO)) : this() {
         if (voices.size == 1) {
             val st = StreamBuilder.flattenStream(rawStream)
             streams.add(st)
@@ -28,6 +48,31 @@ class TutorableSong(rawStream: Stream, var voices: List<Voices> = listOf(Voices.
                 streams.add(st)
             }
         }
+        this.voices = voices
+    }
+
+    constructor(
+        soprano: Stream? = null,
+        alto: Stream? = null,
+        tenor: Stream? = null,
+        bass: Stream? = null,
+    ) : this() {
+        val voices = mutableListOf<Voices>()
+        if (soprano != null) {
+            voices.add(Voices.SOPRANO)
+        }
+        if (alto != null) {
+            voices.add(Voices.ALTO)
+        }
+        if (tenor != null) {
+            voices.add(Voices.TENOR)
+        }
+        if (bass != null) {
+            voices.add(Voices.BASS)
+        }
+
+        streams2 = Streams(soprano, alto, tenor, bass)
+        this.voices = voices
     }
 
     companion object {
@@ -35,12 +80,16 @@ class TutorableSong(rawStream: Stream, var voices: List<Voices> = listOf(Voices.
          * Use this to construct songs for the Song Tutor from inference results.
          */
         fun buildTutorable(abstractSong: AbstractSong) : TutorableSong {
-            val voices = mutableListOf<Voices>(Voices.SOPRANO)
-            if (!abstractSong.isOneHanded) {
-                voices.add(Voices.TENOR)
-            }
             val rawStream = StreamBuilder.build(abstractSong = abstractSong)
-            return TutorableSong(rawStream, voices)
+            if (abstractSong.isOneHanded) {
+                return TutorableSong(soprano = StreamBuilder.flattenStream(rawStream[0] as Stream))
+            } else {
+                return TutorableSong(
+                    soprano = StreamBuilder.flattenStream(rawStream[0] as Stream),
+                    alto =    StreamBuilder.flattenStream(rawStream[1] as Stream),
+                    tenor =   StreamBuilder.flattenStream(rawStream[2] as Stream)
+                )
+            }
         }
     }
 }

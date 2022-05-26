@@ -28,9 +28,12 @@ object StreamBuilder {
             val staffsL = abstractSong.staffs.filterIndexed { index, _ ->
                 index % 2 == 1
             }
-            val streamR = buildSingleStream(staffsR, clef1)
-            val streamL = buildSingleStream(staffsL, clef2)
-            Stream(listOf(streamR, streamL)) // stream is not private and easily accessible!
+
+            val soprano = buildSingleStream(staffsR, clef1)
+            // Dirty hack
+            val alto = buildSingleStream(staffsL, clef1)
+            val tenor = buildSingleStream(staffsL, clef2)
+            Stream(listOf(soprano, tenor, alto)) // stream is not private and easily accessible!
         }
     }
 
@@ -53,16 +56,19 @@ object StreamBuilder {
                     if (glyph is GlyphNote) {
                         // infer pitch
                         val pos = relativePos(glyph.y, bottom, gap)
-                        var noteName: String? = clefmap[pos]
+                        var noteName: String = clefmap[pos] ?: "Unknown"
                         // reset offset
                         when (offset) {
-                            0  -> noteName = clefmap[pos]
+                            0  -> noteName = clefmap[pos] ?: "Unknown"
                             1  -> noteName = clefmap[pos] + "#"
                             -1 -> noteName = clefmap[pos-1] + "#"
                         }
-                        Log.d(TAG,"$noteName")
+
+
+
+                        Log.d(TAG,noteName)
                         val note: Stream.Note
-                        if (noteName != null) {
+                        if (noteName != "Unknown") {
                             // this is a dirty hack to avoid creating invalid notes
                             note = Stream.Note(glyph, noteName)
                             val chord = Stream.Chord(note)
