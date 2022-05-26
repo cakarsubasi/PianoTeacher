@@ -17,7 +17,7 @@ object StreamBuilder {
         return if (abstractSong.isOneHanded) { // one handed
             val clef = "gClef"
             val stream = buildSingleStream(abstractSong.staffs, clef)
-            stream
+            Stream(listOf(stream))
         } else { // two handed
             val clef1 = "gClef"
             val clef2 = "fClef"
@@ -58,13 +58,11 @@ object StreamBuilder {
                         val pos = relativePos(glyph.y, bottom, gap)
                         var noteName: String = clefmap[pos] ?: "Unknown"
                         // reset offset
-                        when (offset) {
-                            0  -> noteName = clefmap[pos] ?: "Unknown"
-                            1  -> noteName = clefmap[pos] + "#"
-                            -1 -> noteName = clefmap[pos-1] + "#"
-                        }
-
-
+                        /*
+                        Accurate application would require keeping track of the note in each line too
+                         */
+                        noteName = applyAccidental(noteName, offset)
+                        offset = 0
 
                         Log.d(TAG,noteName)
                         val note: Stream.Note
@@ -77,7 +75,6 @@ object StreamBuilder {
                             Log.d(TAG, "Note out of bounds at $pos")
                             //Note(glyph, "Unknown")
                         }
-                        // TODO: handle accidentals correctly
                     } else if (glyph is GlyphAccidental) {
                         offset = when (glyph.type.lowercase()) {
                             "accidentalflat" -> -1
@@ -97,6 +94,60 @@ object StreamBuilder {
             staffs.add(staff)
         }
         return Stream(staffs)
+    }
+
+    private fun applyAccidental(noteName: String, offset: Int) : String {
+        if (noteName == "Unknown")
+            return noteName
+        try {
+            var note: Char = noteName[0]
+            var octave: Int = noteName[1].digitToInt()
+            val sharp: Boolean = when(offset) {
+                1 -> when (note) {
+                    'E' -> false
+                    'B' -> false
+                    else -> true
+                }
+                -1 -> when(note) {
+                    'C' -> false
+                    'F' -> false
+                    else -> true
+                }
+                else -> false
+            }
+            octave = when (offset) {
+                1 -> when (note) {
+                    'B' -> octave + 1
+                    else -> octave
+                }
+                -1 -> when (note) {
+                    'C' -> octave - 1
+                    else -> octave
+                }
+                else -> octave
+            }
+            // don't swap these LUTs around
+            note = when (offset) {
+                1 -> when (note) {
+                    'E' -> 'F'
+                    'B' -> 'C'
+                    else -> note
+                }
+                -1 -> when (note) {
+                    'B' -> 'A'
+                    'E' -> 'D'
+                    'A' -> 'G'
+                    'D' -> 'C'
+                    'G' -> 'F'
+                    else -> note
+                }
+                else -> note
+            }
+
+            return if (sharp) "$note$octave#" else "$note$octave"
+        } catch (e: Exception) {
+            return noteName
+        }
     }
 
     private val relativePos = { noteHead:    Double,
