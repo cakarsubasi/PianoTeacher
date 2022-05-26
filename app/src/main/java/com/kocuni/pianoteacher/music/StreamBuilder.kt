@@ -46,13 +46,21 @@ object StreamBuilder {
 
             val measures = LinkedList<IStreamable>()
             for (abstractMeasure in abstractStaff.measures) {
-
+                // for accidentals
+                var offset = 0
                 val chords = LinkedList<Stream.Chord>()
                 for (glyph in abstractMeasure.glyphs) {
                     if (glyph is GlyphNote) {
                         // infer pitch
                         val pos = relativePos(glyph.y, bottom, gap)
-                        val noteName: String? = clefmap[pos]
+                        var noteName: String? = clefmap[pos]
+                        // reset offset
+                        when (offset) {
+                            0  -> noteName = clefmap[pos]
+                            1  -> noteName = clefmap[pos] + "#"
+                            -1 -> noteName = clefmap[pos-1] + "#"
+                        }
+                        Log.d(TAG,"$noteName")
                         val note: Stream.Note
                         if (noteName != null) {
                             // this is a dirty hack to avoid creating invalid notes
@@ -63,10 +71,19 @@ object StreamBuilder {
                             Log.d(TAG, "Note out of bounds at $pos")
                             //Note(glyph, "Unknown")
                         }
+                        // TODO: handle accidentals correctly
+                    } else if (glyph is GlyphAccidental) {
+                        offset = when (glyph.type.lowercase()) {
+                            "accidentalflat" -> -1
+                            "accidentalsharp" -> 1
+                            "flat" -> -1
+                            "sharp" -> 1
+                            else -> 0
+                        }
+                        Log.d(TAG, "Accidental ${glyph.type}, $offset")
                     }
                 }
                 // TODO: Merge chords
-                // TODO: Consider accidentals
                 val part = Stream.Part(chords)
                 measures.add(part)
             }
