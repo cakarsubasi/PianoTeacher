@@ -16,6 +16,7 @@ import kotlin.io.path.name
 
 class FileManager() {
 
+
     constructor(context: Context?) : this() {
         if (context != null)
             this.context = context
@@ -102,26 +103,20 @@ class FileManager() {
 
 
     companion object {
-        fun isOnlyWhiteSpace(str: String): Boolean {
-            return !str.contains(Regex.fromLiteral("[A-Za-z0-9]"))
-        }
 
-        fun saveJSON() {
-
-
-
-        }
-
-        fun loadJSON() {
-
-        }
+        private const val TAG = "FileManager"
 
         @Throws(NullPointerException::class)
         fun getSongFromJSONStream(f: InputStream) : TutorableSong {
             val jsonStr = f.bufferedReader().readLine()
             if (jsonStr != null) {
-                val abstractSong = JSONParser.parse(JSONObject(jsonStr))
-                return TutorableSong.buildTutorable(abstractSong = abstractSong)
+                try {
+                    val abstractSong = JSONParser.parse(JSONObject(jsonStr))
+                    return TutorableSong.buildTutorable(abstractSong = abstractSong)
+                } catch (e: Exception) {
+                    Log.e(TAG, "failed to parse song.")
+                    throw NullPointerException("Could not read JSON String")
+                }
             } else {
                 throw NullPointerException("Could not read JSON String")
             }
