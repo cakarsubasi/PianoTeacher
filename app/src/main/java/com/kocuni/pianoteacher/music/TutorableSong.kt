@@ -20,11 +20,11 @@ class TutorableSong(rawStream: Stream, var voices: List<Voices> = listOf(Voices.
     // TODO construct more intelligently
     init {
         if (voices.size == 1) {
-            val st = Stream.Builder.flattenStream(rawStream)
+            val st = StreamBuilder.flattenStream(rawStream)
             streams.add(st)
         } else {
             for (i in voices.indices) {
-                val st = Stream.Builder.flattenStream(rawStream[i] as Stream)
+                val st = StreamBuilder.flattenStream(rawStream[i] as Stream)
                 streams.add(st)
             }
         }
@@ -39,7 +39,7 @@ class TutorableSong(rawStream: Stream, var voices: List<Voices> = listOf(Voices.
             if (!abstractSong.isOneHanded) {
                 voices.add(Voices.TENOR)
             }
-            val rawStream = Stream.Builder.build(abstractSong = abstractSong)
+            val rawStream = StreamBuilder.build(abstractSong = abstractSong)
             return TutorableSong(rawStream, voices)
         }
     }

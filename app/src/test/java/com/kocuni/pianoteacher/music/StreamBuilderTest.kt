@@ -1,6 +1,5 @@
 package com.kocuni.pianoteacher.music
 
-import androidx.annotation.FloatRange
 import org.junit.Assert.*
 
 import org.junit.Test
@@ -20,7 +19,7 @@ class StreamBuilderTest {
             }
         }
 
-        val measure1: Measure = Measure(
+        val measure1 = Measure(
             generateNotes(4, 0.1, 0.3, 0.4, 0.3)
         )
 
@@ -48,7 +47,7 @@ class StreamBuilderTest {
     fun build() {
         val abstractSong = song1(isOneHanded = true)
 
-        val stream1 = Stream.Builder.build(abstractSong)
+        val stream1 = StreamBuilder.build(abstractSong)
 
         assertNotNull(stream1)
         assertNotNull(stream1.currChord())

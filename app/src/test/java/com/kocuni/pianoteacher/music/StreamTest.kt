@@ -420,8 +420,6 @@ class StreamTest {
     fun combinedTest() {
         val chordify = {str: String -> Stream.Chord(Stream.Note(str))}
 
-        val str = "C4 D4 E4"
-
         val generatePart = { str: String ->
             val list: MutableList<Stream.Chord> = mutableListOf()
             str.splitToSequence(" ").forEach {
@@ -429,6 +427,10 @@ class StreamTest {
             }
             Stream.Part(list)
         }
+
+        val str = "C4 D4 E4"
+
+
 
         val stream = Stream(listOf(generatePart(str)))
 
@@ -446,8 +448,8 @@ class StreamTest {
         val part1 = Stream.Part(listOf())
         val part2 = Stream.Part(listOf(note1))
         val part3 = Stream.Part(listOf(note1, note2, note3))
-        val part4 = Stream.Part(listOf(note2, note3, note1))
-        val part5 = Stream.Part(listOf(note3, note2, note1))
+        //val part4 = Stream.Part(listOf(note2, note3, note1))
+        //val part5 = Stream.Part(listOf(note3, note2, note1))
 
         assertEquals(part1.size, 0)
         assertEquals(part2.size, 1)
@@ -470,12 +472,12 @@ class StreamTest {
     @Test
     fun flattenStream() {
         val stream1 = SampleSongs.song1()
-        val stream2 = Stream.Builder.flattenStream(stream1)
+        val stream2 = StreamBuilder.flattenStream(stream1)
 
         assertEquals(stream1.toString(), stream2.toString())
 
         val stream3 = Stream(listOf(stream1, stream2))
-        val stream4 = Stream.Builder.flattenStream(stream3)
+        val stream4 = StreamBuilder.flattenStream(stream3)
         assertNotEquals(stream3.toString(), stream4.toString())
 
     }

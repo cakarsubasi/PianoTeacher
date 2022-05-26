@@ -1,12 +1,7 @@
 package com.kocuni.pianoteacher.music
 
-import android.util.Log
-import com.kocuni.pianoteacher.music.data.ClefMaps
 import com.kocuni.pianoteacher.music.data.MidiTable
-import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.math.roundToInt
 
 /**
  * A stream is a section of a song larger than a measure
@@ -448,105 +443,6 @@ class Stream(var stream: List<IStreamable>) : IStreamable {
             }
 
         }
-    }
-
-    object Builder {
-        private const val TAG = "StreamBuilder"
-
-        /**
-         * Use this to construct songs for the Song Tutor from inference results.
-         */
-        fun buildTutorable(abstractSong: AbstractSong) : TutorableSong {
-            val voices = mutableListOf<Voices>(Voices.SOPRANO)
-            if (!abstractSong.isOneHanded) {
-                voices.add(Voices.TENOR)
-            }
-            val rawStream = build(abstractSong = abstractSong)
-            return TutorableSong(rawStream, voices)
-        }
-
-        fun build(abstractSong: AbstractSong) : Stream {
-            return if (abstractSong.isOneHanded) { // one handed
-                val clef = "gClef"
-                val stream = buildSingleStream(abstractSong.staffs, clef)
-                stream
-            } else { // two handed
-                val clef1 = "gClef"
-                val clef2 = "fClef"
-                // split staffs
-                val staffsR = abstractSong.staffs.filterIndexed { index, _ ->
-                    index % 2 == 0
-                }
-                val staffsL = abstractSong.staffs.filterIndexed { index, _ ->
-                    index % 2 == 1
-                }
-                val streamR = buildSingleStream(staffsR, clef1)
-                val streamL = buildSingleStream(staffsL, clef2)
-                Stream(listOf(streamR, streamL)) // stream is not private and easily accessible!
-            }
-        }
-
-        private fun buildSingleStream(abstractStaffs: List<SystemStaff>, clef: String) : Stream {
-            // determine which mapping will be used
-            val clefmap: HashMap<Int, String> = ClefMaps.clefs(clef) ?: ClefMaps.gclefmap
-
-            val staffs = LinkedList<IStreamable>()
-            for (abstractStaff in abstractStaffs) {
-                val bottom = abstractStaff.staffs[0].bottom
-                val top = abstractStaff.staffs[0].top
-                val gap = (bottom - top) * 0.25
-
-                val measures = LinkedList<IStreamable>()
-                for (abstractMeasure in abstractStaff.measures) {
-
-                    val chords = LinkedList<Chord>()
-                    for (glyph in abstractMeasure.glyphs) {
-                        if (glyph is GlyphNote) {
-                            // infer pitch
-                            val pos = relativePos(glyph.y, bottom, gap)
-                            val noteName: String? = clefmap[pos]
-                            val note: Note
-                            if (noteName != null) {
-                                // this is a dirty hack to avoid creating invalid notes
-                                note = Note(glyph, noteName)
-                                val chord = Chord(note)
-                                chords.add(chord)
-                            } else {
-                                Log.d(TAG, "Note out of bounds at $pos")
-                                //Note(glyph, "Unknown")
-                            }
-                        }
-                    }
-                    // TODO: Merge chords
-                    // TODO: Consider accidentals
-                    val part = Part(chords)
-                    measures.add(part)
-                }
-                val staff = Stream(measures)
-                staffs.add(staff)
-            }
-            return Stream(staffs)
-        }
-
-        private val relativePos = { notehead:    Double,
-                            staffbottom: Double,
-                            staffgap:    Double ->
-            (2.0*(staffbottom - notehead)/staffgap).roundToInt()
-        }
-
-        fun flattenStream(stream: Stream) : Stream {
-            val list: MutableList<Part> = mutableListOf()
-            stream.first()
-            stream.prevPartChord()
-            while (stream.nextPartChord() != null) {
-                val part = stream.currPart()
-                if (part != null) {
-                    list.add(part)
-                }
-            }
-            return Stream(list)
-        }
-
     }
 
 }
