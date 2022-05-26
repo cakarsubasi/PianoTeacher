@@ -37,20 +37,6 @@ class TutorableSong() {
         streams2.bass ?: Stream(mutableListOf())
     }
 
-
-    constructor(rawStream: Stream, voices: List<Voices> = listOf(Voices.SOPRANO)) : this() {
-        if (voices.size == 1) {
-            val st = StreamBuilder.flattenStream(rawStream)
-            streams.add(st)
-        } else {
-            for (i in voices.indices) {
-                val st = StreamBuilder.flattenStream(rawStream[i] as Stream)
-                streams.add(st)
-            }
-        }
-        this.voices = voices
-    }
-
     constructor(
         soprano: Stream? = null,
         alto: Stream? = null,

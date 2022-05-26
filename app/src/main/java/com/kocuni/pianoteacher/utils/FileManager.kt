@@ -3,6 +3,7 @@ package com.kocuni.pianoteacher.utils
 import android.content.Context
 import android.util.Log
 import com.kocuni.pianoteacher.R
+import com.kocuni.pianoteacher.music.Stream
 import com.kocuni.pianoteacher.music.TutorableSong
 import com.kocuni.pianoteacher.utils.data.SongFile
 import org.json.JSONObject
@@ -115,7 +116,7 @@ class FileManager() {
                     return TutorableSong.buildTutorable(abstractSong = abstractSong)
                 } catch (e: Exception) {
                     Log.e(TAG, "failed to parse song.")
-                    throw NullPointerException("Could not read JSON String")
+                    return TutorableSong(soprano = Stream(mutableListOf()))
                 }
             } else {
                 throw NullPointerException("Could not read JSON String")
