@@ -46,7 +46,7 @@ class FileManager() {
             it.name.contains(Regex.fromLiteral(".json"))
         }.forEach {
             if (it != null) {
-                songs.add(SongFile(it.name, it))
+                songs.add(SongFile(it.name.removeSuffix(".json"), it))
             }
         }
     }
