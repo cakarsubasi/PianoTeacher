@@ -93,7 +93,6 @@
             android:layout_weight="4"
             android:inputType="text"
             android:singleLine="true"
-            android:text="test.json"
             android:textStyle="bold" />
 
     </LinearLayout>
