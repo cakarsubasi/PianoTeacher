@@ -37,14 +37,15 @@
             android:text="IPv4 Address"
             android:textStyle="bold"
             android:textColor="#988734" />
+
         <EditText
-            android:layout_weight="4"
+            android:id="@+id/IPAddress"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:id="@+id/IPAddress"
-            android:text="10.0.2.2"
+            android:layout_weight="4"
             android:singleLine="true"
-            android:textStyle="bold"/>
+            android:text="192.168.1.111"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
