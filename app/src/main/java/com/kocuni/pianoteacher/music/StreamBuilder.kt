@@ -15,7 +15,7 @@ object StreamBuilder {
 
     fun build(abstractSong: AbstractSong) : Stream {
         return if (abstractSong.isOneHanded) { // one handed
-            val clef = "gClef"
+            val clef = findClef(abstractSong.staffs)
             val stream = buildSingleStream(abstractSong.staffs, clef)
             Stream(listOf(stream))
         } else { // two handed
@@ -94,6 +94,44 @@ object StreamBuilder {
             staffs.add(staff)
         }
         return Stream(staffs)
+    }
+
+    /**
+     * Check the first measure in given list of staffs and
+     */
+    private fun findClef(abstractStaffs: List<SystemStaff>) : String {
+        var g = 0
+        var f = 0
+        var c = 0
+        val firstMeasures = mutableListOf<Measure>()
+        abstractStaffs.forEach { firstMeasures.add(it.measures[0]) }
+        for (measure in firstMeasures) {
+            for (glyph in measure.glyphs) {
+                if (glyph is GlyphClef) {
+                    when (glyph.type) {
+                        "gClef" -> g++
+                        "fClef" -> f++
+                        "cClef" -> c++
+                        else -> Log.w(TAG, "Error, found ${glyph.type}")
+                    }
+                }
+            }
+        }
+        val clefs = listOf(g, f, c)
+        var max = 0
+        var ind = 0
+        for (i in clefs.indices) {
+            if (clefs[i] > max) {
+                max = clefs[i]
+                ind = i
+            }
+        }
+        return when (ind) {
+            0 -> "gClef"
+            1 -> "fClef"
+            2 -> "cClef"
+            else -> "gClef"
+        }
     }
 
     private fun applyAccidental(noteName: String, offset: Int) : String {

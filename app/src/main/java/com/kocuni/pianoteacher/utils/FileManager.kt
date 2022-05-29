@@ -76,11 +76,14 @@ class FileManager() {
     private fun copyRawFiles() {
         val name1 = "muscima_45"
         val name2 = "muscima_46"
+        val name3 = "muscima_demo"
         val m1 = context.resources.openRawResource(R.raw.muscima_45)
         val m2 = context.resources.openRawResource(R.raw.muscima_46)
+        val m3 = context.resources.openRawResource(R.raw.muscima_demo)
 
         val copy1 = File(filesDir, "$name1.json")
         val copy2 = File(filesDir, "$name2.json")
+        val copy3 = File(filesDir, "$name3.json")
 
         if (!copy1.exists()) {
             copy1.createNewFile()
@@ -91,6 +94,12 @@ class FileManager() {
             copy2.createNewFile()
             val str2 = m2.bufferedReader().readLine()
             copy2.writeText(str2)
+        }
+
+        if (!copy3.exists()) {
+            copy3.createNewFile()
+            val str3 = m3.bufferedReader().readLine()
+            copy3.writeText(str3)
         }
     }
 
