@@ -47,7 +47,7 @@ class SongTutorViewModel : ViewModel() {
      * Header text
      */
     data class SongUiState(
-        val name: String = "Sample Name",
+        val name: String = "",
     )
 
     data class SongVoiceState(
