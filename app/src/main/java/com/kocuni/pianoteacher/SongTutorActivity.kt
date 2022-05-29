@@ -195,15 +195,15 @@ class SongTutorActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         super.onResume()
 
-        val f = resources.openRawResource(R.raw.bach_bw101_7)
+        //val f = resources.openRawResource(R.raw.bach_bw101_7)
 
-        val stream2 = getSongFromJSONStream(f)
+        //val stream2 = getSongFromJSONStream(f)
         //val stream = SampleSongs.song1()
 
         val viewModel: SongTutorViewModel by viewModels()
         viewModel.fileManager = FileManager(getAppContext())
         viewModel.fileManager.initialize()
-        viewModel.setSong(stream2)
+        //viewModel.setSong(stream2)
 
         setContent {
             TutorApp(viewModel)

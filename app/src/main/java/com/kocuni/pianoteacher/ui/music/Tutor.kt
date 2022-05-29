@@ -71,6 +71,10 @@ fun Tutor(
         uiState = viewModel.uiState
 
     }
+    val voices = when ( viewModel.getVoices().size) {
+        0 -> listOf("None")
+        else -> viewModel.getVoices()
+    }
 
     val status: String =
         when (uiState.status) {
@@ -109,7 +113,7 @@ fun Tutor(
                     )
 
                     StreamDropdown(
-                        items = viewModel.getVoices(),
+                        items = voices,
                         voice_select = viewModel.setVoice
                     )
                 }

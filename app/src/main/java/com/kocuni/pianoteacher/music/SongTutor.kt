@@ -43,15 +43,19 @@ class SongTutor() {
 
     fun getVoices() : List<String> {
         val voices: MutableList<String> = mutableListOf()
-        for (voice in song.voices) {
-            when (voice) {
-                Voices.SOPRANO -> voices.add("SOPRANO")
-                Voices.ALTO -> voices.add("ALTO")
-                Voices.TENOR -> voices.add("TENOR")
-                Voices.BASS -> voices.add("BASS")
+        try {
+            for (voice in song.voices) {
+                when (voice) {
+                    Voices.SOPRANO -> voices.add("SOPRANO")
+                    Voices.ALTO -> voices.add("ALTO")
+                    Voices.TENOR -> voices.add("TENOR")
+                    Voices.BASS -> voices.add("BASS")
+                }
             }
+            return voices
+        } catch(e: Exception) {
+            return voices
         }
-        return voices
     }
 
     fun setVoice(voice: String) {
