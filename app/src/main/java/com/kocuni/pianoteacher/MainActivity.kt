@@ -2,26 +2,13 @@ package com.kocuni.pianoteacher
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.AudioRecord
-import android.os.Environment
-import android.util.Log
-import android.view.MotionEvent
 import androidx.core.app.ActivityCompat
-import com.kocuni.pianoteacher.audio.StreamAnalyzer
 import com.kocuni.pianoteacher.databinding.ActivityMainBinding
 import com.kocuni.pianoteacher.ui.Permissions
-import com.kocuni.pianoteacher.utils.FileManager
-import kotlinx.coroutines.MainScope
-import java.io.File
-import java.nio.file.Files
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import kotlin.io.path.name
 
 class MainActivity : AppCompatActivity() {
 
